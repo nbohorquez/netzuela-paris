@@ -6,25 +6,25 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
 
+using System.Data;          // DataSet
+
 namespace Zuliaworks.Netzuela.Paris.ServidorValeria
 {
     [ServiceContract]
-    public interface IStock
+    public interface IValeria
     {
         [OperationContract]
-        Stock GetStock(string Symbol);
+        DataSet RecibirTablas();
+        [OperationContract]
+        void EnviarTablas(string EsquemaXML, string XML);
     }
-    
+    /*
     [DataContract]
-    public class Stock
+    public class DataSetXML
     {
         [DataMember]
-        public string Symbol { get; set; }
+        public string EsquemaXML { get; set; }
         [DataMember]
-        public DateTime Date { get; set; }
-        [DataMember]
-        public string Company { get; set; }
-        [DataMember]
-        public decimal Close { get; set; }
-    }
+        public string XML { get; set; }
+    }*/
 }

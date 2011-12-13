@@ -4,13 +4,13 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace AplicacionWeb.Controllers
+namespace Zuliaworks.Netzuela.Paris.AplicacionWeb.Controllers
 {
     public class HomeController : Controller
     {
         public ActionResult Index()
         {
-            ViewBag.Message = "ASP.NET MVC";
+            ViewBag.Message = "Aja";
 
             return View();
         }

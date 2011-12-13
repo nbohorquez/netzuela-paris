@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("AplicacionWeb")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("jarcob")]
+[assembly: AssemblyCompany("Zuliaworks")]
 [assembly: AssemblyProduct("AplicacionWeb")]
-[assembly: AssemblyCopyright("Copyright © jarcob 2011")]
+[assembly: AssemblyCopyright("Copyright © Zuliaworks 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // El siguiente GUID sirve como ID de la biblioteca de tipos si este proyecto se expone a COM.
-[assembly: Guid("0466b00b-aac9-461a-b0a8-0eb734fbed30")]
+[assembly: Guid("f3eafe48-e75b-4e02-b089-70abdb3001f7")]
 
 // La información de versión de un ensamblado consta de los siguientes cuatro valores:
 //

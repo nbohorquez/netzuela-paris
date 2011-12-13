@@ -5,9 +5,9 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Security;
-using AplicacionWeb.Models;
+using Zuliaworks.Netzuela.Paris.AplicacionWeb.Models;
 
-namespace AplicacionWeb.Controllers
+namespace Zuliaworks.Netzuela.Paris.AplicacionWeb.Controllers
 {
     public class AccountController : Controller
     {

@@ -52,8 +52,10 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Stocks.svc" />
-    <Content Include="Web.config" />
+    <Content Include="Servidor.svc" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -62,10 +64,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Stocks.svc.cs">
-      <DependentUpon>Stocks.svc</DependentUpon>
+    <Compile Include="Servidor.svc.cs">
+      <DependentUpon>Servidor.svc</DependentUpon>
     </Compile>
-    <Compile Include="IStock.cs" />
+    <Compile Include="IValeria.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -81,8 +83,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>4757</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>
-          </IISUrl>
+          <IISUrl>http://localhost/ServidorValeria</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
