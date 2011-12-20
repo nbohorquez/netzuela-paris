@@ -9,6 +9,7 @@ using System.ServiceModel.Web;
 
 namespace Zuliaworks.Netzuela.Paris.ContratoValeria
 {
+	// Esta informacion es empleada por el servidor y los clientes
     [DataContract]
     public class DataSetXML
     {
