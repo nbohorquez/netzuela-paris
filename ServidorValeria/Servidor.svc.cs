@@ -6,9 +6,11 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
 
-using System.Data;          // DataSet
-using System.IO;            // MemoryStream
-using System.Xml;           // Pa' algo
+using System.Data;                                      // DataSet
+using System.IO;                                        // MemoryStream
+using System.Xml;                                       // Pa' algo
+using Zuliaworks.Netzuela.Paris.ContratoValeria;        // IValeria
+
 
 namespace Zuliaworks.Netzuela.Paris.ServidorValeria
 {
@@ -46,5 +48,25 @@ namespace Zuliaworks.Netzuela.Paris.ServidorValeria
         }
 
         #endregion        
+    
+        public IAsyncResult BeginEnviarTablas(DataSetXML Tabla, AsyncCallback Retorno, object EstadoAsincronico)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool EndEnviarTablas(IAsyncResult Resultado)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IAsyncResult BeginRecibirTablas(AsyncCallback Retorno, object EstadoAsincronico)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DataSetXML EndRecibirTablas(IAsyncResult Resultado)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

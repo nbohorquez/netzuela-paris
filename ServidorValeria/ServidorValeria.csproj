@@ -67,11 +67,16 @@
     <Compile Include="Servidor.svc.cs">
       <DependentUpon>Servidor.svc</DependentUpon>
     </Compile>
-    <Compile Include="IValeria.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ContratoValeria\ContratoValeria.csproj">
+      <Project>{8DE4172C-BAE2-4320-A092-585077DBB33F}</Project>
+      <Name>ContratoValeria</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
