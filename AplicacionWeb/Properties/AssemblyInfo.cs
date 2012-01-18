@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // conjunto de atributos. Cambie los valores de estos atributos para modificar la información
 // asociada a un ensamblado.
 [assembly: AssemblyTitle("AplicacionWeb")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Interfaz al usuario del sistema Netzuela")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Zuliaworks")]
 [assembly: AssemblyProduct("AplicacionWeb")]
