@@ -10,7 +10,7 @@ namespace Zuliaworks.Netzuela.Paris.AplicacionWeb.Controllers
     {
         public ActionResult Index()
         {
-            ViewBag.Message = "Aja";
+            ViewBag.Message = "Esta página esta en construcción";
 
             return View();
         }
