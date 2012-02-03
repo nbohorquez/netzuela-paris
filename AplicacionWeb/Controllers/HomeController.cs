@@ -4,13 +4,13 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace Zuliaworks.Netzuela.Paris.AplicacionWeb.Controllers
+namespace AplicacionWeb.Controllers
 {
     public class HomeController : Controller
     {
         public ActionResult Index()
         {
-            ViewBag.Message = "Esta página esta en construcción";
+            ViewBag.Message = "ASP.NET MVC";
 
             return View();
         }

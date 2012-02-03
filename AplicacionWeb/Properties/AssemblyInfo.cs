@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // conjunto de atributos. Cambie los valores de estos atributos para modificar la información
 // asociada a un ensamblado.
 [assembly: AssemblyTitle("AplicacionWeb")]
-[assembly: AssemblyDescription("Interfaz al usuario del sistema Netzuela")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Zuliaworks")]
+[assembly: AssemblyCompany("jarcob")]
 [assembly: AssemblyProduct("AplicacionWeb")]
-[assembly: AssemblyCopyright("Copyright © Zuliaworks 2011")]
+[assembly: AssemblyCopyright("Copyright © jarcob 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // El siguiente GUID sirve como ID de la biblioteca de tipos si este proyecto se expone a COM.
-[assembly: Guid("f3eafe48-e75b-4e02-b089-70abdb3001f7")]
+[assembly: Guid("d324b3a3-1b8d-4939-8005-fa5a780f3bc1")]
 
 // La información de versión de un ensamblado consta de los siguientes cuatro valores:
 //

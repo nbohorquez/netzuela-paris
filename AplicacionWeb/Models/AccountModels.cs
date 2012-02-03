@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Web.Mvc;
 using System.Web.Security;
 
-namespace Zuliaworks.Netzuela.Paris.AplicacionWeb.Models
+namespace AplicacionWeb.Models
 {
 
     public class ChangePasswordModel
