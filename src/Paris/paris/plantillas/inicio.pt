@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Netzuela - ${nombre_pagina}</title>
+    <link rel="stylesheet" href="/estilos/bootstrap.css"/>
+    <link rel="stylesheet" href="/estilos/bootstrap-responsive.css"/>
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+      }
+      li {
+      	display: inline;
+      }
+	</style>
+</head>
+<body>
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<ul class="nav">
+					<li class="active"><a href="#">Inicio</a></li>
+					<li><a href="producto">Productos</a></li>
+					<li><a href="tienda">Tiendas</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span12">
+				<div class="hero-unit">
+					<h1 align="center">netzuela</h1>
+    				<p align="center">Tu mundo en tiempo real</p>
+    				<form class="well form-search" align="center">
+						<input type="text" class="input-medium search-query"/>
+						<button type="submit" class="btn">Búsqueda</button>
+					</form>
+				</div>
+    		</div>
+   		</div>
+   		<hr/>
+   		<div>
+   			<ul align="right">
+   				<li>&copy 2012 Zuliaworks</li>
+  				<li><a href="acerca">Acerca de</a></li>
+  				<li><a href="publicidad">Publicidad</a></li>
+  				<li><a href="desarrolladores">Desarrolladores</a></li>
+  				<li><a href="empleo">Empleo</a></li>
+  				<li><a href="condiciones">Condiciones</a></li>
+  				<li><a href="ayuda">Ayuda</a></li>
+			</ul>
+   		</div>
+	</div>
+</body>
+</html>

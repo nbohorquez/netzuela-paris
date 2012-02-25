@@ -1,3 +1,6 @@
 src/Scripts/
 src/Lib/
 src/Include/
+
+src/Paris/*.pyc
+src/Paris/paris/*.pyc
