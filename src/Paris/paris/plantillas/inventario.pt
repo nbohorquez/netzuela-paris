@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:tales="http://xml.zope.org/namespaces/tales">
+<head>
+    <title>Netzuela - ${nombre_pagina}</title>
+    <link rel="stylesheet" href="/estilos/bootstrap.css"/>
+    <link rel="stylesheet" href="/estilos/bootstrap-responsive.css"/>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<h1>Inventario</h1>
+		</div>
+		<div class="row-fluid">
+			<div class="span4">
+				<table class="table table-striped">
+		  			<thead>
+		    			<tr>
+		    				<th tal:repeat="columna view.columnas_inventario">
+		    					<tal:block tal:condition="python:columna != tipo">
+                					<span>${columna}</span>
+            					</tal:block>
+		    				</th>
+		    			</tr>
+		  			</thead>
+		  			<tbody>
+		  				<tr tal:repeat="item inventario">
+				        	<td>
+					        	<tal:block tal:condition="python:'TiendaID' != tipo">
+					                <span>${item.TiendaID}</span>
+					            </tal:block>
+				            </td>
+				            <td>
+					        	<tal:block tal:condition="python:'ProductoID' != tipo">
+					                <span>${item.ProductoID}</span>
+					            </tal:block>
+				            </td>
+				            <td>${item.Codigo}</td>
+				            <td>${item.Descripcion}</td>
+				            <td>${item.Precio}</td>
+				            <td>${item.Cantidad}</td>
+				        </tr>
+		  			</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

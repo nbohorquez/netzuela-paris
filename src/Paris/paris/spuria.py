@@ -48,6 +48,7 @@ TABLAS_A_OBJETOS = [
                     {'tabla': 'interlocutor',               'objeto': 'Interlocutor'},
                     {'tabla': 'inventario',                 'objeto': 'Inventario'},
                     #{'tabla': 'inventariotienda',           'objeto': 'InventarioTienda'},
+                    #{'tabla': 'inventarioReciente',         'objeto': 'InventarioReciente'},
                     {'tabla': 'mensaje',                    'objeto': 'Mensaje'},
                     {'tabla': 'municipio',                  'objeto': 'Municipio'},
                     {'tabla': 'pais',                       'objeto': 'Pais'},
@@ -78,4 +79,66 @@ TABLAS_A_OBJETOS = [
                     {'tabla': 'turno',                      'objeto': 'Turno'},
                     {'tabla': 'usuario',                    'objeto': 'Usuario'},
                     {'tabla': 'visibilidad',                'objeto': 'Visibilidad'},
+]
+
+INVENTARIO_RECIENTE = [ 
+                   'TiendaID', 
+                   'ProductoID', 
+                   'Codigo', 
+                   'Descripcion', 
+                   'Precio', 
+                   'Cantidad' 
+]
+
+PRODUCTO = [ 
+            'Rastreable_P', 
+            'Describible_P', 
+            'Buscable_P',
+            'CalificableSeguible_P',
+            'ProductoID',
+            'TipoDeCodigo',
+            'Codigo',
+            'Estatus',
+            'Fabricante',
+            'Modelo',
+            'Nombre',
+            'Categoria',
+            'DebutEnElMercado',
+            'Largo',
+            'Ancho',
+            'Alto',
+            'Peso',
+            'PaisDeOrigen'
+]
+
+TIENDA = [
+          'Buscable_P',
+          'Cliente_P',
+          'CalificableSeguible_P',
+          'Interlocutor_P',
+          'Dibujable_P',
+          'TiendaID',
+          'Abierto'
+]
+
+CLIENTE = [
+           'Rastreable_P',
+           'Describible_P',
+           'Usuario_P',
+           'RIF',
+           'Categoria',
+           'Estatus',
+           'NombreLegal',
+           'NombreComun',
+           'Telefono',
+           'Edificio_CC',
+           'Piso',
+           'Apartamento',
+           'LocalNo',
+           'Casa',
+           'Calle',
+           'Sector_Urb_Barrio',
+           'PaginaWeb',
+           'Facebook',
+           'Twitter'
 ]
