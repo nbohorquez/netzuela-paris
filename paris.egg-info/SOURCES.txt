@@ -1,5 +1,6 @@
 CHANGES.txt
 MANIFEST.in
+README.rst
 README.txt
 development.ini
 production.ini
@@ -28,5 +29,6 @@ paris/estilos/glyphicons-halflings-white.png
 paris/estilos/glyphicons-halflings.png
 paris/plantillas/inicio.pt
 paris/plantillas/inventario.pt
+paris/plantillas/listado.pt
 paris/plantillas/producto.pt
 paris/plantillas/tienda.pt
