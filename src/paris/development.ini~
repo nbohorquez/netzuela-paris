@@ -1,5 +1,5 @@
 [app:main]
-use = egg:Paris
+use = egg:paris
 
 pyramid.reload_templates = true
 pyramid.debug_authorization = false
@@ -11,8 +11,7 @@ pyramid.includes =
     pyramid_debugtoolbar
     pyramid_tm
 
-# Documentacion sobre sqlalchemy.url en http://docs.sqlalchemy.org/en/latest/core/engines.html
-sqlalchemy.url = mysql+pymysql://chivo:#HK_@20MamA!pAPa13?#3864@localhost:3306/spuria
+sqlalchemy.url = sqlite:///%(here)s/paris.db
 
 [server:main]
 use = egg:waitress#main

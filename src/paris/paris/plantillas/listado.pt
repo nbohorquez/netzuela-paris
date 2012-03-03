@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:tales="http://xml.zope.org/namespaces/tales">
+<head>
+    <title>Netzuela - ${nombre_pagina}</title>
+    <link rel="stylesheet" href="/estilos/bootstrap.css"/>
+    <link rel="stylesheet" href="/estilos/bootstrap-responsive.css"/>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span6">
+				<table class="table table-striped">
+		  			<thead>
+		    			<tr tal:switch="nombre_pagina">
+		    				<th tal:case="'Productos'" tal:repeat="columna view.columnas_producto_reducido">${columna}</th>
+		    				<th tal:case="'Tiendas'" tal:repeat="columna view.columnas_cliente_reducido">${columna}</th>
+		    			</tr>
+		  			</thead>
+		  			<tbody>
+		  				<tr tal:repeat="item lista">
+		  					<tal:block tal:switch="nombre_pagina">
+			  					<td tal:case="'Productos'" tal:repeat="columna view.columnas_producto_reducido">
+			  						<span tal:content="getattr(item, columna)"></span>
+								</td>
+			    				<td tal:case="'Tiendas'" tal:repeat="columna view.columnas_cliente_reducido">  					
+					        		<span tal:content="getattr(item, columna)"></span>
+								</td>
+							</tal:block>
+						</tr>
+		  			</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

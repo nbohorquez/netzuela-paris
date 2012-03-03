@@ -4,7 +4,7 @@ Created on 28/02/2012
 @author: Nestor
 '''
 from pyramid.decorator import reify
-from spuria import ( CLIENTE, INVENTARIO_RECIENTE, PRODUCTO, TIENDA )
+from spuria import (CLIENTE, INVENTARIO_RECIENTE, PRODUCTO, TIENDA, CLIENTE_REDUCIDO, PRODUCTO_REDUCIDO)
     
 class Esquemas(object):
     def __init__(self):
@@ -23,8 +23,18 @@ class Esquemas(object):
         return columnas
     
     @reify
+    def columnas_cliente_reducido(self):
+        columnas = CLIENTE_REDUCIDO[:]
+        return columnas
+    
+    @reify
     def columnas_producto(self):
         columnas = PRODUCTO[:]
+        return columnas
+    
+    @reify
+    def columnas_producto_reducido(self):
+        columnas = PRODUCTO_REDUCIDO[:]
         return columnas
     
     @reify

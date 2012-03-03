@@ -1,3 +1,4 @@
       [paste.app_factory]
       main = paris:main
+      [console_scripts]
       

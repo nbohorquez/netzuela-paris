@@ -1,6 +1,7 @@
-src/Scripts/
-src/Lib/
-src/Include/
+src/bin/
+src/lib/
+src/include/
+src/local/
 
-src/Paris/*.pyc
-src/Paris/paris/*.pyc
+src/paris/*.pyc
+src/paris/paris/*.pyc

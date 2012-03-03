@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal">
+<head>
+    <title>Netzuela - ${nombre_pagina}</title>
+    <link rel="stylesheet" href="/estilos/bootstrap.css"/>
+    <link rel="stylesheet" href="/estilos/bootstrap-responsive.css"/>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span4">
+				<h1>${cliente.NombreComun}</h1>
+				<h3>${cliente.NombreLegal}</h3>
+				<h5>RIF: ${cliente.RIF}</h5>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span4">
+				<h6>
+					<tal:block tal:condition="abierto">Abierta</tal:block>
+					<tal:block tal:condition="not abierto">Cerrada</tal:block>
+				</h6>
+				<a tal:attributes="href inventario_url" href="">Ver productos de esta tienda</a> 
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span4">
+				<table class="table table-striped">
+		  			<thead>
+		    			<tr>
+		      				<th>Atributo</th>
+		      				<th>Valor</th>
+		    			</tr>
+		  			</thead>
+		  			<tbody>
+		  				<tr tal:repeat="columna view.columnas_cliente">
+		  					<td>${columna}</td>
+		  					<td tal:content="python:getattr(cliente, columna)"></td>
+		  				</tr>
+		  			</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

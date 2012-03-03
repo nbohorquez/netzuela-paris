@@ -30,12 +30,12 @@
 		  				<tr tal:repeat="item inventario">
 				        	<td>
 					        	<tal:block tal:condition="python:'TiendaID' != tipo">
-					                <span>${item.TiendaID}</span>
+					                <a tal:attributes="href python:view.peticion.route_url('tienda', tienda_id=item.TiendaID)">${item.TiendaID}</a>
 					            </tal:block>
 				            </td>
 				            <td>
 					        	<tal:block tal:condition="python:'ProductoID' != tipo">
-					                <span>${item.ProductoID}</span>
+					                <a tal:attributes="href python:view.peticion.route_url('producto', producto_id=item.ProductoID)">${item.ProductoID}</a>
 					            </tal:block>
 				            </td>
 				            <td>${item.Codigo}</td>

@@ -1,4 +1,4 @@
-Paris README
+paris README
 ==================
 
 Getting Started
@@ -8,7 +8,7 @@ Getting Started
 
 - $venv/bin/python setup.py develop
 
-- $venv/bin/populate_Paris development.ini
+- $venv/bin/populate_paris development.ini
 
 - $venv/bin/pserve development.ini
 

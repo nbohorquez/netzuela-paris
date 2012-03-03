@@ -14,11 +14,12 @@ requires = [
     'pyramid_debugtoolbar',
     'zope.sqlalchemy',
     'waitress',
+    'mysql-python',
     ]
 
-setup(name='Paris',
+setup(name='paris',
       version='0.0',
-      description='Paris',
+      description='paris',
       long_description=README + '\n\n' +  CHANGES,
       classifiers=[
         "Programming Language :: Python",
@@ -38,6 +39,7 @@ setup(name='Paris',
       entry_points="""\
       [paste.app_factory]
       main = paris:main
+      [console_scripts]
       """,
       )
 

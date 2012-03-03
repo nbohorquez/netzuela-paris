@@ -4,6 +4,8 @@ Created on 25/02/2012
 @author: Nestor
 '''
 
+# Si estais en Windows descomenta este segemento:
+"""
 TABLAS_A_OBJETOS = [
                     {'tabla': 'acceso',                     'objeto': 'Acceso'},
                     {'tabla': 'accion',                     'objeto': 'Accion'},
@@ -71,7 +73,7 @@ TABLAS_A_OBJETOS = [
                     {'tabla': 'serviciovendido',            'objeto': 'ServicioVendido'},
                     {'tabla': 'sexo',                       'objeto': 'Sexo'},
                     {'tabla': 'sexoobjetivo',               'objeto': 'SexoObjetivo'},
-                    {'tabla': 'subcontinente',              'objeto': 'SubContinente'},
+                    {'tabla': 'subcontinente',              'objeto': 'Subcontinente'},
                     {'tabla': 'tamano',                     'objeto': 'Tamano'},
                     {'tabla': 'tienda',                     'objeto': 'Tienda'},
                     {'tabla': 'tiendasconsumidores',        'objeto': 'TiendasConsumidores'},
@@ -80,14 +82,93 @@ TABLAS_A_OBJETOS = [
                     {'tabla': 'usuario',                    'objeto': 'Usuario'},
                     {'tabla': 'visibilidad',                'objeto': 'Visibilidad'},
 ]
+"""
 
-INVENTARIO_RECIENTE = [ 
-                   'TiendaID', 
-                   'ProductoID', 
-                   'Codigo', 
-                   'Descripcion', 
-                   'Precio', 
-                   'Cantidad' 
+# Si estais en Linux descomenta este segemento:
+TABLAS_A_OBJETOS = [
+                    {'tabla': 'Acceso',                     'objeto': 'Acceso'},
+                    {'tabla': 'Accion',                     'objeto': 'Accion'},
+                    {'tabla': 'Administrador',              'objeto': 'Administrador'},
+                    {'tabla': 'Buscable',                   'objeto': 'Buscable'},
+                    {'tabla': 'Busqueda',                   'objeto': 'Busqueda'},
+                    {'tabla': 'CalificableSeguible',        'objeto': 'CalificableSeguible'},
+                    {'tabla': 'Calificacion',               'objeto': 'Calificacion'},
+                    {'tabla': 'CalificacionResena',         'objeto': 'CalificacionResena'},
+                    {'tabla': 'Categoria',                  'objeto': 'Categoria'},
+                    {'tabla': 'Ciudad',                     'objeto': 'Ciudad'},
+                    {'tabla': 'Cliente',                    'objeto': 'Cliente'},
+                    {'tabla': 'Cobrable',                   'objeto': 'Cobrable'},
+                    {'tabla': 'CodigoDeError',              'objeto': 'CodigoDeError'},
+                    {'tabla': 'Consumidor',                 'objeto': 'Consumidor'},
+                    {'tabla': 'ConsumidorObjetivo',         'objeto': 'ConsumidorObjetivo'},
+                    {'tabla': 'ContadorDeExhibiciones',     'objeto': 'ContadorDeExhibiciones'},
+                    {'tabla': 'Continente',                 'objeto': 'Continente'},
+                    {'tabla': 'Croquis',                    'objeto': 'Croquis'},
+                    {'tabla': 'Describible',                'objeto': 'Describible'},
+                    {'tabla': 'Descripcion',                'objeto': 'Descripcion'},
+                    {'tabla': 'Dia',                        'objeto': 'Dia'},
+                    {'tabla': 'Dibujable',                  'objeto': 'Dibujable'},
+                    {'tabla': 'Estadisticas',               'objeto': 'Estadisticas'},
+                    {'tabla': 'EstadisticasDeInfluencia',   'objeto': 'EstadisticasDeInfluencia'},
+                    {'tabla': 'EstadisticasDePopularidad',  'objeto': 'EstadisticasDePopularidad'},
+                    {'tabla': 'EstadisticasDeVisitas',      'objeto': 'EstadisticasDeVisitas'},
+                    {'tabla': 'EstadisticasTemporales',     'objeto': 'EstadisticasTemporales'},
+                    {'tabla': 'Estado',                     'objeto': 'Estado'},
+                    {'tabla': 'Estatus',                    'objeto': 'Estatus'},
+                    {'tabla': 'Etiqueta',                   'objeto': 'Etiqueta'},
+                    {'tabla': 'Etiquetable',                'objeto': 'Etiquetable'},
+                    {'tabla': 'Factura',                    'objeto': 'Factura'},
+                    {'tabla': 'Foto',                       'objeto': 'Foto'},
+                    {'tabla': 'GradoDeInstruccion',         'objeto': 'GradoDeInstruccion'},
+                    {'tabla': 'GradoDeInstruccionObjetivo', 'objeto': 'GradoDeInstruccionObjetivo'},
+                    {'tabla': 'GrupoDeEdad',                'objeto': 'GrupoDeEdad'},
+                    {'tabla': 'GrupoDeEdadObjetivo',        'objeto': 'GrupoDeEdadObjetivo'},
+                    {'tabla': 'HorarioDeTrabajo',           'objeto': 'HorarioDeTrabajo'},
+                    {'tabla': 'HusoHorario',                'objeto': 'HusoHorario'},
+                    {'tabla': 'Idioma',                     'objeto': 'Idioma'},
+                    {'tabla': 'Interlocutor',               'objeto': 'Interlocutor'},
+                    {'tabla': 'Inventario',                 'objeto': 'Inventario'},
+                    #{'tabla': 'InventarioTienda',           'objeto': 'InventarioTienda'},
+                    #{'tabla': 'InventarioReciente',         'objeto': 'InventarioReciente'},
+                    {'tabla': 'Mensaje',                    'objeto': 'Mensaje'},
+                    {'tabla': 'Municipio',                  'objeto': 'Municipio'},
+                    {'tabla': 'Pais',                       'objeto': 'Pais'},
+                    {'tabla': 'Palabra',                    'objeto': 'Palabra'},
+                    {'tabla': 'Parroquia',                  'objeto': 'Parroquia'},
+                    {'tabla': 'Patrocinante',               'objeto': 'Patrocinante'},
+                    {'tabla': 'PrecioCantidad',             'objeto': 'PrecioCantidad'},
+                    {'tabla': 'Privilegios',                'objeto': 'Privilegios'},
+                    {'tabla': 'Producto',                   'objeto': 'Producto'},
+                    {'tabla': 'Publicidad',                 'objeto': 'Publicidad'},
+                    {'tabla': 'Punto',                      'objeto': 'Punto'},
+                    {'tabla': 'PuntoDeCroquis',             'objeto': 'PuntoDeCroquis'},
+                    {'tabla': 'Rastreable',                 'objeto': 'Rastreable'},
+                    {'tabla': 'RegionGeografica',           'objeto': 'RegionGeografica'},
+                    {'tabla': 'RegionGeograficaObjetivo',   'objeto': 'RegionGeograficaObjetivo'},
+                    {'tabla': 'Registro',                   'objeto': 'Registro'},
+                    {'tabla': 'RelacionDePalabras',         'objeto': 'RelacionDePalabras'},
+                    {'tabla': 'ResultadoDeBusqueda',        'objeto': 'ResultadoDeBusqueda'},
+                    {'tabla': 'Seguidor',                   'objeto': 'Seguidor'},
+                    {'tabla': 'ServicioVendido',            'objeto': 'ServicioVendido'},
+                    {'tabla': 'Sexo',                       'objeto': 'Sexo'},
+                    {'tabla': 'SexoObjetivo',               'objeto': 'SexoObjetivo'},
+                    {'tabla': 'Subcontinente',              'objeto': 'Subcontinente'},
+                    {'tabla': 'Tamano',                     'objeto': 'Tamano'},
+                    {'tabla': 'Tienda',                     'objeto': 'Tienda'},
+                    {'tabla': 'TiendasConsumidores',        'objeto': 'TiendasConsumidores'},
+                    {'tabla': 'TipoDeCodigo',               'objeto': 'TipoDeCodigo'},
+                    {'tabla': 'Turno',                      'objeto': 'Turno'},
+                    {'tabla': 'Usuario',                    'objeto': 'Usuario'},
+                    {'tabla': 'Visibilidad',                'objeto': 'Visibilidad'},
+]
+
+INVENTARIO_RECIENTE = [
+                       'TiendaID',
+                       'ProductoID',
+                       'Codigo',
+                       'Descripcion',
+                       'Precio',
+                       'Cantidad' 
 ]
 
 PRODUCTO = [ 
@@ -109,6 +190,15 @@ PRODUCTO = [
             'Alto',
             'Peso',
             'PaisDeOrigen'
+]
+
+PRODUCTO_REDUCIDO = [
+                     'ProductoID',
+                     'Codigo',
+                     'Categoria',
+                     'Fabricante',
+                     'Modelo',
+                     'Nombre',                     
 ]
 
 TIENDA = [
@@ -141,4 +231,12 @@ CLIENTE = [
            'PaginaWeb',
            'Facebook',
            'Twitter'
+]
+
+CLIENTE_REDUCIDO = [
+                    'RIF',
+                    'Categoria',
+                    'NombreLegal',
+                    'NombreComun',
+                    'Telefono',
 ]

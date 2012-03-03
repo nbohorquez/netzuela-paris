@@ -20,8 +20,8 @@
 			<div class="container">
 				<ul class="nav">
 					<li class="active"><a href="#">Inicio</a></li>
-					<li><a href="producto">Productos</a></li>
-					<li><a href="tienda">Tiendas</a></li>
+					<li><a href="/productos">Productos</a></li>
+					<li><a href="/tiendas">Tiendas</a></li>
 				</ul>
 			</div>
 		</div>

@@ -300,7 +300,15 @@ def cargar_tablas(motor):
 		mixIn(objeto, [object])
 		mapper(globals()[objeto], esquema_tabla)
 	# Cargamos el "diferente": la vista InventarioReciente. Esta no tiene PK definida.
+	# Descomentar este segemento si estais en Windows:
+	"""
 	esquema_tabla = Table('inventarioreciente', metadata,
+						Column("TiendaID", Integer, primary_key=True),
+						Column("Codigo", String, primary_key=True),
+						autoload=True)
+	"""
+	# Descomentar este segemento si estais en Linux:
+	esquema_tabla = Table('InventarioReciente', metadata,
 						Column("TiendaID", Integer, primary_key=True),
 						Column("Codigo", String, primary_key=True),
 						autoload=True)
