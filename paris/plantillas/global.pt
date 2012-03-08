@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      metal:define-macro="diagrama">
+<head>
+    <title>Netzuela - ${nombre_pagina}</title>
+    <link rel="stylesheet" href="/estilos/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/estilos/css/bootstrap-responsive.css"/>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+    	html { height: 100%; }
+  		body { height: 100%; padding-top: 60px;	}
+    </style>
+</head>
+<body onload="inicializar()">
+	
+	<!-- Barra superior
+	================================================== -->
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          			<span class="icon-bar"></span>
+          			<span class="icon-bar"></span>
+          			<span class="icon-bar"></span>
+        		</a>
+        		<a class="brand" href="#">netzuela</a>
+        		<div class="nav-collapse">
+	        		<ul class="nav">
+						<li class="active"><a href="#">Inicio</a></li>
+						<li><a href="/productos">Productos</a></li>
+						<li><a href="/tiendas">Tiendas</a></li>
+					</ul>
+					<form class="navbar-search pull-left" action="">
+            			<input type="text" class="search-query" placeholder="Busqueda" />
+            			<i class="icon-search icon-white"></i>
+          			</form>
+					<ul class="nav pull-right">
+						<li><a href="/tiendas">
+							<i class="icon-user icon-white"></i>
+							Soy tienda
+						</a></li>
+					</ul>
+        		</div>
+			</div>
+		</div>
+	</div>	
+	
+	<div class="container-fluid">
+		
+		<!-- Cuerpo principal
+		================================================== -->		
+		<div class="row-fluid">
+			
+			<!-- Barra lateral
+			================================================== -->
+			<div class="span2">
+				<ul class="nav nav-list">
+				  	<li class="nav-header">Categorias</li>
+				  	<tal:block tal:repeat="categoria view.categorias">
+				  		<tal:block tal:switch="repeat.categoria.index == 0">
+							<li class="active" tal:case="True">
+				  				<a href="#">${categoria.Nombre}</a>
+				  			</li>
+				  			<li tal:case="False"><a href="#">${categoria.Nombre}</a></li>	
+						</tal:block>
+				  	</tal:block>
+				</ul>
+			</div>
+			
+			<!-- Zona central
+			================================================== -->
+			<div class="span10">
+				<div id="reportes" style="width:100%; height:40%;">
+				</div>
+				<div id="principal" style="width:100%; height:auto;">
+					<div metal:define-slot="contenido" />	
+				</div>				
+			</div>			
+		</div>
+		
+		<hr />
+			
+		<!-- Barra inferior
+		================================================== -->
+		<footer class="pull-right">
+			<p>
+			<span><a href="/acerca">Sobre nosotros</a></span>
+			<span><a href="/publicidad">Publicidad</a></span>
+			<span><a href="/desarrolladores">Desarrolladores</a></span>
+			<span><a href="/empleo">Empleo</a></span>
+			<span><a href="/condiciones">Condiciones</a></span>
+			<span><a href="/ayuda">Ayuda</a></span>
+			<span>&copy 2012 Zuliaworks</span>
+			</p>	
+		</footer>
+	</div>
+	
+	<!-- Scripts (colocados aqui para que la pagina cargue mas rapido)
+	================================================================== -->
+	<script type="text/javascript" src="/estilos/js/jquery-1.7.1.js"></script>
+    <script type="text/javascript" src="/estilos/js/bootstrap-tab.js"></script>
+    <script type="text/javascript" src="/estilos/js/bootstrap-collapse.js"></script>
+    <script	type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+	<script type="text/javascript">
+		function inicializar() 
+		{
+		    var latlng = new google.maps.LatLng(10.40, -71.44);
+		    var opciones = {
+		      zoom: 8,
+		      center: latlng,
+		      mapTypeId: google.maps.MapTypeId.ROADMAP
+		    };
+		    var mapa = new google.maps.Map(document.getElementById("reportes"), opciones);
+	  	}
+	</script>
+</body>
+</html>

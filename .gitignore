@@ -1,3 +1,4 @@
 env/
 paris/*.pyc
 *.*~
+*.pyc

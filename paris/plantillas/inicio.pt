@@ -3,15 +3,10 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Netzuela - ${nombre_pagina}</title>
-    <link rel="stylesheet" href="/estilos/bootstrap.css"/>
-    <link rel="stylesheet" href="/estilos/bootstrap-responsive.css"/>
+    <link rel="stylesheet" href="/estilos/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/estilos/css/bootstrap-responsive.css"/>
     <style type="text/css">
-      body {
-        padding-top: 60px;
-      }
-      li {
-      	display: inline;
-      }
+    	body { height:100%; padding-top: 60px }
 	</style>
 </head>
 <body>
@@ -29,10 +24,10 @@
 	<div class="container-fluid">
 		<div class="row-fluid">
 			<div class="span12">
-				<div class="hero-unit">
+				<div class="hero-unit" style="height:100%">
 					<h1 align="center">netzuela</h1>
     				<p align="center">Tu mundo en tiempo real</p>
-    				<form class="well form-search" align="center">
+    				<form class="form-search" align="center">
 						<input type="text" class="input-medium search-query"/>
 						<button type="submit" class="btn">Búsqueda</button>
 					</form>
@@ -40,17 +35,17 @@
     		</div>
    		</div>
    		<hr/>
-   		<div>
-   			<ul align="right">
-   				<li>&copy 2012 Zuliaworks</li>
-  				<li><a href="acerca">Acerca de</a></li>
-  				<li><a href="publicidad">Publicidad</a></li>
-  				<li><a href="desarrolladores">Desarrolladores</a></li>
-  				<li><a href="empleo">Empleo</a></li>
-  				<li><a href="condiciones">Condiciones</a></li>
-  				<li><a href="ayuda">Ayuda</a></li>
-			</ul>
-   		</div>
+   		<footer class="pull-right">
+			<p>
+			<span><a href="/acerca">Sobre nosotros</a></span>
+			<span><a href="/publicidad">Publicidad</a></span>
+			<span><a href="/desarrolladores">Desarrolladores</a></span>
+			<span><a href="/empleo">Empleo</a></span>
+			<span><a href="/condiciones">Condiciones</a></span>
+			<span><a href="/ayuda">Ayuda</a></span>
+			<span>&copy 2012 Zuliaworks</span>
+			</p>	
+		</footer>
 	</div>
 </body>
 </html>

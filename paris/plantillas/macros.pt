@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal">
+<head>
+    <title>Macros</title>
+</head>
+<body>
+	<metal:inventario define-macro="inventario">
+	    <table class="table">
+			<thead>
+				<tr>
+					<th tal:repeat="columna view.columnas_inventario">
+						<tal:block tal:condition="python:columna != tipo">
+							<span>${columna}</span>
+						</tal:block>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr tal:repeat="item inventario">
+		        	<td>
+			        	<p tal:condition="python:'TiendaID' != tipo">
+			                <a tal:attributes="href python:view.peticion.route_url('tienda', tienda_id=item.TiendaID)">${item.TiendaID}</a>
+			            </p>
+		            </td>
+		            <td>
+			        	<p tal:condition="python:'ProductoID' != tipo">
+			                <a tal:attributes="href python:view.peticion.route_url('producto', producto_id=item.ProductoID)">${item.ProductoID}</a>
+			            </p>
+		            </td>
+		            <td><p>${item.Codigo}</p></td>
+		            <td><p>${item.Descripcion}</p></td>
+		            <td><p>${item.Precio}</p></td>
+		            <td><p>${item.Cantidad}</p></td>
+		        </tr>
+			</tbody>
+		</table>
+	</metal:inventario>
+</body>
+</html>
