@@ -1,10 +1,10 @@
 <div metal:use-macro="view.diagrama_global">
-	<div metal:fill-slot="contenido">
+	<div metal:fill-slot="contenido" tal:define="cliente view.cliente">
 		<div class="page-header">
   			<h1>${cliente.NombreComun} 
   				<small>${cliente.NombreLegal}</small>
-  				<span class="label label-success" tal:condition="abierto">>Abierta</span>
-				<span class="label label-important" tal:condition="not abierto">Cerrada</span>
+  				<span class="label label-success" tal:condition="tienda.Abierto">>Abierta</span>
+				<span class="label label-important" tal:condition="not tienda.Abierto">Cerrada</span>
 			</h1>
 		</div>
 		<div id="menu_tienda">
@@ -19,24 +19,24 @@
             	</div>
             	<div class="tab-pane" id="informacion">
               		<div class="row-fluid">
-						<table class="table">
-				  			<thead>
-				    			<tr>
-				      				<th>Atributo</th>
-				      				<th>Valor</th>
-				    			</tr>
-				  			</thead>
-				  			<tbody>
-				  				<tr tal:repeat="columna view.columnas_cliente">
-				  					<td><p>${columna}</p></td>
-				  					<td><p tal:content="python:getattr(cliente, columna)"></p></td>
-				  				</tr>
-				  			</tbody>
-						</table>
+						<address>
+							<strong>${cliente.NombreLegal}</strong><br />
+							<span tal:content="python:cliente.Edificio_CC" />  
+							<span tal:content="python:cliente.Piso" /> 
+							<span tal:content="python:cliente.Apartamento" /> 
+							<span tal:content="python:cliente.LocalNo" /> 
+							<span tal:content="python:cliente.Casa" /><br />
+							<span tal:content="python:cliente.Calle" />, 
+							<span tal:content="python:cliente.Sector_Urb_Barrio" /><br />
+							
+							<span tal:content="python:cliente.Telefono"/>
+						</address>
 					</div>
             	</div>
 	            <div class="tab-pane" id="inventario">
-              		<div metal:use-macro="python:view.macros['inventario']"></div>
+	            	<tal:block tal:define="tipo 'TiendaID'">
+              			<div metal:use-macro="python:view.macros['inventario']"></div>
+              		</tal:block>
 	            </div>
           	</div>
 		</div>		

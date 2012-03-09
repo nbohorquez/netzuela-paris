@@ -28,7 +28,7 @@
 					<h1 align="center">netzuela</h1>
     				<p align="center">Tu mundo en tiempo real</p>
     				<form class="form-search" align="center">
-						<input type="text" class="input-medium search-query"/>
+						<input type="text" class="input-medium search-query" />
 						<button type="submit" class="btn">Búsqueda</button>
 					</form>
 				</div>

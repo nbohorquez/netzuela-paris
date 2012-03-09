@@ -12,14 +12,12 @@
 			<thead>
 				<tr>
 					<th tal:repeat="columna view.columnas_inventario">
-						<tal:block tal:condition="python:columna != tipo">
-							<span>${columna}</span>
-						</tal:block>
+						<span tal:condition="python:columna != tipo">${columna}</span>
 					</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr tal:repeat="item inventario">
+				<tr tal:repeat="item view.inventario">
 		        	<td>
 			        	<p tal:condition="python:'TiendaID' != tipo">
 			                <a tal:attributes="href python:view.peticion.route_url('tienda', tienda_id=item.TiendaID)">${item.TiendaID}</a>

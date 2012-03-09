@@ -33,9 +33,9 @@
 						<li><a href="/productos">Productos</a></li>
 						<li><a href="/tiendas">Tiendas</a></li>
 					</ul>
-					<form class="navbar-search pull-left" action="">
-            			<input type="text" class="search-query" placeholder="Busqueda" />
-            			<i class="icon-search icon-white"></i>
+					<form class="navbar-search" action="">
+						<input type="text" class="search-query" placeholder="Busqueda" />
+						<i class="icon-search icon-white"></i>	            		
           			</form>
 					<ul class="nav pull-right">
 						<li><a href="/tiendas">

@@ -32,7 +32,9 @@
 					</div>
             	</div>
 	            <div class="tab-pane" id="inventario">
-              		<div metal:use-macro="python:view.macros['inventario']"></div>
+	            	<tal:block tal:define="tipo 'ProductoID'">
+              			<div metal:use-macro="python:view.macros['inventario']"></div>
+              		</tal:block>
 	            </div>
           	</div>
 		</div>

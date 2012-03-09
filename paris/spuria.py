@@ -5,6 +5,7 @@ Created on 25/02/2012
 '''
 
 # Si estais en Windows descomenta este segemento:
+
 """
 TABLAS_A_OBJETOS = [
                     {'tabla': 'acceso',                     'objeto': 'Acceso'},
