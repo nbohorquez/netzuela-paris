@@ -28,7 +28,6 @@
 							<span tal:content="python:cliente.Casa" /><br />
 							<span tal:content="python:cliente.Calle" />, 
 							<span tal:content="python:cliente.Sector_Urb_Barrio" /><br />
-							
 							<span tal:content="python:cliente.Telefono"/>
 						</address>
 					</div>
@@ -39,6 +38,6 @@
               		</tal:block>
 	            </div>
           	</div>
-		</div>		
+		</div>	
 	</div>
 </div>

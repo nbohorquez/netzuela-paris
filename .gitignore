@@ -1,4 +1,7 @@
+build/
+dist/
 env/
 paris/*.pyc
+paris.egg-info/
 *.*~
 *.pyc

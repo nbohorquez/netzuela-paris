@@ -75,7 +75,7 @@ class ParisViews(Diagramas):
 		tienda_id = self.peticion.matchdict['tienda_id']
 		tienda = DBSession.query(Tienda).filter_by(TiendaID = tienda_id).first()
 		
-		resultado = HTTPNotFound(MENSAJE_DE_ERROR) if (tienda is None) else {'nombre_pagina': 'Tienda', 'tienda': tienda} 
+		resultado = HTTPNotFound(MENSAJE_DE_ERROR) if (tienda is None) else {'nombre_pagina': 'Tienda', 'tienda': tienda}
 		return resultado
 
 	@view_config(route_name='listado_productos', renderer='plantillas/listado.pt')
