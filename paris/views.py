@@ -1,16 +1,28 @@
 from .models import (
-	DBSession, 
-	Tienda, 
-	Producto, 
-	Cliente, 
-	InventarioReciente, 
-	Categoria,
-	Patrocinante
+	categoria,
+	cliente,
+	DBSession,
+	describible,
+	descripcion,	
+	estado, 
+	horario_de_trabajo,
+	inventario_reciente,
+	municipio, 
+	parroquia,
+	patrocinante,
+	producto,
+	region_geografica,
+	tamano_reciente,
+	tienda,
+	turno,
+	usuario
 )
-from diagramas import Diagramas
+from diagramas import diagramas
 from pyramid.decorator import reify
 from pyramid.httpexceptions import (HTTPNotFound)
 from pyramid.view import view_config
+from sqlalchemy import and_
+import string
 
 MENSAJE_DE_ERROR = 'Vos lo que estais es loco! Esa verga no existe'
 
@@ -18,80 +30,144 @@ MENSAJE_DE_ERROR = 'Vos lo que estais es loco! Esa verga no existe'
 # definidas explicitamente en ninguna parte. Lo que ocurre es que yo las cargo de forma 
 # dinamica cuando inicia la aplicacion.
 
-class ParisViews(Diagramas):
+class paris_views(diagramas):
 	def __init__(self, peticion):
 		self.peticion = peticion
+		if 'tienda_id' in self.peticion.matchdict:
+			self.peticion_id = self.peticion.matchdict['tienda_id']
+			self.tipo_de_peticion = 'tienda'
+		elif 'producto_id' in self.peticion.matchdict:
+			self.peticion_id = self.peticion.matchdict['producto_id']
+			self.tipo_de_peticion = 'producto'
+		elif 'patrocinante_id' in self.peticion.matchdict:
+			self.peticion_id = self.peticion.matchdict['patrocinante_id']
+			self.tipo_de_peticion = 'patrocinante'
 		pass
+	
+	def obtener_cliente(self):
+		def cli_tienda():
+			return DBSession.query(cliente).join(tienda).filter(tienda.tienda_id == self.peticion_id).first()
+		def cli_patrocinante():
+			return DBSession.query(cliente).join(patrocinante).filter(patrocinante.patrocinante_id == self.peticion_id).first()
+		resultado = ({'tienda': lambda: cli_tienda(), 'patrocinante': lambda: cli_patrocinante()}[self.tipo_de_peticion])()
+		return resultado
 	
 	@reify
 	def peticion(self):
-		peticion = self.peticion
-		return peticion
+		return self.peticion
 	
 	# Esta verga hay que quitarla...
 	@reify
 	def categorias(self):
-		categorias = DBSession.query(Categoria).all()
-		return categorias
+		return DBSession.query(categoria).all()		 
 	
 	@reify
-	def inventario(self):
-		if 'tienda_id' in self.peticion.matchdict:
-			tienda_id = self.peticion.matchdict['tienda_id']
-			inventario = DBSession.query(InventarioReciente).filter_by(TiendaID = tienda_id).all()
-		elif 'producto_id' in self.peticion.matchdict:
-			producto_id = self.peticion.matchdict['producto_id']
-			inventario = DBSession.query(InventarioReciente).filter_by(ProductoID = producto_id).all()
-	
-		resultado = HTTPNotFound(MENSAJE_DE_ERROR) if (inventario is None) else inventario
+	def inventario_reciente(self):
+		def inv_tienda():
+			return DBSession.query(inventario_reciente).filter_by(tienda_id = self.peticion_id).all()
+		def inv_producto():
+			return DBSession.query(inventario_reciente).filter_by(producto_id = self.peticion_id).all()
+		
+		var_inventario = ({'tienda': lambda: inv_tienda(), 'producto': lambda: inv_producto()}[self.tipo_de_peticion])()
+		resultado = HTTPNotFound(MENSAJE_DE_ERROR) if (var_inventario is None) else var_inventario
 		return resultado
 
 	@reify
 	def cliente(self):
-		if 'tienda_id' in self.peticion.matchdict:
-			tienda_id = self.peticion.matchdict['tienda_id']
-			cliente = DBSession.query(Cliente).join(Tienda).filter(Tienda.TiendaID == tienda_id).first()
-		elif 'patrocinante_id' in self.peticion.matchdict:
-			patrocinante_id = self.peticion.matchdict['patrocinante_id']
-			cliente = DBSession.query(Cliente).join(Patrocinante).filter(Patrocinante.PatrocinanteID == patrocinante_id).first()
-		
-		resultado = HTTPNotFound(MENSAJE_DE_ERROR) if (cliente is None) else cliente
-		return resultado
+		resultado = self.obtener_cliente()
+		return HTTPNotFound(MENSAJE_DE_ERROR) if (resultado is None) else resultado		 
 
+	@reify
+	def region_geografica(self):
+		var_cliente = self.obtener_cliente()
+		
+		if var_cliente is not None:
+			var_parroquia = DBSession.query(parroquia).join(usuario).filter(usuario.usuario_id == var_cliente.usuario_p).first()
+			var_municipio = DBSession.query(municipio).filter_by(municipio_id = parroquia.municipio).first()
+			var_estado = DBSession.query(estado).filter_by(estado_id = municipio.estado).first()
+			
+			reg_geo_parroquia = DBSession.query(region_geografica).filter_by(region_geografica_id = var_parroquia.region_geografica_p).first()
+			reg_geo_municipio = DBSession.query(region_geografica).filter_by(region_geografica_id = var_municipio.region_geografica_p).first()
+			reg_geo_estado = DBSession.query(region_geografica).filter_by(region_geografica_id = var_estado.region_geografica_p).first()
+
+			resultado = {'parroquia': reg_geo_parroquia.nombre, 'municipio': reg_geo_municipio.nombre, 'estado': reg_geo_estado.nombre }
+		else:
+			resultado = HTTPNotFound(MENSAJE_DE_ERROR)
+			
+		return resultado
+		
+	@reify
+	def descripciones(self):
+		def desc_tienda():
+			return DBSession.query(descripcion).join(describible).join(cliente).join(tienda).filter(tienda.tienda_id == self.peticion_id).all()
+		def desc_producto():
+			return DBSession.query(descripcion).join(describible).join(producto).filter(producto.producto_id == self.peticion_id).all()
+		def desc_patrocinante():
+			return DBSession.query(descripcion).join(describible).join(cliente).join(patrocinante).filter(patrocinante.patrocinante_id == self.peticion_id).all()
+		
+		var_descripciones = ({'tienda': lambda: desc_tienda(), 'producto': lambda: desc_producto(), 'patrocinante': lambda: desc_patrocinante()}[self.tipo_de_peticion])()
+		resultado = [ {'contenido': ""} ] if var_descripciones is None else var_descripciones
+		return resultado
+	
+	@reify
+	def horarios(self):
+		if self.tipo_de_peticion == 'tienda':
+			var_horario = DBSession.query(horario_de_trabajo).filter_by(tienda_id = self.peticion_id).all()
+		
+		if var_horario is not None:
+			var_horarios = list()
+			for jornada in var_horario:
+				horario = {}
+				horario['dia'] = jornada.dia
+				horario['laborable'] = jornada.laborable
+				turnos = DBSession.query(turno).filter(and_(turno.tienda_id == self.peticion_id, turno.dia == jornada.dia)).all()
+				horario['turnos'] = string.join(["{0.hora_de_apertura} - {0.hora_de_cierre} ".format(t) for t in turnos])
+				var_horarios.append(horario)
+			resultado = var_horarios
+		else:
+			resultado = [{""}]
+
+		return resultado
+	
+	@reify
+	def tamano_reciente(self):
+		if self.tipo_de_peticion == 'tienda':
+			var_tamano = DBSession.query(tamano_reciente).filter(tamano_reciente.tienda_id == self.peticion_id).first()
+		resultado = {'numero_total_de_productos': 'ND', 'cantidad_total_de_productos': 'ND', 'valor': 'ND'} if (var_tamano is None) else var_tamano
+		return resultado
+	
 	@view_config(route_name='inicio', renderer='plantillas/inicio.pt')
 	def inicio_view(self):
 		return {'nombre_pagina': 'Inicio'}
 	
 	@view_config(route_name='producto', renderer='plantillas/producto.pt')
 	def producto_view(self):
-		producto_id = self.peticion.matchdict['producto_id']
-		producto = DBSession.query(Producto).filter_by(ProductoID = producto_id).first()
-		
-		resultado = HTTPNotFound(MENSAJE_DE_ERROR) if (producto is None) else {'nombre_pagina': 'Producto', 'producto': producto} 
+		if self.tipo_de_peticion == 'producto':
+			var_producto = DBSession.query(producto).filter_by(producto_id = self.peticion_id).first()
+		resultado = HTTPNotFound(MENSAJE_DE_ERROR) if (var_producto is None) else {'nombre_pagina': 'Producto', 'producto': var_producto}
 		return resultado
 	
 	@view_config(route_name='tienda', renderer='plantillas/tienda.pt')
 	def tienda_view(self):
-		tienda_id = self.peticion.matchdict['tienda_id']
-		tienda = DBSession.query(Tienda).filter_by(TiendaID = tienda_id).first()
-		
-		resultado = HTTPNotFound(MENSAJE_DE_ERROR) if (tienda is None) else {'nombre_pagina': 'Tienda', 'tienda': tienda}
+		if self.tipo_de_peticion == 'tienda':
+			var_tienda = DBSession.query(tienda).filter_by(tienda_id = self.peticion_id).first()
+		resultado = HTTPNotFound(MENSAJE_DE_ERROR) if (var_tienda is None) else {'nombre_pagina': 'Tienda', 'tienda': var_tienda}
 		return resultado
 
 	@view_config(route_name='listado_productos', renderer='plantillas/listado.pt')
 	def listado_productos_view(self):
-		productos = DBSession.query(Producto).all()
+		productos = DBSession.query(producto).all()
 		return {'nombre_pagina': 'Productos', 'lista': productos}
 	
 	@view_config(route_name='listado_tiendas', renderer='plantillas/listado.pt')
 	def listado_tiendas_view(self):
-		clientes = DBSession.query(Cliente).join(Tienda).all()
+		clientes = DBSession.query(cliente).join(tienda).all()
 		return {'nombre_pagina': 'Tiendas', 'lista': clientes}
 		
 	@view_config(route_name='inventario_producto', renderer='plantillas/inventario.pt')
 	def inventario_producto_view(self):
-		return { 'nombre_pagina': 'Inventario', 'tipo': 'ProductoID' }
+		return { 'nombre_pagina': 'Inventario', 'tipo': 'producto_id' }
 		
 	@view_config(route_name='inventario_tienda', renderer='plantillas/inventario.pt')
 	def inventario_tienda_view(self):
-		return { 'nombre_pagina': 'Inventario', 'tipo': 'TiendaID' }
+		return { 'nombre_pagina': 'Inventario', 'tipo': 'tienda_id' }

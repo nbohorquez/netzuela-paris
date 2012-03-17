@@ -1,43 +1,96 @@
 <div metal:use-macro="view.diagrama_global">
 	<div metal:fill-slot="contenido" tal:define="cliente view.cliente">
 		<div class="page-header">
-  			<h1>${cliente.NombreComun} 
-  				<small>${cliente.NombreLegal}</small>
-  				<span class="label label-success" tal:condition="tienda.Abierto">>Abierta</span>
-				<span class="label label-important" tal:condition="not tienda.Abierto">Cerrada</span>
-			</h1>
+			<div class="row-fluid">
+				<div class="span8">
+					<h1>${cliente.nombre_comun} 
+		  				<small>${cliente.nombre_legal}</small>
+		  				<span class="label label-success" tal:condition="tienda.abierto">Abierta</span>
+						<span class="label label-important" tal:condition="not tienda.abierto">Cerrada</span>
+					</h1>
+				</div>
+				<div class="span4">
+					<div class="progress">
+		  				<div class="bar" style="width: 60%;"></div>
+		  			</div>
+				</div>
+			</div>  			
 		</div>
-		<div id="menu_tienda">
-        	<ul id="pestanas" class="nav nav-tabs">
-            	<li class="active"><a href="#noticias" data-toggle="tab">Noticias</a></li>
-            	<li><a href="#informacion" data-toggle="tab">Informacion</a></li>
-            	<li><a href="#inventario" data-toggle="tab">Inventario</a></li>
-    		</ul>
-          	<div id="contenido_pestanas" class="tab-content">
-            	<div class="tab-pane active" id="noticias">
-              		<p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</p>
-            	</div>
-            	<div class="tab-pane" id="informacion">
-              		<div class="row-fluid">
-						<address>
-							<strong>${cliente.NombreLegal}</strong><br />
-							<span tal:content="python:cliente.Edificio_CC" />  
-							<span tal:content="python:cliente.Piso" /> 
-							<span tal:content="python:cliente.Apartamento" /> 
-							<span tal:content="python:cliente.LocalNo" /> 
-							<span tal:content="python:cliente.Casa" /><br />
-							<span tal:content="python:cliente.Calle" />, 
-							<span tal:content="python:cliente.Sector_Urb_Barrio" /><br />
-							<span tal:content="python:cliente.Telefono"/>
+		<div id="contenido_pestanas" class="tab-content">
+        	<div class="tab-pane active" id="noticias">
+          		<p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</p>
+        	</div>
+        	<div class="tab-pane" id="informacion">
+          		<div class="row-fluid">
+          			<div class="span4">
+          				<ul class="thumbnails">
+							<li>
+						    	<a href="#" class="thumbnail">
+						      		<img src="http://images.apple.com/retail/images/store_photos/photo_fashionshow.jpg" alt="">
+						    	</a>
+						  	</li>
+						</ul>
+						<table class="table pull-left" tal:define="horarios view.horarios">
+				  			<thead>
+				    			<tr>
+				    				<tal:block tal:repeat="horario horarios">
+				    					<th tal:content="horario.dia[0]">dia</th>	
+				    				</tal:block>				    				
+				    			</tr>
+				  			</thead>
+				  			<tbody>
+					    		<tr>
+					    			<tal:block tal:repeat="horario horarios">
+					    				<td tal:switch="horario.laborable">
+					    					<a href="#" tal:case="True" rel="tooltip" title="${horario.turnos}">
+					    						<i class="icon-ok"></i>
+					    					</a>
+					    					<a href="#" tal:case="False" rel="tooltip" title="No laborable">
+					    						<i class="icon-remove"></i>
+					    					</a>
+										</td>
+					    			</tal:block>
+				  				</tr>
+				  			</tbody>
+						</table>
+						<address tal:define="reg_geo view.region_geografica">
+							<strong>${cliente.nombre_legal}</strong><br />
+							<span tal:content="python:cliente.edificio_cc" />  
+							<span tal:content="python:cliente.piso" /> 
+							<span tal:content="python:cliente.apartamento" /> 
+							<span tal:content="python:cliente.local_no" /> 
+							<span tal:content="python:cliente.casa" /><br />
+							<span tal:content="python:cliente.calle" />, 
+							<span tal:content="python:cliente.sector_urb_barrio" /><br />
+							<span tal:content="python:reg_geo.parroquia" /><br />
+							<span tal:content="python:reg_geo.municipio" />,
+							<span tal:content="python:reg_geo.estado" /><br />
+							<span tal:content="python:cliente.telefono"/>
 						</address>
-					</div>
-            	</div>
-	            <div class="tab-pane" id="inventario">
-	            	<tal:block tal:define="tipo 'TiendaID'">
-              			<div metal:use-macro="python:view.macros['inventario']"></div>
-              		</tal:block>
-	            </div>
-          	</div>
-		</div>	
+          			</div>
+          			<div class="span8">
+           				<tal:block tal:repeat="descripcion view.descripciones">
+	          				<p tal:content="descripcion.contenido">Descripcion</p>
+	          			</tal:block>	
+          			</div>
+				</div>
+        	</div>
+            <div class="tab-pane" id="inventario">
+            	<tal:block tal:define="tipo 'tienda_id'">
+          			<div metal:use-macro="python:view.macros['inventario']"></div>
+          		</tal:block>
+          		<p class="pull-right" tal:define="tamano view.tamano_reciente">
+          			<abbr title="Numero total de productos">N:</abbr>
+          			<span tal:content="tamano.numero_total_de_productos"></span>
+          			<abbr title="Cantidad total de productos">C:</abbr>
+          			<span tal:content="tamano.cantidad_total_de_productos"></span>
+          			<abbr title="Tamano del inventario">T:</abbr>
+          			<span tal:content="tamano.valor"></span>
+          		</p>
+            </div>
+            <div class="tab-pane" id="comentarios">
+            	Comentarios
+            </div>
+      	</div>
 	</div>
 </div>

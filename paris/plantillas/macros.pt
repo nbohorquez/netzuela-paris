@@ -17,21 +17,21 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr tal:repeat="item view.inventario">
+				<tr tal:repeat="item view.inventario_reciente">
 		        	<td>
-			        	<p tal:condition="python:'TiendaID' != tipo">
-			                <a tal:attributes="href python:view.peticion.route_url('tienda', tienda_id=item.TiendaID)">${item.TiendaID}</a>
+			        	<p tal:condition="python:'tienda_id' != tipo">
+			                <a tal:attributes="href python:view.peticion.route_url('tienda', tienda_id=item.tienda_id)">${item.tienda_id}</a>
 			            </p>
 		            </td>
 		            <td>
-			        	<p tal:condition="python:'ProductoID' != tipo">
-			                <a tal:attributes="href python:view.peticion.route_url('producto', producto_id=item.ProductoID)">${item.ProductoID}</a>
+			        	<p tal:condition="python:'producto_id' != tipo">
+			                <a tal:attributes="href python:view.peticion.route_url('producto', producto_id=item.producto_id)">${item.producto_id}</a>
 			            </p>
 		            </td>
-		            <td><p>${item.Codigo}</p></td>
-		            <td><p>${item.Descripcion}</p></td>
-		            <td><p>${item.Precio}</p></td>
-		            <td><p>${item.Cantidad}</p></td>
+		            <td><p>${item.codigo}</p></td>
+		            <td><p>${item.descripcion}</p></td>
+		            <td><p>${item.precio}</p></td>
+		            <td><p>${item.cantidad}</p></td>
 		        </tr>
 			</tbody>
 		</table>

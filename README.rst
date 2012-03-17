@@ -11,4 +11,4 @@ Instalación
 
 - $venv/bin/python setup.py develop
 
-- $venv/bin/pserve development.ini
+- $venv/bin/pserve development.ini --reload

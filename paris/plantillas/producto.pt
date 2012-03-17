@@ -1,20 +1,29 @@
 <div metal:use-macro="view.diagrama_global">
 	<div metal:fill-slot="contenido">
 		<div class="page-header">
-  			<h1>${producto.Fabricante} ${producto.Nombre} <small>Modelo: ${producto.Modelo} Codigo: ${producto.Codigo}</small></h1>
+  			<h1>${producto.fabricante} ${producto.nombre} <small>Modelo: ${producto.modelo} Codigo: ${producto.codigo}</small></h1>
 		</div>
-		<div id="menu_tienda">
-        	<ul id="pestanas" class="nav nav-tabs">
-            	<li class="active"><a href="#noticias" data-toggle="tab">Noticias</a></li>
-            	<li><a href="#informacion" data-toggle="tab">Informacion</a></li>
-            	<li><a href="#inventario" data-toggle="tab">Inventario</a></li>
-    		</ul>
-          	<div id="contenido_pestanas" class="tab-content">
-            	<div class="tab-pane active" id="noticias">
-              		<p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</p>
-            	</div>
-            	<div class="tab-pane" id="informacion">
-              		<div class="row-fluid">
+		<div id="contenido_pestanas" class="tab-content">
+	       	<div class="tab-pane active" id="noticias">
+	      		<p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</p>
+	    	</div>
+	    	<div class="tab-pane" id="informacion">
+	      		<div class="row-fluid">
+	      			<div class="span4">
+          				<ul class="thumbnails">
+							<li>
+						    	<a href="#" class="thumbnail">
+						      		<img src="http://images.apple.com/retail/images/store_photos/photo_fashionshow.jpg" alt="">
+						    	</a>
+						  	</li>
+						</ul>
+          			</div>      
+          			<div class="span4">
+		      			<tal:block tal:repeat="descripcion view.descripciones">
+		      				<p tal:content="descripcion.contenido">Descripcion</p>
+		      			</tal:block>
+	          		</div>
+	          		<div class="span4">
 						<table class="table">
 				  			<thead>
 				    			<tr>
@@ -30,13 +39,13 @@
 				  			</tbody>
 						</table>
 					</div>
-            	</div>
-	            <div class="tab-pane" id="inventario">
-	            	<tal:block tal:define="tipo 'ProductoID'">
-              			<div metal:use-macro="python:view.macros['inventario']"></div>
-              		</tal:block>
-	            </div>
-          	</div>
+				</div>
+	    	</div>
+	        <div class="tab-pane" id="inventario">
+	        	<tal:block tal:define="tipo 'producto_id'">
+	      			<div metal:use-macro="python:view.macros['inventario']"></div>
+	      		</tal:block>
+	        </div>
 		</div>
-	</div>
+  	</div>
 </div>

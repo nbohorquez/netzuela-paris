@@ -8,7 +8,7 @@ from pyramid.decorator import reify
 from pyramid.renderers import get_renderer
 from spuria import (CLIENTE, INVENTARIO_RECIENTE, PRODUCTO, TIENDA, CLIENTE_REDUCIDO, PRODUCTO_REDUCIDO)
     
-class Diagramas(object):
+class diagramas(object):
     def __init__(self):
         '''
         Constructor
