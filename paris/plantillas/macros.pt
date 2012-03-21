@@ -36,5 +36,17 @@
 			</tbody>
 		</table>
 	</metal:inventario>
+	<metal:comentarios define-macro="comentarios">
+		<blockquote tal:repeat="comentario view.comentarios">
+			<p>${comentario.resena}</p>
+			<small>
+				${comentario.consumidor.nombre} ${comentario.consumidor.apellido} el ${comentario.fecha}
+				<tal:block tal:switch="comentario.calificacion">
+					<span tal:case="'Bien'"><i class="icon-thumbs-up"></i></span>
+					<span tal:case="'Mal'"><i class="icon-thumbs-down"></i></span>									
+    			</tal:block>
+			</small>
+		</blockquote>
+	</metal:comentarios>
 </body>
 </html>

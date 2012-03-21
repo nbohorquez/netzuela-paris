@@ -11,10 +11,10 @@
 				</div>
 				<div class="span4">
 					<div class="progress">
-		  				<div class="bar" style="width: 60%;"></div>
+		  				<div id="barra_de_turno" class="bar" style="width: 10%"></div>
 		  			</div>
-				</div>
-			</div>  			
+		  		</div>
+			</div>
 		</div>
 		<div id="contenido_pestanas" class="tab-content">
         	<div class="tab-pane active" id="noticias">
@@ -23,13 +23,9 @@
         	<div class="tab-pane" id="informacion">
           		<div class="row-fluid">
           			<div class="span4">
-          				<ul class="thumbnails">
-							<li>
-						    	<a href="#" class="thumbnail">
-						      		<img src="http://images.apple.com/retail/images/store_photos/photo_fashionshow.jpg" alt="">
-						    	</a>
-						  	</li>
-						</ul>
+          				<div class="thumbnail">
+					    	<img tal:define="foto view.foto" src="/estatico/${foto.ruta_de_foto}" alt="" onClick="actualizar_barra_de_turno();" />
+						</div>
 						<table class="table pull-left" tal:define="horarios view.horarios">
 				  			<thead>
 				    			<tr>
@@ -55,17 +51,20 @@
 						</table>
 						<address tal:define="reg_geo view.region_geografica">
 							<strong>${cliente.nombre_legal}</strong><br />
-							<span tal:content="python:cliente.edificio_cc" />  
-							<span tal:content="python:cliente.piso" /> 
-							<span tal:content="python:cliente.apartamento" /> 
-							<span tal:content="python:cliente.local_no" /> 
-							<span tal:content="python:cliente.casa" /><br />
-							<span tal:content="python:cliente.calle" />, 
-							<span tal:content="python:cliente.sector_urb_barrio" /><br />
-							<span tal:content="python:reg_geo.parroquia" /><br />
-							<span tal:content="python:reg_geo.municipio" />,
-							<span tal:content="python:reg_geo.estado" /><br />
-							<span tal:content="python:cliente.telefono"/>
+							<span tal:content="cliente.edificio_cc" />  
+							<span tal:content="cliente.piso" /> 
+							<span tal:content="cliente.apartamento" /> 
+							<span tal:content="cliente.local_no" /> 
+							<span tal:content="cliente.casa" /><br />
+							<span tal:content="cliente.calle" />, 
+							<span tal:content="cliente.sector_urb_barrio" /><br />
+							<span tal:content="reg_geo.parroquia" /><br />
+							<span tal:content="reg_geo.municipio" />,
+							<span tal:content="reg_geo.estado" /><br />
+							<span tal:content="cliente.telefono"/><br />
+							<a href="${cliente.facebook}"><i class="icon-facebook-sign icon-large"></i></a>
+				  			<a href="${cliente.twitter}"><i class="icon-twitter-sign icon-large"></i></a>	
+				  			<a href="mailto:${cliente.correo_electronico}"><i class="icon-envelope icon-large"></i></a>
 						</address>
           			</div>
           			<div class="span8">
@@ -89,8 +88,13 @@
           		</p>
             </div>
             <div class="tab-pane" id="comentarios">
-            	Comentarios
+            	<div metal:use-macro="python:view.macros['comentarios']"></div>
             </div>
       	</div>
+	</div>
+	<div metal:fill-slot="otros_scripts" tal:define="cliente view.cliente">
+		<script type="text/javascript">
+			var actualizar_periodico = setInterval(actualizar, 5000);
+		</script>
 	</div>
 </div>

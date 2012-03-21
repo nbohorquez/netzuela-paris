@@ -1,16 +1,22 @@
 from .models import (
+	calificable_seguible,
+	calificacion_resena,
 	categoria,
 	cliente,
+	consumidor,
 	DBSession,
 	describible,
 	descripcion,	
 	estado, 
+	foto,
 	horario_de_trabajo,
 	inventario_reciente,
 	municipio, 
 	parroquia,
 	patrocinante,
 	producto,
+	publicidad,
+	rastreable,
 	region_geografica,
 	tamano_reciente,
 	tienda,
@@ -22,7 +28,7 @@ from pyramid.decorator import reify
 from pyramid.httpexceptions import (HTTPNotFound)
 from pyramid.view import view_config
 from sqlalchemy import and_
-import string
+import string, random
 
 MENSAJE_DE_ERROR = 'Vos lo que estais es loco! Esa verga no existe'
 
@@ -69,13 +75,13 @@ class paris_views(diagramas):
 			return DBSession.query(inventario_reciente).filter_by(producto_id = self.peticion_id).all()
 		
 		var_inventario = ({'tienda': lambda: inv_tienda(), 'producto': lambda: inv_producto()}[self.tipo_de_peticion])()
-		resultado = HTTPNotFound(MENSAJE_DE_ERROR) if (var_inventario is None) else var_inventario
+		resultado = [{""}] if (var_inventario is None) else var_inventario
 		return resultado
 
 	@reify
 	def cliente(self):
 		resultado = self.obtener_cliente()
-		return HTTPNotFound(MENSAJE_DE_ERROR) if (resultado is None) else resultado		 
+		return {""} if (resultado is None) else resultado		 
 
 	@reify
 	def region_geografica(self):
@@ -92,7 +98,7 @@ class paris_views(diagramas):
 
 			resultado = {'parroquia': reg_geo_parroquia.nombre, 'municipio': reg_geo_municipio.nombre, 'estado': reg_geo_estado.nombre }
 		else:
-			resultado = HTTPNotFound(MENSAJE_DE_ERROR)
+			resultado = {'parroquia': 'N/D', 'municipio': 'N/D', 'estado': 'N/D' }
 			
 		return resultado
 		
@@ -115,15 +121,14 @@ class paris_views(diagramas):
 			var_horario = DBSession.query(horario_de_trabajo).filter_by(tienda_id = self.peticion_id).all()
 		
 		if var_horario is not None:
-			var_horarios = list()
+			resultado = list()
 			for jornada in var_horario:
 				horario = {}
 				horario['dia'] = jornada.dia
 				horario['laborable'] = jornada.laborable
 				turnos = DBSession.query(turno).filter(and_(turno.tienda_id == self.peticion_id, turno.dia == jornada.dia)).all()
 				horario['turnos'] = string.join(["{0.hora_de_apertura} - {0.hora_de_cierre} ".format(t) for t in turnos])
-				var_horarios.append(horario)
-			resultado = var_horarios
+				resultado.append(horario)
 		else:
 			resultado = [{""}]
 
@@ -135,6 +140,52 @@ class paris_views(diagramas):
 			var_tamano = DBSession.query(tamano_reciente).filter(tamano_reciente.tienda_id == self.peticion_id).first()
 		resultado = {'numero_total_de_productos': 'ND', 'cantidad_total_de_productos': 'ND', 'valor': 'ND'} if (var_tamano is None) else var_tamano
 		return resultado
+	
+	@reify
+	def foto(self):
+		def foto_tienda():
+			return DBSession.query(foto).join(describible).join(cliente).join(tienda).filter(tienda.tienda_id == self.peticion_id).first()
+		def foto_producto():
+			return DBSession.query(foto).join(describible).join(producto).filter(producto.producto_id == self.peticion_id).first()
+		def foto_patrocinante():
+			return DBSession.query(foto).join(describible).join(cliente).join(patrocinante).filter(patrocinante.patrocinante_id == self.peticion_id).first()
+		def foto_publicidad():
+			return DBSession.query(foto).join(describible).join(publicidad).filter(publicidad.publicidad_id == self.peticion_id).first()
+		
+		var_foto = ({'tienda': lambda: foto_tienda(), 'producto': lambda: foto_producto(), 'patrocinante': lambda: foto_patrocinante(), 'publicidad': lambda: foto_publicidad()}[self.tipo_de_peticion])()
+		resultado = {'ruta_de_foto': ''} if (var_foto is None) else var_foto
+		
+		return resultado
+	
+	@reify
+	def comentarios(self):
+		def cal_producto():
+			return DBSession.query(calificacion_resena).join(calificable_seguible).join(producto).filter(producto.producto_id == self.peticion_id).all()
+		def cal_tienda():
+			return DBSession.query(calificacion_resena).join(calificable_seguible).join(tienda).filter(tienda.tienda_id == self.peticion_id).all()
+		
+		resultado = {}
+		var_comentarios = ({'tienda': lambda: cal_tienda(), 'producto': lambda: cal_producto()}[self.tipo_de_peticion])()
+		
+		if var_comentarios is not None:
+			resultado = list()
+			for comentario in var_comentarios:
+				tmp = {}
+				tmp['calificacion'] = comentario.calificacion
+				tmp['resena'] = comentario.resena
+				fecha_decimal = DBSession.query(rastreable).filter_by(rastreable_id = comentario.rastreable_p).first().fecha_de_creacion
+				fecha = str(fecha_decimal) + ''
+				tmp['fecha'] = "{0}/{1}/{2} {3}:{4}".format(fecha[6:8], fecha[4:6], fecha[0:4], fecha[8:10], fecha[10:12])
+				tmp['consumidor'] = DBSession.query(consumidor).filter_by(consumidor_id = comentario.consumidor_id).first()
+				resultado.append(tmp)
+		else:
+			resultado = [{""}]
+				
+		return resultado
+	
+	@view_config(route_name="aleatorio", renderer="json")
+	def updates_view(self):
+		return random.randint(1, 100)
 	
 	@view_config(route_name='inicio', renderer='plantillas/inicio.pt')
 	def inicio_view(self):

@@ -1,3 +1,10 @@
+function actualizar() {
+	//var actual = Math.floor(Math.random()*101).toString() + "%";
+	$.getJSON('/aleatorio.json', function(datos) {
+        document.getElementById("barra_de_turno").style.width = datos.toString() + "%";
+    });
+}
+
 function inicializar() {
     var latlng = new google.maps.LatLng(10.40, -71.44);
     var opciones = {

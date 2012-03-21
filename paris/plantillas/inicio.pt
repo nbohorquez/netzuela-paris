@@ -3,8 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Netzuela - ${nombre_pagina}</title>
-    <link rel="stylesheet" href="/estilos/css/bootstrap.css"/>
-    <link rel="stylesheet" href="/estilos/css/bootstrap-responsive.css"/>
+    <link rel="stylesheet" href="/estatico/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/estatico/css/bootstrap-responsive.css"/>
     <style type="text/css">
     	body { height:100%; padding-top: 60px }
 	</style>
