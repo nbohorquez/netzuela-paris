@@ -4,9 +4,11 @@ from .models import (
 	categoria,
 	cliente,
 	consumidor,
+	croquis,
 	DBSession,
 	describible,
-	descripcion,	
+	descripcion,
+	dibujable,	
 	estado, 
 	foto,
 	horario_de_trabajo,
@@ -16,6 +18,8 @@ from .models import (
 	patrocinante,
 	producto,
 	publicidad,
+	punto,
+	punto_de_croquis,
 	rastreable,
 	region_geografica,
 	tamano_reciente,
@@ -28,7 +32,7 @@ from pyramid.decorator import reify
 from pyramid.httpexceptions import (HTTPNotFound)
 from pyramid.view import view_config
 from sqlalchemy import and_
-import string, random
+import string
 
 MENSAJE_DE_ERROR = 'Vos lo que estais es loco! Esa verga no existe'
 
@@ -65,7 +69,7 @@ class paris_views(diagramas):
 	# Esta verga hay que quitarla...
 	@reify
 	def categorias(self):
-		return DBSession.query(categoria).all()		 
+		return DBSession.query(categoria).all() 
 	
 	@reify
 	def inventario_reciente(self):
@@ -121,7 +125,7 @@ class paris_views(diagramas):
 			var_horario = DBSession.query(horario_de_trabajo).filter_by(tienda_id = self.peticion_id).all()
 		
 		if var_horario is not None:
-			resultado = list()
+			resultado = []
 			for jornada in var_horario:
 				horario = {}
 				horario['dia'] = jornada.dia
@@ -142,23 +146,23 @@ class paris_views(diagramas):
 		return resultado
 	
 	@reify
-	def foto(self):
+	def fotos(self):
 		def foto_tienda():
-			return DBSession.query(foto).join(describible).join(cliente).join(tienda).filter(tienda.tienda_id == self.peticion_id).first()
+			return DBSession.query(foto).join(describible).join(cliente).join(tienda).filter(tienda.tienda_id == self.peticion_id).all()
 		def foto_producto():
-			return DBSession.query(foto).join(describible).join(producto).filter(producto.producto_id == self.peticion_id).first()
+			return DBSession.query(foto).join(describible).join(producto).filter(producto.producto_id == self.peticion_id).all()
 		def foto_patrocinante():
-			return DBSession.query(foto).join(describible).join(cliente).join(patrocinante).filter(patrocinante.patrocinante_id == self.peticion_id).first()
+			return DBSession.query(foto).join(describible).join(cliente).join(patrocinante).filter(patrocinante.patrocinante_id == self.peticion_id).all()
 		def foto_publicidad():
-			return DBSession.query(foto).join(describible).join(publicidad).filter(publicidad.publicidad_id == self.peticion_id).first()
+			return DBSession.query(foto).join(describible).join(publicidad).filter(publicidad.publicidad_id == self.peticion_id).all()
 		
-		var_foto = ({'tienda': lambda: foto_tienda(), 'producto': lambda: foto_producto(), 'patrocinante': lambda: foto_patrocinante(), 'publicidad': lambda: foto_publicidad()}[self.tipo_de_peticion])()
-		resultado = {'ruta_de_foto': ''} if (var_foto is None) else var_foto
+		var_fotos = ({'tienda': lambda: foto_tienda(), 'producto': lambda: foto_producto(), 'patrocinante': lambda: foto_patrocinante(), 'publicidad': lambda: foto_publicidad()}[self.tipo_de_peticion])()
+		resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
 		
 		return resultado
 	
 	@reify
-	def comentarios(self):
+	def calificaciones_resenas(self):
 		def cal_producto():
 			return DBSession.query(calificacion_resena).join(calificable_seguible).join(producto).filter(producto.producto_id == self.peticion_id).all()
 		def cal_tienda():
@@ -168,13 +172,13 @@ class paris_views(diagramas):
 		var_comentarios = ({'tienda': lambda: cal_tienda(), 'producto': lambda: cal_producto()}[self.tipo_de_peticion])()
 		
 		if var_comentarios is not None:
-			resultado = list()
+			resultado = []
 			for comentario in var_comentarios:
 				tmp = {}
 				tmp['calificacion'] = comentario.calificacion
 				tmp['resena'] = comentario.resena
 				fecha_decimal = DBSession.query(rastreable).filter_by(rastreable_id = comentario.rastreable_p).first().fecha_de_creacion
-				fecha = str(fecha_decimal) + ''
+				fecha = str(fecha_decimal)
 				tmp['fecha'] = "{0}/{1}/{2} {3}:{4}".format(fecha[6:8], fecha[4:6], fecha[0:4], fecha[8:10], fecha[10:12])
 				tmp['consumidor'] = DBSession.query(consumidor).filter_by(consumidor_id = comentario.consumidor_id).first()
 				resultado.append(tmp)
@@ -183,10 +187,19 @@ class paris_views(diagramas):
 				
 		return resultado
 	
-	@view_config(route_name="aleatorio", renderer="json")
-	def updates_view(self):
-		return random.randint(1, 100)
-	
+	@view_config(route_name="tienda_turno", renderer="json")
+	def tienda_turno_view(self):
+		var_dia = self.peticion.params['dia']
+		var_tienda = self.peticion.params['tienda_id']
+		apertura, cierre = DBSession.query(turno.hora_de_apertura, turno.hora_de_cierre).filter(and_(turno.tienda_id == var_tienda, turno.dia == var_dia)).first()
+		return { 'apertura': "{0}".format(str(apertura)), 'cierre': "{0}".format(str(cierre)) } 
+		
+	@view_config(route_name="tienda_coordenadas", renderer="json")
+	def tienda_coordenadas_view(self):
+		var_tienda = self.peticion.params['tienda_id']
+		latitud, longitud = DBSession.query(punto.latitud, punto.longitud).join(punto_de_croquis).join(croquis).join(dibujable).join(tienda).filter_by(tienda_id = var_tienda).first()
+		return { 'latitud': "{0}".format(str(latitud)), 'longitud': "{0}".format(str(longitud)) }
+		
 	@view_config(route_name='inicio', renderer='plantillas/inicio.pt')
 	def inicio_view(self):
 		return {'nombre_pagina': 'Inicio'}

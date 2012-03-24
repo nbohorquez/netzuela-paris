@@ -6,7 +6,7 @@ Created on 28/02/2012
 
 from pyramid.decorator import reify
 from pyramid.renderers import get_renderer
-from spuria import (CLIENTE, INVENTARIO_RECIENTE, PRODUCTO, TIENDA, CLIENTE_REDUCIDO, PRODUCTO_REDUCIDO)
+from constantes import (CLIENTE, INVENTARIO_RECIENTE, PRODUCTO, CLIENTE_REDUCIDO, PRODUCTO_REDUCIDO)
     
 class diagramas(object):
     def __init__(self):
@@ -48,11 +48,3 @@ class diagramas(object):
     def columnas_producto_reducido(self):
         columnas = PRODUCTO_REDUCIDO[:]
         return columnas
-    
-    @reify
-    def columnas_tienda(self):
-        columnas = TIENDA[:]
-        return columnas
-    
-    
-        

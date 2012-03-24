@@ -2,7 +2,7 @@ from sqlalchemy import MetaData, Table, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, mapper
 from zope.sqlalchemy import ZopeTransactionExtension
-from .spuria import TABLAS
+from constantes import TABLAS
 #from .__init__ import motor
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))

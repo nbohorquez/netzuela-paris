@@ -1,5 +1,8 @@
 <div metal:use-macro="view.diagrama_global">
 	<div metal:fill-slot="contenido" tal:define="cliente view.cliente">
+		
+		<!-- Encabezado
+		================================================== -->	
 		<div class="page-header">
 			<div class="row-fluid">
 				<div class="span8">
@@ -16,17 +19,27 @@
 		  		</div>
 			</div>
 		</div>
+		<div id="meta_datos">
+			<input type="hidden" id="tienda_id" name="tienda_id" value="${tienda.tienda_id}" />
+		</div>
+		
+		<!-- Contenido
+		================================================== -->	
 		<div id="contenido_pestanas" class="tab-content">
+			
+			<!-- Noticias
+			================================================== -->	
         	<div class="tab-pane active" id="noticias">
           		<p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</p>
         	</div>
+        	
+        	<!-- Informacion
+			================================================== -->	
         	<div class="tab-pane" id="informacion">
           		<div class="row-fluid">
           			<div class="span4">
-          				<div class="thumbnail">
-					    	<img tal:define="foto view.foto" src="/estatico/${foto.ruta_de_foto}" alt="" onClick="actualizar_barra_de_turno();" />
-						</div>
-						<table class="table pull-left" tal:define="horarios view.horarios">
+          				<div metal:use-macro="python:view.macros['fotos']"></div>
+						<table id="horarios" class="table pull-left" tal:define="horarios view.horarios">
 				  			<thead>
 				    			<tr>
 				    				<tal:block tal:repeat="horario horarios">
@@ -49,7 +62,7 @@
 				  				</tr>
 				  			</tbody>
 						</table>
-						<address tal:define="reg_geo view.region_geografica">
+						<address id="direccion" tal:define="reg_geo view.region_geografica">
 							<strong>${cliente.nombre_legal}</strong><br />
 							<span tal:content="cliente.edificio_cc" />  
 							<span tal:content="cliente.piso" /> 
@@ -68,12 +81,17 @@
 						</address>
           			</div>
           			<div class="span8">
-           				<tal:block tal:repeat="descripcion view.descripciones">
-	          				<p tal:content="descripcion.contenido">Descripcion</p>
-	          			</tal:block>	
+          				<div id="descripciones">
+	           				<tal:block tal:repeat="descripcion view.descripciones">
+		          				<p tal:content="descripcion.contenido">Descripcion</p>
+		          			</tal:block>
+	          			</div>
           			</div>
 				</div>
         	</div>
+        	
+        	<!-- Inventario
+			================================================== -->	
             <div class="tab-pane" id="inventario">
             	<tal:block tal:define="tipo 'tienda_id'">
           			<div metal:use-macro="python:view.macros['inventario']"></div>
@@ -87,14 +105,17 @@
           			<span tal:content="tamano.valor"></span>
           		</p>
             </div>
+            
+            <!-- Comentarios (calificaciones y reseñas)
+			================================================== -->	
             <div class="tab-pane" id="comentarios">
             	<div metal:use-macro="python:view.macros['comentarios']"></div>
             </div>
       	</div>
 	</div>
 	<div metal:fill-slot="otros_scripts" tal:define="cliente view.cliente">
-		<script type="text/javascript">
-			var actualizar_periodico = setInterval(actualizar, 5000);
-		</script>
+		<script type="text/javascript" src="/estatico/js/bootstrap-tooltip.js"></script>
+		<script type="text/javascript" src="/estatico/js/bootstrap-carousel.js"></script>
+		<script type="text/javascript" src="/estatico/js/tienda.js" />
 	</div>
 </div>

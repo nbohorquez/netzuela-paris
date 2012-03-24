@@ -90,18 +90,9 @@ INVENTARIO_RECIENTE = [
 ]
 
 PRODUCTO = [ 
-            'rastreable_p',
-            'describible_p',
-            'buscable_p',
-            'calificable_seguible_p',
-            'producto_id',
             'tipo_de_codigo',
             'codigo',
             'estatus',
-            'fabricante',
-            'modelo',
-            'nombre',
-            'categoria',
             'debut_en_el_mercado',
             'largo',
             'ancho',
@@ -117,16 +108,6 @@ PRODUCTO_REDUCIDO = [
                      'categoria',
                      'modelo',
                      'nombre',                     
-]
-
-TIENDA = [
-          'buscable_p',
-          'cliente_p',
-          'calificable_seguible_p',
-          'interlocutor_p',
-          'dibujable_p',
-          'tienda_id',
-          'abierto',
 ]
 
 CLIENTE = [

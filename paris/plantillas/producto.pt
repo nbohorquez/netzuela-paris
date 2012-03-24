@@ -1,22 +1,28 @@
 <div metal:use-macro="view.diagrama_global">
 	<div metal:fill-slot="contenido">
+		
+		<!-- Encabezado
+		================================================== -->	
 		<div class="page-header">
   			<h1>${producto.fabricante} ${producto.nombre} <small>Modelo: ${producto.modelo} Codigo: ${producto.codigo}</small></h1>
 		</div>
+		
+		<!-- Contenido
+		================================================== -->	
 		<div id="contenido_pestanas" class="tab-content">
+			
+			<!-- Noticias
+			================================================== -->	
 	       	<div class="tab-pane active" id="noticias">
 	      		<p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</p>
 	    	</div>
+	    	
+	    	<!-- Informacion
+			================================================== -->
 	    	<div class="tab-pane" id="informacion">
 	      		<div class="row-fluid">
 	      			<div class="span4">
-          				<ul class="thumbnails">
-							<li>
-						    	<a href="#" class="thumbnail">
-						      		<img tal:define="foto view.foto" src="/estatico/${foto.ruta_de_foto}" alt="" />
-						    	</a>
-						  	</li>
-						</ul>
+          				<div metal:use-macro="python:view.macros['fotos']"></div>
 						<table class="table">
 				  			<thead>
 				    			<tr>
@@ -26,7 +32,7 @@
 				  			</thead>
 				  			<tbody>
 					    		<tr tal:repeat="columna view.columnas_producto">
-				  					<td><p>${columna}</p></td>
+				  					<td><p tal:content="python:columna.replace('_', ' ')"></p></td>
 				  					<td><p tal:content="python:getattr(producto, columna)"></p></td>
 				  				</tr>
 				  			</tbody>
@@ -39,11 +45,17 @@
 	          		</div>
 				</div>
 	    	</div>
+	    	
+	    	<!-- Inventario
+			================================================== -->
 	        <div class="tab-pane" id="inventario">
 	        	<tal:block tal:define="tipo 'producto_id'">
 	      			<div metal:use-macro="python:view.macros['inventario']"></div>
 	      		</tal:block>
 	        </div>
+	        
+	        <!-- Comentarios
+			================================================== -->
 	        <div class="tab-pane" id="comentarios">
             	<div metal:use-macro="python:view.macros['comentarios']"></div>
             </div>

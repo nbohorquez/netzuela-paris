@@ -7,6 +7,9 @@
     <title>Macros</title>
 </head>
 <body>
+	
+	<!-- Inventario
+	================================================== -->	
 	<metal:inventario define-macro="inventario">
 	    <table class="table">
 			<thead>
@@ -36,8 +39,11 @@
 			</tbody>
 		</table>
 	</metal:inventario>
+	
+	<!-- Comentarios (calificaciones y reseñas)
+	================================================== -->	
 	<metal:comentarios define-macro="comentarios">
-		<blockquote tal:repeat="comentario view.comentarios">
+		<blockquote tal:repeat="comentario view.calificaciones_resenas">
 			<p>${comentario.resena}</p>
 			<small>
 				${comentario.consumidor.nombre} ${comentario.consumidor.apellido} el ${comentario.fecha}
@@ -48,5 +54,32 @@
 			</small>
 		</blockquote>
 	</metal:comentarios>
+	
+	<!-- Fotos
+	================================================== -->	
+	<metal:fotos define-macro="fotos">
+		<div id="carrusel" class="carousel slide">
+            <div class="carousel-inner">
+            	<tal:block tal:repeat="foto view.fotos" tal:switch="repeat.foto.index == 0">
+           			<div tal:case="True" class="item active">
+        				<div class="thumbnail">
+        					<img src="/estatico/${foto.ruta_de_foto}" alt="" />
+        				</div>
+        			</div>
+        			<div tal:case="False" class="item">
+        				<div class="thumbnail">
+        					<img src="/estatico/${foto.ruta_de_foto}" alt="" />
+        				</div>
+        			</div>
+            	</tal:block>
+			</div>
+			<tal:block tal:switch="python:len(view.fotos) > 1">
+				<tal:block tal:case="True">
+		        	<a class="left carousel-control" href="#carrusel" data-slide="prev">&lsaquo;</a>
+		        	<a class="right carousel-control" href="#carrusel" data-slide="next">&rsaquo;</a>
+	        	</tal:block>
+        	</tal:block>
+        </div>
+	</metal:fotos>
 </body>
 </html>

@@ -19,6 +19,7 @@ def main(global_config, **settings):
 	config.add_route('listado_tiendas', '/tiendas')
 	config.add_route('inventario_producto', '/producto/{producto_id}/inventario')
 	config.add_route('inventario_tienda', '/tienda/{tienda_id}/inventario')
-	config.add_route('aleatorio', '/aleatorio.json')
+	config.add_route('tienda_turno', '/tienda_turno.json')
+	config.add_route('tienda_coordenadas', '/tienda_coordenadas.json')
 	config.scan()
 	return config.make_wsgi_app()
