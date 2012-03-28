@@ -1,10 +1,14 @@
+/**
+ * @author Nestor Bohorquez
+ */
+
 $(document).ready(function() {
-	var actualizar_periodico = setInterval(tienda.actualizar, 5000);
-	tienda.temporizador = $('input[name=tienda_id]').val();
-	$.getJSON('/tienda_coordenadas.json', { tienda_id: tienda }, function(data) {
+	tienda.temporizador = setInterval(tienda.actualizar, 5000);
+	tienda.id = $('input[name=tienda_id]').val();
+	$.getJSON('/tienda_coordenadas.json', { tienda_id: tienda.id }, function(data) {
 		var latitud = parseFloat(data.latitud.replace(",", "."));
 		var longitud = parseFloat(data.longitud.replace(",", "."));
-		google_map.marcador(latitud, longitud);
+		google_map.agregar_marcador(latitud, longitud);
 	});
 });
 
@@ -13,6 +17,7 @@ $(window).unload(function() {
 });
 
 var tienda = {
+	id: null,
 	temporizador: null
 }
 
@@ -45,7 +50,7 @@ tienda.actualizar = function () {
 		else if (ahorita >= cierre) {
 			porcentaje = 100;
 		}
-		else if (ahorita < cierre && ahorita >= apertura ) {
+		else if (ahorita < cierre && ahorita >= apertura) {
 	 		porcentaje = (100/(cierre - apertura)) * ahorita - 100;
 		}
 		
