@@ -8,37 +8,62 @@
 </head>
 <body>
 	
-	<!-- Inventario
+	<!-- Inventario tienda
 	================================================== -->	
-	<metal:inventario define-macro="inventario">
-	    <table class="table">
-			<thead>
-				<tr>
-					<th tal:repeat="columna view.columnas_inventario">
-						<span tal:condition="python:columna != tipo">${columna}</span>
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr tal:repeat="item view.inventario_reciente">
-		        	<td>
-			        	<p tal:condition="python:'tienda_id' != tipo">
-			                <a tal:attributes="href python:view.peticion.route_url('tienda', tienda_id=item.tienda_id)">${item.tienda_id}</a>
-			            </p>
-		            </td>
-		            <td>
-			        	<p tal:condition="python:'producto_id' != tipo">
-			                <a tal:attributes="href python:view.peticion.route_url('producto', producto_id=item.producto_id)">${item.producto_id}</a>
-			            </p>
-		            </td>
-		            <td><p>${item.codigo}</p></td>
-		            <td><p>${item.descripcion}</p></td>
-		            <td><p>${item.precio}</p></td>
-		            <td><p>${item.cantidad}</p></td>
-		        </tr>
-			</tbody>
-		</table>
-	</metal:inventario>
+	<metal:inventario_tienda define-macro="inventario_tienda">
+	    <ul class="thumbnails">
+        	<li class="span2" tal:repeat="item view.inventario_reciente">
+        		<div tal:define="enlace view.peticion.route_url('producto', producto_id = item.producto_id)">
+        			<a tal:attributes="href enlace">
+        				<img tal:define="foto view.foto('producto', item.producto_id, 'pequenas')" src="/estatico/${foto.ruta_de_foto}" alt="producto.nombre" />
+        			</a>
+        			<div class="caption" tal:define="producto view.obtener_producto(item.producto_id)">
+						<a tal:attributes="href enlace">
+							<h5>${producto.nombre}</h5>
+						</a>
+						<p>
+							<em>${producto.codigo}</em><br />
+							${item.descripcion}<br />
+							<strong>Categoria</strong> <span tal:define="categoria_item view.obtener_categoria(producto.categoria)">${categoria_item.nombre}</span><br />
+							<strong>SKU</strong> ${item.codigo}<br />
+							<strong>Precio</strong> ${item.precio}<br />
+							<strong>Cantidad</strong> ${item.cantidad}
+						</p>
+					</div>
+	           	</div>
+	        </li>
+        </ul>
+	</metal:inventario_tienda>
+	
+	<!-- Inventario producto
+	================================================== -->	
+	<metal:inventario_producto define-macro="inventario_producto">
+	   <ul class="thumbnails">
+        	<li class="span2" tal:repeat="item view.inventario_reciente">
+        		<div tal:define="enlace view.peticion.route_url('tienda', tienda_id = item.tienda_id)">
+        			<a tal:attributes="href enlace">
+        				<img tal:define="foto view.foto('tienda', item.tienda_id, 'pequenas')" src="/estatico/${foto.ruta_de_foto}" alt="cliente.nombre_comun" />
+        			</a>
+        			<div class="caption" tal:define="cliente view.obtener_cliente_padre('tienda', item.tienda_id)">
+						<a tal:attributes="href enlace">
+							<h5>${cliente.nombre_comun}</h5>	
+						</a>
+						<p tal:define="tienda view.obtener_tienda(item.tienda_id)">
+							${cliente.nombre_legal}
+							<span class="label label-success" tal:condition="tienda.abierto">Abierta</span>
+							<span class="label label-important" tal:condition="not tienda.abierto">Cerrada</span>
+							<br />
+							<em>${cliente.rif}</em><br />
+							<strong>Categoria</strong> <span tal:define="categoria_item view.obtener_categoria(cliente.categoria)">${categoria_item.nombre}</span><br />					
+							<strong>Precio</strong> ${item.precio}<br />
+							<strong>Cantidad</strong> ${item.cantidad}
+							<input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
+						</p>
+					</div>
+	           	</div>
+	        </li>
+        </ul>
+	</metal:inventario_producto>
 	
 	<!-- Comentarios (calificaciones y reseñas)
 	================================================== -->	
@@ -57,29 +82,39 @@
 	
 	<!-- Fotos
 	================================================== -->	
-	<metal:fotos define-macro="fotos">
+	<metal:fotos_medianas define-macro="fotos_medianas">
 		<div id="carrusel" class="carousel slide">
             <div class="carousel-inner">
-            	<tal:block tal:repeat="foto view.fotos" tal:switch="repeat.foto.index == 0">
-           			<div tal:case="True" class="item active">
+            	<tal:block tal:repeat="foto view.fotos_medianas">
+           			<div tal:condition="repeat.foto.start" class="item active">
         				<div class="thumbnail">
-        					<img src="/estatico/${foto.ruta_de_foto}" alt="" />
+        					<img src="/estatico/${foto.ruta_de_foto}" alt="Foto" />
         				</div>
         			</div>
-        			<div tal:case="False" class="item">
+        			<div tal:condition="not repeat.foto.start" class="item">
         				<div class="thumbnail">
-        					<img src="/estatico/${foto.ruta_de_foto}" alt="" />
+        					<img src="/estatico/${foto.ruta_de_foto}" alt="Foto" />
         				</div>
         			</div>
             	</tal:block>
 			</div>
-			<tal:block tal:switch="python:len(view.fotos) > 1">
-				<tal:block tal:case="True">
-		        	<a class="left carousel-control" href="#carrusel" data-slide="prev">&lsaquo;</a>
-		        	<a class="right carousel-control" href="#carrusel" data-slide="next">&rsaquo;</a>
-	        	</tal:block>
+			<tal:block tal:condition="python:len(view.fotos_medianas) > 1">
+	        	<a class="left carousel-control" href="#carrusel" data-slide="prev">&lsaquo;</a>
+	        	<a class="right carousel-control" href="#carrusel" data-slide="next">&rsaquo;</a>
         	</tal:block>
         </div>
-	</metal:fotos>
+	</metal:fotos_medianas>
+	
+	<!-- Ruta de categoria
+	================================================== -->	
+	<metal:ruta_de_categoria define-macro="ruta_de_categoria">
+		<ul id="ruta_de_categoria" class="breadcrumb">
+			<li tal:repeat="nodo view.ruta_de_categoria">
+		    	<a href="#">${nodo}</a> <span class="divider">/</span>
+		  	</li>
+		  	<li tal:condition="nombre_pagina == 'Producto'" class="active">${producto.fabricante} ${producto.nombre}</li>
+		  	<li tal:condition="nombre_pagina == 'Tienda'" class="active">${cliente.nombre_comun}</li>
+		</ul>
+	</metal:ruta_de_categoria>
 </body>
 </html>

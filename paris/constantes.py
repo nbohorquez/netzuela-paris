@@ -101,15 +101,6 @@ PRODUCTO = [
             'pais_de_origen',
 ]
 
-PRODUCTO_REDUCIDO = [
-                     'producto_id',
-                     'codigo',
-                     'fabricante',
-                     'categoria',
-                     'modelo',
-                     'nombre',                     
-]
-
 CLIENTE = [
            'rastreable_p',
            'describible_p',
@@ -130,12 +121,4 @@ CLIENTE = [
            'pagina_web',
            'facebook',
            'twitter',
-]
-
-CLIENTE_REDUCIDO = [
-                    'rif',
-                    'categoria',
-                    'nombre_legal',
-                    'nombre_comun',
-                    'telefono',
 ]

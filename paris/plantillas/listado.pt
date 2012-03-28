@@ -1,27 +1,52 @@
 <div metal:use-macro="view.diagrama_global">
 	<div metal:fill-slot="contenido">
+		
+		<!-- Encabezado
+		================================================== -->
 		<div class="page-header">
   			<h1>${nombre_pagina} <small>TODO: Listar los filtros que definieron esta busqueda</small></h1>
 		</div>
-		<table class="table">
-  			<thead>
-    			<tr tal:switch="nombre_pagina">
-    				<th tal:case="'Productos'" tal:repeat="columna view.columnas_producto_reducido">${columna}</th>
-    				<th tal:case="'Tiendas'" tal:repeat="columna view.columnas_cliente_reducido">${columna}</th>
-    			</tr>
-  			</thead>
-  			<tbody>
-  				<tr tal:repeat="item lista">
-  					<tal:block tal:switch="nombre_pagina">
-	  					<td tal:case="'Productos'" tal:repeat="columna view.columnas_producto_reducido">
-	  						<p tal:content="getattr(item, columna)"></p>
-						</td>
-	    				<td tal:case="'Tiendas'" tal:repeat="columna view.columnas_cliente_reducido">  					
-			        		<p tal:content="getattr(item, columna)"></p>
-						</td>
-					</tal:block>
-				</tr>
-  			</tbody>
-		</table>
+		
+		<!-- Listado
+		================================================== -->
+		<div tal:condition="nombre_pagina == 'Productos'">
+			<ul class="thumbnails">
+	        	<li class="span2" tal:repeat="item lista">
+	        		<div tal:define="enlace python:view.peticion.route_url('producto', producto_id = item.producto_id)">
+	        			<a tal:attributes="href enlace">
+	        				<img tal:define="foto view.foto('producto', item.producto_id, 'pequenas')" src="/estatico/${foto.ruta_de_foto}" alt="" />
+	        			</a>
+						<div class="caption">
+							<a tal:attributes="href enlace">
+								<h5>${item.nombre}</h5>
+							</a>
+							<p>
+								<em>${item.codigo}</em>
+							</p>
+						</div>
+		           	</div>
+		        </li>
+	        </ul>			
+		</div>
+		<div tal:condition="nombre_pagina == 'Tiendas'">
+			<ul class="thumbnails">
+	        	<li class="span2" tal:repeat="item lista">
+	        		<div tal:define="enlace python:view.peticion.route_url('tienda', tienda_id = item.tienda_id)">
+	        			<a tal:attributes="href enlace">
+	        				<img tal:define="foto view.foto('tienda', item.tienda_id, 'pequenas')" src="/estatico/${foto.ruta_de_foto}" alt="" />
+	        			</a>
+						<div class="caption" tal:define="cliente view.obtener_cliente(item.cliente_p)">
+							<a tal:attributes="href enlace">
+								<h5>${cliente.nombre_comun}</h5>
+							</a>
+							<p>
+								${cliente.nombre_legal}<br />
+								<em>${cliente.rif}</em>
+							</p>
+						</div>
+		           	</div>
+		        </li>
+	        </ul>
+		</div>
 	</div>
 </div>

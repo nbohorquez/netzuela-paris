@@ -1,5 +1,5 @@
 <div metal:use-macro="view.diagrama_global">
-	<div metal:fill-slot="contenido" tal:define="cliente view.cliente">
+	<div metal:fill-slot="contenido" tal:define="cliente view.cliente_padre">
 		
 		<!-- Encabezado
 		================================================== -->	
@@ -20,7 +20,7 @@
 			</div>
 		</div>
 		<div id="meta_datos">
-			<input type="hidden" id="tienda_id" name="tienda_id" value="${tienda.tienda_id}" />
+			<input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
 		</div>
 		
 		<!-- Contenido
@@ -38,13 +38,14 @@
         	<div class="tab-pane" id="informacion">
           		<div class="row-fluid">
           			<div class="span4">
-          				<div metal:use-macro="python:view.macros['fotos']"></div>
+          				<div metal:use-macro="python:view.macros['fotos_medianas']"></div>
+          				<div metal:use-macro="python:view.macros['ruta_de_categoria']"></div>
 						<table id="horarios" class="table pull-left" tal:define="horarios view.horarios">
 				  			<thead>
 				    			<tr>
 				    				<tal:block tal:repeat="horario horarios">
 				    					<th tal:content="horario.dia[0]">dia</th>	
-				    				</tal:block>				    				
+				    				</tal:block>
 				    			</tr>
 				  			</thead>
 				  			<tbody>
@@ -93,9 +94,7 @@
         	<!-- Inventario
 			================================================== -->	
             <div class="tab-pane" id="inventario">
-            	<tal:block tal:define="tipo 'tienda_id'">
-          			<div metal:use-macro="python:view.macros['inventario']"></div>
-          		</tal:block>
+          		<div metal:use-macro="python:view.macros['inventario_tienda']"></div>
           		<p class="pull-right" tal:define="tamano view.tamano_reciente">
           			<abbr title="Numero total de productos">N:</abbr>
           			<span tal:content="tamano.numero_total_de_productos"></span>
@@ -113,9 +112,9 @@
             </div>
       	</div>
 	</div>
-	<div metal:fill-slot="otros_scripts" tal:define="cliente view.cliente">
+	<div metal:fill-slot="otros_scripts">
 		<script type="text/javascript" src="/estatico/js/bootstrap-tooltip.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-carousel.js"></script>
-		<script type="text/javascript" src="/estatico/js/tienda.js" />
+		<script type="text/javascript" src="/estatico/js/tienda.js"></script>
 	</div>
 </div>

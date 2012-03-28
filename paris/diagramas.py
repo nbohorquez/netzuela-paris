@@ -6,13 +6,11 @@ Created on 28/02/2012
 
 from pyramid.decorator import reify
 from pyramid.renderers import get_renderer
-from constantes import (CLIENTE, INVENTARIO_RECIENTE, PRODUCTO, CLIENTE_REDUCIDO, PRODUCTO_REDUCIDO)
+from constantes import (CLIENTE, INVENTARIO_RECIENTE, PRODUCTO)
     
 class diagramas(object):
     def __init__(self):
-        '''
-        Constructor
-        '''
+        pass
 
     @reify
     def diagrama_global(self):
@@ -25,9 +23,22 @@ class diagramas(object):
         return renderer.implementation().macros
 
     @reify
-    def columnas_inventario(self):
-        columnas = INVENTARIO_RECIENTE[:]
-        return columnas
+    def columnas_inventario_tienda(self):
+        resultado = []
+        for columna in INVENTARIO_RECIENTE[:]:
+            if columna != 'tienda_id':
+                mostrar = columna.replace('_', ' ').capitalize()
+                resultado.append({'db': columna, 'bonito': mostrar})
+        return resultado
+    
+    @reify
+    def columnas_inventario_producto(self):
+        resultado = []
+        for columna in INVENTARIO_RECIENTE[:]:
+            if columna != 'producto_id':
+                mostrar = columna.replace('_', ' ').capitalize()
+                resultado.append({'db': columna, 'bonito': mostrar})
+        return resultado
 
     @reify
     def columnas_cliente(self):
@@ -35,16 +46,6 @@ class diagramas(object):
         return columnas
     
     @reify
-    def columnas_cliente_reducido(self):
-        columnas = CLIENTE_REDUCIDO[:]
-        return columnas
-    
-    @reify
     def columnas_producto(self):
         columnas = PRODUCTO[:]
-        return columnas
-    
-    @reify
-    def columnas_producto_reducido(self):
-        columnas = PRODUCTO_REDUCIDO[:]
         return columnas

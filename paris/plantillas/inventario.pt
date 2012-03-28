@@ -1,8 +1,5 @@
 <div metal:use-macro="view.diagrama_global">
 	<div metal:fill-slot="contenido">
-		<div class="page-header">
-  			<h1>${nombre_pagina} <small>TODO: Listar los filtros que definieron esta busqueda</small></h1>
-		</div>
-		<div metal:use-macro="python:view.macros['inventario']"></div>
+		<p>Inventario</p>
 	</div>
 </div>

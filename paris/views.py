@@ -52,15 +52,6 @@ class paris_views(diagramas):
 		elif 'patrocinante_id' in self.peticion.matchdict:
 			self.peticion_id = self.peticion.matchdict['patrocinante_id']
 			self.tipo_de_peticion = 'patrocinante'
-		pass
-	
-	def obtener_cliente(self):
-		def cli_tienda():
-			return DBSession.query(cliente).join(tienda).filter(tienda.tienda_id == self.peticion_id).first()
-		def cli_patrocinante():
-			return DBSession.query(cliente).join(patrocinante).filter(patrocinante.patrocinante_id == self.peticion_id).first()
-		resultado = ({'tienda': lambda: cli_tienda(), 'patrocinante': lambda: cli_patrocinante()}[self.tipo_de_peticion])()
-		return resultado
 	
 	@reify
 	def peticion(self):
@@ -83,13 +74,13 @@ class paris_views(diagramas):
 		return resultado
 
 	@reify
-	def cliente(self):
-		resultado = self.obtener_cliente()
-		return {""} if (resultado is None) else resultado		 
+	def cliente_padre(self):
+		resultado = self.obtener_cliente_padre(self.tipo_de_peticion, self.peticion_id)
+		return {""} if (resultado is None) else resultado	 
 
 	@reify
 	def region_geografica(self):
-		var_cliente = self.obtener_cliente()
+		var_cliente = self.obtener_cliente_padre(self.tipo_de_peticion, self.peticion_id)
 		
 		if var_cliente is not None:
 			var_parroquia = DBSession.query(parroquia).join(usuario).filter(usuario.usuario_id == var_cliente.usuario_p).first()
@@ -146,19 +137,21 @@ class paris_views(diagramas):
 		return resultado
 	
 	@reify
-	def fotos(self):
-		def foto_tienda():
-			return DBSession.query(foto).join(describible).join(cliente).join(tienda).filter(tienda.tienda_id == self.peticion_id).all()
-		def foto_producto():
-			return DBSession.query(foto).join(describible).join(producto).filter(producto.producto_id == self.peticion_id).all()
-		def foto_patrocinante():
-			return DBSession.query(foto).join(describible).join(cliente).join(patrocinante).filter(patrocinante.patrocinante_id == self.peticion_id).all()
-		def foto_publicidad():
-			return DBSession.query(foto).join(describible).join(publicidad).filter(publicidad.publicidad_id == self.peticion_id).all()
-		
-		var_fotos = ({'tienda': lambda: foto_tienda(), 'producto': lambda: foto_producto(), 'patrocinante': lambda: foto_patrocinante(), 'publicidad': lambda: foto_publicidad()}[self.tipo_de_peticion])()
+	def fotos_grandes(self):
+		var_fotos = self.fotos(self.tipo_de_peticion, self.peticion_id, 'grandes')
 		resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
-		
+		return resultado
+	
+	@reify
+	def fotos_medianas(self):
+		var_fotos = self.fotos(self.tipo_de_peticion, self.peticion_id, 'medianas')
+		resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
+		return resultado
+	
+	@reify
+	def fotos_pequenas(self):
+		var_fotos = self.fotos(self.tipo_de_peticion, self.peticion_id, 'pequenas')
+		resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
 		return resultado
 	
 	@reify
@@ -186,6 +179,65 @@ class paris_views(diagramas):
 			resultado = [{""}]
 				
 		return resultado
+	
+	@reify
+	def ruta_de_categoria(self):
+		def cat_producto():
+			return DBSession.query(producto.categoria).filter_by(producto_id = self.peticion_id).first()
+		def cat_tienda():
+			return DBSession.query(cliente.categoria).join(tienda).filter(tienda.tienda_id == self.peticion_id).first()
+		def cat_patrocinante():
+			return DBSession.query(cliente.categoria).join(patrocinante).filter(patrocinante.patrocinante_id == self.peticion_id).first()
+		
+		cat_padre = ({'producto': lambda: cat_producto(), 'tienda': lambda: cat_tienda(), 'patrocinante': lambda: cat_patrocinante()}[self.tipo_de_peticion])()
+		cat_p = cat_padre[0]
+		ruta = []
+				
+		while True:
+			cat = DBSession.query(categoria).filter_by(categoria_id = cat_p).first()
+			ruta.append(cat.nombre)
+			if cat.hijo_de_categoria == cat_p or cat.hijo_de_categoria == None:
+				break
+			else:
+				cat_p = cat.hijo_de_categoria
+		
+		ruta.reverse()
+		return ruta
+		
+	def obtener_categoria(self, cat_id):
+		return DBSession.query(categoria).filter_by(categoria_id = cat_id).first()
+			
+	def obtener_cliente(self, cli_id):
+		return DBSession.query(cliente).filter_by(rif = cli_id).first()
+	
+	def obtener_cliente_padre(self, objeto, objeto_id):
+		def cli_tienda():
+			return DBSession.query(cliente).join(tienda).filter(tienda.tienda_id == objeto_id).first()
+		def cli_patrocinante():
+			return DBSession.query(cliente).join(patrocinante).filter(patrocinante.patrocinante_id == objeto_id).first()
+		resultado = ({'tienda': lambda: cli_tienda(), 'patrocinante': lambda: cli_patrocinante()}[objeto])()
+		return resultado
+	
+	def obtener_tienda(self, tie_id):
+		return DBSession.query(tienda).filter_by(tienda_id = tie_id).first()
+	
+	def obtener_producto(self, prod_id):
+		return DBSession.query(producto).filter_by(producto_id = prod_id).first()
+			
+	def foto(self, objeto, objeto_id, tamano):
+		return self.fotos(objeto, objeto_id, tamano)[0]
+	
+	def fotos(self, objeto, objeto_id, tamano):
+		def foto_tienda():
+			return DBSession.query(foto).join(describible).join(cliente).join(tienda).filter(and_(tienda.tienda_id == objeto_id, foto.ruta_de_foto.like('%' + tamano + '%'))).all()
+		def foto_producto():
+			return DBSession.query(foto).join(describible).join(producto).filter(and_(producto.producto_id == objeto_id, foto.ruta_de_foto.like('%' + tamano + '%'))).all()
+		def foto_patrocinante():
+			return DBSession.query(foto).join(describible).join(cliente).join(patrocinante).filter(and_(patrocinante.patrocinante_id == objeto_id, foto.ruta_de_foto.like('%' + tamano + '%'))).all()
+		def foto_publicidad():
+			return DBSession.query(foto).join(describible).join(publicidad).filter(and_(publicidad.publicidad_id == objeto_id, foto.ruta_de_foto.like('%' + tamano + '%'))).all()
+		
+		return ({'tienda': lambda: foto_tienda(), 'producto': lambda: foto_producto(), 'patrocinante': lambda: foto_patrocinante(), 'publicidad': lambda: foto_publicidad()}[objeto])()
 	
 	@view_config(route_name="tienda_turno", renderer="json")
 	def tienda_turno_view(self):
@@ -225,8 +277,8 @@ class paris_views(diagramas):
 	
 	@view_config(route_name='listado_tiendas', renderer='plantillas/listado.pt')
 	def listado_tiendas_view(self):
-		clientes = DBSession.query(cliente).join(tienda).all()
-		return {'nombre_pagina': 'Tiendas', 'lista': clientes}
+		tiendas = DBSession.query(tienda).all()
+		return {'nombre_pagina': 'Tiendas', 'lista': tiendas}
 		
 	@view_config(route_name='inventario_producto', renderer='plantillas/inventario.pt')
 	def inventario_producto_view(self):
