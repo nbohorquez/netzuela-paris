@@ -124,8 +124,8 @@
 	<!-- Enlace de categoria
 	================================================== -->	
 	<metal:enlace_categoria define-macro="enlace_categoria">
-		<a tal:condition="pagina == 'Productos'" tal:attributes="href view.peticion.route_url('productos', categoria_id = categoria.categoria_id)">${categoria.nombre}</a>
-		<a tal:condition="pagina == 'Tiendas'" tal:attributes="href view.peticion.route_url('tiendas', categoria_id = categoria.categoria_id)">${categoria.nombre}</a>
+		<a tal:condition="pagina == 'Productos'" tal:attributes="href view.peticion.route_url('productos', categoria_id = categoria.categoria_id, region_geografica_id = 0)">${categoria.nombre}</a>
+		<a tal:condition="pagina == 'Tiendas'" tal:attributes="href view.peticion.route_url('tiendas', categoria_id = categoria.categoria_id, region_geografica_id = 0)">${categoria.nombre}</a>
 	</metal:enlace_categoria>
 </body>
 </html>

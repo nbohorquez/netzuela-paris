@@ -52,8 +52,9 @@ class paris_views(diagramas):
 		elif 'patrocinante_id' in self.peticion.matchdict:
 			self.peticion_id = self.peticion.matchdict['patrocinante_id']
 			self.tipo_de_peticion = 'patrocinante'
-		elif 'categoria_id' in self.peticion.matchdict:
-			self.peticion_id = self.peticion.matchdict['categoria_id']
+		elif 'categoria_id' in self.peticion.matchdict and 'region_geografica_id' in self.peticion.matchdict:
+			self.categoria_id = self.peticion.matchdict['categoria_id']
+			self.region_geografica_id = self.peticion.matchdict['region_geografica_id']
 			self.tipo_de_peticion = 'listado'
 	
 	@reify
@@ -62,7 +63,15 @@ class paris_views(diagramas):
 	
 	@reify
 	def peticion_id(self):
-		return self.peticion_id
+		return self.peticion_id if self.tipo_de_peticion != 'listado' else None
+	
+	@reify
+	def categoria_id(self):
+		return self.categoria_id if self.tipo_de_peticion == 'listado' else None
+	
+	@reify
+	def region_geografica_id(self):
+		return self.region_geografica_id if self.tipo_de_peticion == 'listado' else None
 	
 	@reify
 	def tipo_de_peticion(self):
@@ -85,7 +94,7 @@ class paris_views(diagramas):
 		return {""} if (resultado is None) else resultado	 
 
 	@reify
-	def region_geografica(self):
+	def direccion(self):
 		var_cliente = self.obtener_cliente_padre(self.tipo_de_peticion, self.peticion_id)
 		
 		if var_cliente is not None:
@@ -187,9 +196,17 @@ class paris_views(diagramas):
 		return resultado
 	
 	@reify
+	def regiones_geograficas_hijas(self):
+		if self.tipo_de_peticion == 'listado':
+			
+		else:
+			resultado = None
+		return resultado
+	
+	@reify
 	def categorias_hijas(self):
 		if self.tipo_de_peticion == 'listado':
-			resultado = DBSession.query(categoria).filter(and_(categoria.hijo_de_categoria == self.peticion_id, categoria.categoria_id != categoria.hijo_de_categoria)).all()
+			resultado = DBSession.query(categoria).filter(and_(categoria.hijo_de_categoria == self.categoria_id, categoria.categoria_id != categoria.hijo_de_categoria)).all()
 		else:
 			resultado = None
 		return resultado
@@ -197,7 +214,7 @@ class paris_views(diagramas):
 	@reify
 	def categoria_actual(self):
 		if self.tipo_de_peticion == 'listado':
-			resultado = self.obtener_categoria(self.peticion_id)
+			resultado = self.obtener_categoria(self.categoria_id)
 		else:
 			resultado = None
 		return resultado
@@ -211,11 +228,11 @@ class paris_views(diagramas):
 		def cat_patrocinante():
 			return DBSession.query(cliente.categoria).join(patrocinante).filter(patrocinante.patrocinante_id == self.peticion_id).first()
 		def cat_listado():
-			return [ self.peticion_id ]
+			return [ self.categoria_id ]
 		
 		cat_padre = ({'producto': lambda: cat_producto(), 'tienda': lambda: cat_tienda(), 'patrocinante': lambda: cat_patrocinante(), 'listado': lambda: cat_listado()}[self.tipo_de_peticion])()
 		return self.obtener_ruta_categoria(cat_padre[0])
-		
+	
 	def obtener_ruta_categoria(self, cat_id):
 		ruta = []
 		
@@ -290,12 +307,12 @@ class paris_views(diagramas):
 
 	@view_config(route_name='productos', renderer='plantillas/listado.pt')
 	def listado_productos_view(self):
-		productos = DBSession.query(producto).filter_by(categoria = self.peticion_id).all()
+		productos = DBSession.query(producto).filter_by(categoria = self.categoria_id).all()
 		return {'pagina': 'Productos', 'lista': productos}
 	
 	@view_config(route_name='tiendas', renderer='plantillas/listado.pt')
 	def listado_tiendas_view(self):
-		tiendas = DBSession.query(tienda).join(cliente).filter_by(categoria = self.peticion_id).all()
+		tiendas = DBSession.query(tienda).join(cliente).filter_by(categoria = self.categoria_id).all()
 		return {'pagina': 'Tiendas', 'lista': tiendas}
 		
 	@view_config(route_name='inventario_producto', renderer='plantillas/inventario.pt')

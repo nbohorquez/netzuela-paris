@@ -37,8 +37,8 @@
         	<div class="tab-pane" id="informacion">
           		<div class="row-fluid">
           			<div class="span4">
-          				<div metal:use-macro="python:view.macros['fotos_medianas']"></div>
-          				<div metal:use-macro="python:view.macros['ruta_de_categoria']"></div>
+          				<div metal:use-macro="view.macros['fotos_medianas']"></div>
+          				<div metal:use-macro="view.macros['ruta_de_categoria']"></div>
 						<table id="horarios" class="table pull-left" tal:define="horarios view.horarios">
 				  			<thead>
 				    			<tr>
@@ -62,7 +62,7 @@
 				  				</tr>
 				  			</tbody>
 						</table>
-						<address id="direccion" tal:define="reg_geo view.region_geografica">
+						<address id="direccion" tal:define="reg_geo view.direccion">
 							<strong>${cliente.nombre_legal}</strong><br />
 							<span tal:content="cliente.edificio_cc" />  
 							<span tal:content="cliente.piso" /> 
