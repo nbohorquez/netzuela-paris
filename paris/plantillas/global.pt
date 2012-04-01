@@ -5,7 +5,7 @@
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       metal:define-macro="diagrama">
 <head>
-    <title>Netzuela - ${nombre_pagina}</title>
+    <title>Netzuela - ${pagina}</title>
     <link rel="stylesheet" href="/estatico/css/bootstrap.css"/>
     <link rel="stylesheet" href="/estatico/css/bootstrap-responsive.css" />
     <link rel="stylesheet" href="/estatico/css/font-awesome.css" />
@@ -14,6 +14,9 @@
     	html { height: 100%; }
   		body { height: 100%; padding-top: 60px;	}
     </style>
+    <div id="meta_datos">
+		<input type="hidden" name="pagina" value="${pagina}" />
+	</div>
     <div metal:define-slot="extra_head"></div>
 </head>
 <body>
@@ -28,46 +31,68 @@
           			<span class="icon-bar"></span>
           			<span class="icon-bar"></span>
         		</a>
-        		<a class="brand" href="#">netzuela</a>
+        		<a class="brand" href="/">netzuela</a>
         		<div class="nav-collapse">
-	        		<ul class="nav">
-						<li class="active"><a href="/">Inicio</a></li>
-						<li><a href="/productos">Productos</a></li>
-						<li><a href="/tiendas">Tiendas</a></li>
+	        		<ul id="navegacion" class="nav">
+						<li><a tal:attributes="href view.peticion.route_url('productos', categoria_id = 1)">Productos</a></li>
+						<li><a tal:attributes="href view.peticion.route_url('tiendas', categoria_id = 1)">Tiendas</a></li>
 					</ul>
 					<form class="navbar-search" action="">
 						<input type="text" class="search-query" placeholder="Busqueda" />
-						<i class="icon-search icon-white"></i>	            		
+						<i class="icon-search icon-white"></i>
           			</form>
 					<ul class="nav pull-right">
-						<li><a href="/tiendas">
-							<i class="icon-user icon-white"></i>
-							Soy tienda
-						</a></li>
+						<li>
+							<a href="/tiendas">
+								<i class="icon-user icon-white"></i>	
+								Soy tienda
+							</a>
+						</li>
 					</ul>
         		</div>
 			</div>
 		</div>
 	</div>		
-	
+
 	<div class="container-fluid">
 		
 		<!-- Cuerpo principal
 		================================================== -->		
 		<div class="row-fluid">
 			
-			<!-- Barra lateral
+			<!-- Menu lateral
 			================================================== -->
 			<div class="span3">
 				<div class="well" style="padding: 8px 0;">
-					<ul class="nav nav-list">
-					  	<li class="nav-header">Categorias</li>
-					  	<tal:block tal:repeat="categoria view.categorias">
-							<li class="active" tal:condition="repeat.categoria.start">
-				  				<a href="#">${categoria.nombre}</a>
-				  			</li>
-				  			<li tal:condition="not repeat.categoria.start"><a href="#">${categoria.nombre}</a></li>	
-					  	</tal:block>
+					<ul id="categorias" class="nav nav-list" tal:condition="pagina == 'Productos' or pagina == 'Tiendas'">
+						<li class="nav-header">Categorias</li>
+						<tal:block tal:repeat="categoria view.ruta_categoria_actual">
+							<li class="active" tal:condition="categoria.categoria_id == long(view.peticion_id)">
+								<div metal:use-macro="view.macros['enlace_categoria']"></div>
+							</li>
+							<li tal:condition="categoria.categoria_id != long(view.peticion_id)">
+								<div metal:use-macro="view.macros['enlace_categoria']"></div>
+							</li>
+						</tal:block>
+						<tal:block tal:repeat="categoria view.categorias_hijas">
+							<li>
+								<div metal:use-macro="view.macros['enlace_categoria']"></div>
+							</li>
+						</tal:block>
+					</ul>
+					<ul id="ubicacion" class="nav nav-list" tal:condition="pagina == 'Productos' or pagina == 'Tiendas'">
+						<li class="nav-header">Ubicacion</li>
+					  	<li class="active">
+				  			<a href="#">Maracaibo</a>
+				  		</li>
+				  		<li>
+				  			<a href="#">Cabimas</a>
+				  		</li>
+				  		<li>
+				  			<a href="#">Ciudad Ojeda</a>
+				  		</li>
+					</ul>
+					<ul id="menu" class="nav nav-list" tal:condition="pagina == 'Producto' or pagina == 'Tienda'">
 					  	<li class="nav-header">Menu</li>
 					  	<li class="active">
 					  		<a href="#noticias" data-toggle="tab">
@@ -93,9 +118,11 @@
 						  		Comentarios
 					  		</a>
 					  	</li>
+					</ul>
+					<ul class="nav nav-list">
 					  	<li class="divider"></li>
           				<li><a href="#">Ayuda</a></li>
-					</ul>
+          			</ul>
 				</div>
 			</div>
 			
@@ -104,7 +131,8 @@
 			<div class="span9">
 				<div id="gadget" class="accordion-group">
               		<div id="gadget_encabezado" class="accordion-heading">
-                		<a class="accordion-toggle" data-toggle="collapse" data-parent="#acordeon" href="#gadget_colapsable">
+                		<a class="accordion-toggle" data-toggle="collapse" href="#gadget_colapsable">
+		                  	<i></i>
 		                  	Mapa
                 		</a>
 					</div>
@@ -142,6 +170,7 @@
 	<script type="text/javascript" src="/estatico/js/bootstrap-tab.js"></script>
     <script type="text/javascript" src="/estatico/js/bootstrap-collapse.js"></script>
     <script type="text/javascript" src="/estatico/js/mapa.js"></script>
-    <div id="scripts" metal:define-slot="otros_scripts"></div>
+    <script type="text/javascript" src="/estatico/js/global.js"></script>
+    <div id="scripts" metal:define-slot="scripts_extra"></div>
 </body>
 </html>

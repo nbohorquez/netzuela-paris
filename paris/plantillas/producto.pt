@@ -24,41 +24,45 @@
 	      			<div class="span4">
 	      				<div metal:use-macro="python:view.macros['fotos_medianas']"></div>
 	      				<div metal:use-macro="python:view.macros['ruta_de_categoria']"></div>
-						<table class="table">
-				  			<thead>
-				    			<tr>
-				      				<th>Caracteristicas</th>
-				    			</tr>
-				  			</thead>
-				  			<tbody>
-					    		<tr>
-					    			<td>
-					    				<p>
-					    					Fabricante<br />
-					    					Modelo<br />
-					    					Codigo<br />
-					    					Debut en el mercado<br />
-					    					Largo [m]<br />
-					    					Ancho [m]<br />
-					    					Alto  [m]<br />
-					    					Peso  [kg]<br />
-					    				</p>
-					    			</td>
-				  					<td>
-				  						<p>
-				  							${producto.fabricante}<br />
-				  							${producto.modelo}<br />
-				  							${producto.codigo} (${producto.tipo_de_codigo})<br />
-				  							${producto.debut_en_el_mercado}<br />
-				  							${producto.largo}<br />
-				  							${producto.ancho}<br />
-				  							${producto.alto}<br />
-				  							${producto.peso}<br />
-				  						</p>
-				  					</td>
-				  				</tr>
-				  			</tbody>
-						</table>
+	      				<div>
+							<table class="table">
+					  			<thead>
+					    			<tr>
+					      				<th>Caracteristicas</th>
+					    			</tr>
+					  			</thead>
+					  			<tbody>
+						    		<tr>
+						    			<td>
+						    				<p>
+						    					Fabricante<br />
+						    					Nombre<br />
+						    					Modelo<br />
+						    					Codigo (${producto.tipo_de_codigo})<br />
+						    					Debut en el mercado<br />
+						    					Largo [m]<br />
+						    					Ancho [m]<br />
+						    					Alto [m]<br />
+						    					Peso [kg]<br />
+						    				</p>
+						    			</td>
+					  					<td>
+					  						<p>
+					  							${producto.fabricante}<br />
+					  							${producto.nombre}<br />
+					  							${producto.modelo}<br />
+					  							${producto.codigo}<br />
+					  							${producto.debut_en_el_mercado}<br />
+					  							${producto.largo}<br />
+					  							${producto.ancho}<br />
+					  							${producto.alto}<br />
+					  							${producto.peso}<br />
+					  						</p>
+					  					</td>
+					  				</tr>
+					  			</tbody>
+							</table>
+						</div>
 					</div>
           			<div class="span8">
 		      			<tal:block tal:repeat="descripcion view.descripciones">
@@ -71,17 +75,17 @@
 	    	<!-- Inventario
 			================================================== -->
 	        <div class="tab-pane" id="inventario">
-	      		<div metal:use-macro="python:view.macros['inventario_producto']"></div>
+	      		<div metal:use-macro="view.macros['inventario_producto']"></div>
 	        </div>
 	        
 	        <!-- Comentarios
 			================================================== -->
 	        <div class="tab-pane" id="comentarios">
-            	<div metal:use-macro="python:view.macros['comentarios']"></div>
+            	<div metal:use-macro="view.macros['comentarios']"></div>
             </div>
 		</div>
   	</div>
-  	<div metal:fill-slot="otros_scripts">
+  	<div metal:fill-slot="scripts_extra">
   		<script type="text/javascript" src="/estatico/js/bootstrap-carousel.js"></script>
   		<script type="text/javascript" src="/estatico/js/producto.js"></script>
   	</div>

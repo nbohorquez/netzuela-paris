@@ -31,7 +31,7 @@ from diagramas import diagramas
 from pyramid.decorator import reify
 from pyramid.httpexceptions import (HTTPNotFound)
 from pyramid.view import view_config
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 import string
 
 MENSAJE_DE_ERROR = 'Vos lo que estais es loco! Esa verga no existe'
@@ -52,15 +52,21 @@ class paris_views(diagramas):
 		elif 'patrocinante_id' in self.peticion.matchdict:
 			self.peticion_id = self.peticion.matchdict['patrocinante_id']
 			self.tipo_de_peticion = 'patrocinante'
+		elif 'categoria_id' in self.peticion.matchdict:
+			self.peticion_id = self.peticion.matchdict['categoria_id']
+			self.tipo_de_peticion = 'listado'
 	
 	@reify
 	def peticion(self):
 		return self.peticion
 	
-	# Esta verga hay que quitarla...
 	@reify
-	def categorias(self):
-		return DBSession.query(categoria).all() 
+	def peticion_id(self):
+		return self.peticion_id
+	
+	@reify
+	def tipo_de_peticion(self):
+		return self.tipo_de_peticion
 	
 	@reify
 	def inventario_reciente(self):
@@ -138,19 +144,19 @@ class paris_views(diagramas):
 	
 	@reify
 	def fotos_grandes(self):
-		var_fotos = self.fotos(self.tipo_de_peticion, self.peticion_id, 'grandes')
+		var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'grandes')
 		resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
 		return resultado
 	
 	@reify
 	def fotos_medianas(self):
-		var_fotos = self.fotos(self.tipo_de_peticion, self.peticion_id, 'medianas')
+		var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'medianas')
 		resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
 		return resultado
 	
 	@reify
 	def fotos_pequenas(self):
-		var_fotos = self.fotos(self.tipo_de_peticion, self.peticion_id, 'pequenas')
+		var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'pequenas')
 		resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
 		return resultado
 	
@@ -181,25 +187,45 @@ class paris_views(diagramas):
 		return resultado
 	
 	@reify
-	def ruta_de_categoria(self):
+	def categorias_hijas(self):
+		if self.tipo_de_peticion == 'listado':
+			resultado = DBSession.query(categoria).filter(and_(categoria.hijo_de_categoria == self.peticion_id, categoria.categoria_id != categoria.hijo_de_categoria)).all()
+		else:
+			resultado = None
+		return resultado
+	
+	@reify
+	def categoria_actual(self):
+		if self.tipo_de_peticion == 'listado':
+			resultado = self.obtener_categoria(self.peticion_id)
+		else:
+			resultado = None
+		return resultado
+	
+	@reify
+	def ruta_categoria_actual(self):
 		def cat_producto():
 			return DBSession.query(producto.categoria).filter_by(producto_id = self.peticion_id).first()
 		def cat_tienda():
 			return DBSession.query(cliente.categoria).join(tienda).filter(tienda.tienda_id == self.peticion_id).first()
 		def cat_patrocinante():
 			return DBSession.query(cliente.categoria).join(patrocinante).filter(patrocinante.patrocinante_id == self.peticion_id).first()
+		def cat_listado():
+			return [ self.peticion_id ]
 		
-		cat_padre = ({'producto': lambda: cat_producto(), 'tienda': lambda: cat_tienda(), 'patrocinante': lambda: cat_patrocinante()}[self.tipo_de_peticion])()
-		cat_p = cat_padre[0]
+		cat_padre = ({'producto': lambda: cat_producto(), 'tienda': lambda: cat_tienda(), 'patrocinante': lambda: cat_patrocinante(), 'listado': lambda: cat_listado()}[self.tipo_de_peticion])()
+		return self.obtener_ruta_categoria(cat_padre[0])
+		
+	def obtener_ruta_categoria(self, cat_id):
 		ruta = []
-				
+		
 		while True:
-			cat = DBSession.query(categoria).filter_by(categoria_id = cat_p).first()
-			ruta.append(cat.nombre)
-			if cat.hijo_de_categoria == cat_p or cat.hijo_de_categoria == None:
+			cat = DBSession.query(categoria).filter_by(categoria_id = cat_id).first()
+			ruta.append(cat)
+			if (cat.hijo_de_categoria == cat.categoria_id) or (cat.hijo_de_categoria == None):
 				break
 			else:
-				cat_p = cat.hijo_de_categoria
+				cat_id = cat.hijo_de_categoria
 		
 		ruta.reverse()
 		return ruta
@@ -223,21 +249,62 @@ class paris_views(diagramas):
 	
 	def obtener_producto(self, prod_id):
 		return DBSession.query(producto).filter_by(producto_id = prod_id).first()
-			
-	def foto(self, objeto, objeto_id, tamano):
-		return self.fotos(objeto, objeto_id, tamano)[0]
-	
-	def fotos(self, objeto, objeto_id, tamano):
+		
+	def sql_foto(self, objeto, objeto_id, tamano):
 		def foto_tienda():
-			return DBSession.query(foto).join(describible).join(cliente).join(tienda).filter(and_(tienda.tienda_id == objeto_id, foto.ruta_de_foto.like('%' + tamano + '%'))).all()
+			return DBSession.query(foto).join(describible).join(cliente).join(tienda).filter(and_(tienda.tienda_id == objeto_id, foto.ruta_de_foto.like('%' + tamano + '%')))
 		def foto_producto():
-			return DBSession.query(foto).join(describible).join(producto).filter(and_(producto.producto_id == objeto_id, foto.ruta_de_foto.like('%' + tamano + '%'))).all()
+			return DBSession.query(foto).join(describible).join(producto).filter(and_(producto.producto_id == objeto_id, foto.ruta_de_foto.like('%' + tamano + '%')))
 		def foto_patrocinante():
-			return DBSession.query(foto).join(describible).join(cliente).join(patrocinante).filter(and_(patrocinante.patrocinante_id == objeto_id, foto.ruta_de_foto.like('%' + tamano + '%'))).all()
+			return DBSession.query(foto).join(describible).join(cliente).join(patrocinante).filter(and_(patrocinante.patrocinante_id == objeto_id, foto.ruta_de_foto.like('%' + tamano + '%')))
 		def foto_publicidad():
 			return DBSession.query(foto).join(describible).join(publicidad).filter(and_(publicidad.publicidad_id == objeto_id, foto.ruta_de_foto.like('%' + tamano + '%'))).all()
 		
 		return ({'tienda': lambda: foto_tienda(), 'producto': lambda: foto_producto(), 'patrocinante': lambda: foto_patrocinante(), 'publicidad': lambda: foto_publicidad()}[objeto])()
+			
+	def obtener_foto(self, objeto, objeto_id, tamano):
+		resultado = self.sql_foto(objeto, objeto_id, tamano)
+		return resultado.first()
+	
+	def obtener_fotos(self, objeto, objeto_id, tamano):
+		resultado = self.sql_foto(objeto, objeto_id, tamano)
+		return resultado.all()
+	
+	@view_config(route_name='inicio', renderer='plantillas/inicio.pt')
+	def inicio_view(self):
+		return {'nombre_pagina': 'Inicio'}
+	
+	@view_config(route_name='producto', renderer='plantillas/producto.pt')
+	def producto_view(self):
+		if self.tipo_de_peticion == 'producto':
+			var_producto = DBSession.query(producto).filter_by(producto_id = self.peticion_id).first()
+		resultado = HTTPNotFound(MENSAJE_DE_ERROR) if (var_producto is None) else {'pagina': 'Producto', 'producto': var_producto}
+		return resultado
+	
+	@view_config(route_name='tienda', renderer='plantillas/tienda.pt')
+	def tienda_view(self):
+		if self.tipo_de_peticion == 'tienda':
+			var_tienda = DBSession.query(tienda).filter_by(tienda_id = self.peticion_id).first()
+		resultado = HTTPNotFound(MENSAJE_DE_ERROR) if (var_tienda is None) else {'pagina': 'Tienda', 'tienda': var_tienda}
+		return resultado
+
+	@view_config(route_name='productos', renderer='plantillas/listado.pt')
+	def listado_productos_view(self):
+		productos = DBSession.query(producto).filter_by(categoria = self.peticion_id).all()
+		return {'pagina': 'Productos', 'lista': productos}
+	
+	@view_config(route_name='tiendas', renderer='plantillas/listado.pt')
+	def listado_tiendas_view(self):
+		tiendas = DBSession.query(tienda).join(cliente).filter_by(categoria = self.peticion_id).all()
+		return {'pagina': 'Tiendas', 'lista': tiendas}
+		
+	@view_config(route_name='inventario_producto', renderer='plantillas/inventario.pt')
+	def inventario_producto_view(self):
+		return { 'pagina': 'Inventario', 'tipo': 'producto_id' }
+		
+	@view_config(route_name='inventario_tienda', renderer='plantillas/inventario.pt')
+	def inventario_tienda_view(self):
+		return { 'pagina': 'Inventario', 'tipo': 'tienda_id' }
 	
 	@view_config(route_name="tienda_turno", renderer="json")
 	def tienda_turno_view(self):
@@ -251,39 +318,18 @@ class paris_views(diagramas):
 		var_tienda = self.peticion.params['tienda_id']
 		latitud, longitud = DBSession.query(punto.latitud, punto.longitud).join(punto_de_croquis).join(croquis).join(dibujable).join(tienda).filter_by(tienda_id = var_tienda).first()
 		return { 'latitud': "{0}".format(str(latitud)), 'longitud': "{0}".format(str(longitud)) }
+	"""
+	@view_config(route_name="categorias", renderer="json")
+	def categorias_view(self):
+		var_categoria = self.peticion.params['categoria_id']
+		var_categorias = DBSession.query(categoria).filter_by(hijo_de_categoria = var_categoria).all()
+		resultado = []
 		
-	@view_config(route_name='inicio', renderer='plantillas/inicio.pt')
-	def inicio_view(self):
-		return {'nombre_pagina': 'Inicio'}
-	
-	@view_config(route_name='producto', renderer='plantillas/producto.pt')
-	def producto_view(self):
-		if self.tipo_de_peticion == 'producto':
-			var_producto = DBSession.query(producto).filter_by(producto_id = self.peticion_id).first()
-		resultado = HTTPNotFound(MENSAJE_DE_ERROR) if (var_producto is None) else {'nombre_pagina': 'Producto', 'producto': var_producto}
-		return resultado
-	
-	@view_config(route_name='tienda', renderer='plantillas/tienda.pt')
-	def tienda_view(self):
-		if self.tipo_de_peticion == 'tienda':
-			var_tienda = DBSession.query(tienda).filter_by(tienda_id = self.peticion_id).first()
-		resultado = HTTPNotFound(MENSAJE_DE_ERROR) if (var_tienda is None) else {'nombre_pagina': 'Tienda', 'tienda': var_tienda}
-		return resultado
-
-	@view_config(route_name='listado_productos', renderer='plantillas/listado.pt')
-	def listado_productos_view(self):
-		productos = DBSession.query(producto).all()
-		return {'nombre_pagina': 'Productos', 'lista': productos}
-	
-	@view_config(route_name='listado_tiendas', renderer='plantillas/listado.pt')
-	def listado_tiendas_view(self):
-		tiendas = DBSession.query(tienda).all()
-		return {'nombre_pagina': 'Tiendas', 'lista': tiendas}
-		
-	@view_config(route_name='inventario_producto', renderer='plantillas/inventario.pt')
-	def inventario_producto_view(self):
-		return { 'nombre_pagina': 'Inventario', 'tipo': 'producto_id' }
-		
-	@view_config(route_name='inventario_tienda', renderer='plantillas/inventario.pt')
-	def inventario_tienda_view(self):
-		return { 'nombre_pagina': 'Inventario', 'tipo': 'tienda_id' }
+		for cat in var_categorias:
+			info = {}
+			info['categoria_id'] = cat.categoria_id
+			info['nombre'] = cat.nombre
+			resultado.append(info)
+			
+		return { 'categorias': resultado }
+	"""

@@ -10,6 +10,8 @@ $(document).ready(function() {
 		var longitud = parseFloat(data.longitud.replace(",", "."));
 		google_map.agregar_marcador(latitud, longitud);
 	});
+	
+	$('a[rel="popover"]').popover();
 });
 
 $(window).unload(function() {
@@ -54,7 +56,7 @@ tienda.actualizar = function () {
 	 		porcentaje = (100/(cierre - apertura)) * ahorita - 100;
 		}
 		
-        document.getElementById("barra_de_turno").style.width = porcentaje.toString() + "%";
+        $("#barra_de_turno").css({'width': porcentaje.toString() + "%"});
     });
 }
 

@@ -7,7 +7,6 @@
 			<div class="row-fluid">
 				<div class="span8">
 					<h1>${cliente.nombre_comun} 
-		  				<small>${cliente.nombre_legal}</small>
 		  				<span class="label label-success" tal:condition="tienda.abierto">Abierta</span>
 						<span class="label label-important" tal:condition="not tienda.abierto">Cerrada</span>
 					</h1>
@@ -51,11 +50,11 @@
 				  			<tbody>
 					    		<tr>
 					    			<tal:block tal:repeat="horario horarios">
-					    				<td tal:switch="horario.laborable">
-					    					<a href="#" tal:case="True" rel="tooltip" title="${horario.turnos}">
+					    				<td>
+					    					<a href="#" tal:condition="horario.laborable" rel="popover" title="${horario.dia}" data-content="${horario.turnos}">
 					    						<i class="icon-ok"></i>
 					    					</a>
-					    					<a href="#" tal:case="False" rel="tooltip" title="No laborable">
+					    					<a href="#" tal:condition="not horario.laborable" rel="popover" title="${horario.dia}" data-content="No laborable">
 					    						<i class="icon-remove"></i>
 					    					</a>
 										</td>
@@ -76,10 +75,12 @@
 							<span tal:content="reg_geo.municipio" />,
 							<span tal:content="reg_geo.estado" /><br />
 							<span tal:content="cliente.telefono"/><br />
-							<a href="${cliente.facebook}"><i class="icon-facebook-sign icon-large"></i></a>
-				  			<a href="${cliente.twitter}"><i class="icon-twitter-sign icon-large"></i></a>	
-				  			<a href="mailto:${cliente.correo_electronico}"><i class="icon-envelope icon-large"></i></a>
 						</address>
+						<h3>
+							<a href="${cliente.facebook}"><i class="icon-facebook-sign"></i></a>
+				  			<a href="${cliente.twitter}"><i class="icon-twitter-sign"></i></a>	
+				  			<a href="mailto:${cliente.correo_electronico}"><i class="icon-envelope"></i></a>
+			  			</h3>
           			</div>
           			<div class="span8">
           				<div id="descripciones">
@@ -108,13 +109,14 @@
             <!-- Comentarios (calificaciones y reseñas)
 			================================================== -->	
             <div class="tab-pane" id="comentarios">
-            	<div metal:use-macro="python:view.macros['comentarios']"></div>
+            	<div metal:use-macro="view.macros['comentarios']"></div>
             </div>
       	</div>
 	</div>
-	<div metal:fill-slot="otros_scripts">
+	<div metal:fill-slot="scripts_extra">
 		<script type="text/javascript" src="/estatico/js/bootstrap-tooltip.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-carousel.js"></script>
+		<script type="text/javascript" src="/estatico/js/bootstrap-popover.js"></script>
 		<script type="text/javascript" src="/estatico/js/tienda.js"></script>
 	</div>
 </div>

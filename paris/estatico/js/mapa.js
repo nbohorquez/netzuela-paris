@@ -34,18 +34,3 @@ google_map.agregar_marcador = function(latitud, longitud) {
 google_map.ajustar_mapa = function() {
 	this.mapa.fitBounds(this.borde);
 }
-
-$('#gadget_colapsable').on('hidden', function () {
-	$("#gadget").css({'height':'auto'});
-	google.maps.event.trigger(google_map.mapa, 'resize');
-})
-
-$('#gadget_colapsable').on('show', function () {
-	$("#gadget").css({'height':'40%'});
-	$("#mapa").height($("#gadget").height() - $("#gadget_encabezado").height());
-	google.maps.event.trigger(google_map.mapa, 'resize');
-	
-	if (google_map.borde != null) {
-		google_map.ajustar_mapa();
-	}
-})
