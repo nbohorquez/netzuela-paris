@@ -34,8 +34,8 @@
         		<a class="brand" href="/">netzuela</a>
         		<div class="nav-collapse">
 	        		<ul id="navegacion" class="nav">
-						<li><a tal:attributes="href view.peticion.route_url('productos', categoria_id = 1, region_geografica_id = 0)">Productos</a></li>
-						<li><a tal:attributes="href view.peticion.route_url('tiendas', categoria_id = 1, region_geografica_id = 0)">Tiendas</a></li>
+						<li><a tal:attributes="href view.peticion.route_url('productos', categoria_id = 1, region_geografica_id = 8)">Productos</a></li>
+						<li><a tal:attributes="href view.peticion.route_url('tiendas', categoria_id = 1, region_geografica_id = 8)">Tiendas</a></li>
 					</ul>
 					<form class="navbar-search pull-left" action="">
 						<input type="text" class="search-query" placeholder="Busqueda" />
@@ -53,6 +53,7 @@
 			                	<li><a href="#">Separated link</a></li>
 			                	<li><a href="#">One more separated link</a></li>
 			              	</ul>
+						</li>
 						<li>
 							<a href="/tiendas">
 								<i class="icon-user icon-white"></i>	
@@ -93,17 +94,17 @@
 					</ul>
 					<ul id="ubicacion" class="nav nav-list" tal:condition="pagina == 'Productos' or pagina == 'Tiendas'">
 						<li class="nav-header">Ubicacion</li>
-					  	<tal:block tal:repeat="categoria view.ruta_categoria_actual">
-							<li class="active" tal:condition="categoria.categoria_id == long(view.categoria_id)">
-								<div metal:use-macro="view.macros['enlace_categoria']"></div>
+						<tal:block tal:repeat="region view.ruta_region_geografica_actual">
+							<li class="active" tal:condition="region.region_geografica_id == long(view.region_geografica_id)">
+								<div metal:use-macro="view.macros['enlace_ubicacion']"></div>
 							</li>
-							<li tal:condition="categoria.categoria_id != long(view.categoria_id)">
-								<div metal:use-macro="view.macros['enlace_categoria']"></div>
+							<li tal:condition="region.region_geografica_id != long(view.region_geografica_id)">
+								<div metal:use-macro="view.macros['enlace_ubicacion']"></div>
 							</li>
 						</tal:block>
-						<tal:block tal:repeat="categoria view.categorias_hijas">
+						<tal:block tal:repeat="region view.regiones_geograficas_hijas">
 							<li>
-								<div metal:use-macro="view.macros['enlace_categoria']"></div>
+								<div metal:use-macro="view.macros['enlace_ubicacion']"></div>
 							</li>
 						</tal:block>
 					</ul>

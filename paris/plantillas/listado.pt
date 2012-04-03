@@ -80,7 +80,9 @@
 	        	<li class="span2" tal:repeat="item lista">
 	        		<div tal:define="enlace python:view.peticion.route_url('tienda', tienda_id = item.tienda_id)">
 	        			<a tal:attributes="href enlace">
-	        				<img tal:define="foto view.obtener_foto('tienda', item.tienda_id, 'pequenas')" src="/estatico/${foto.ruta_de_foto}" alt="" />
+	        				<div class="thumbnail">
+	        					<img tal:define="foto view.obtener_foto('tienda', item.tienda_id, 'pequenas')" src="/estatico/${foto.ruta_de_foto}" alt="" />
+	        				</div>
 	        			</a>
 						<div class="caption" tal:define="cliente view.obtener_cliente(item.cliente_p)">
 							<a tal:attributes="href enlace">
@@ -96,7 +98,4 @@
 	        </ul>
 		</div>
 	</div>
-	<div metal:fill-slot="scripts_extra">
-  		<script type="text/javascript" src="/estatico/js/bootstrap-alert.js"></script>
-  	</div>
 </div>

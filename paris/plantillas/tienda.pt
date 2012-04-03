@@ -62,7 +62,7 @@
 				  				</tr>
 				  			</tbody>
 						</table>
-						<address id="direccion" tal:define="reg_geo view.direccion">
+						<address id="direccion" tal:define="region view.direccion">
 							<strong>${cliente.nombre_legal}</strong><br />
 							<span tal:content="cliente.edificio_cc" />  
 							<span tal:content="cliente.piso" /> 
@@ -71,9 +71,9 @@
 							<span tal:content="cliente.casa" /><br />
 							<span tal:content="cliente.calle" />, 
 							<span tal:content="cliente.sector_urb_barrio" /><br />
-							<span tal:content="reg_geo.parroquia" /><br />
-							<span tal:content="reg_geo.municipio" />,
-							<span tal:content="reg_geo.estado" /><br />
+							<span tal:content="region.parroquia" /><br />
+							<span tal:content="region.municipio" />,
+							<span tal:content="region.estado" /><br />
 							<span tal:content="cliente.telefono"/><br />
 						</address>
 						<h3>
