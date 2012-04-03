@@ -1,2 +1,7 @@
-AplicacionWeb/bin/
-AplicacionWeb/obj/
+build/
+dist/
+env/
+paris/*.pyc
+paris.egg-info/
+*.*~
+*.pyc
