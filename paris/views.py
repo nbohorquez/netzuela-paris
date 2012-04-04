@@ -28,7 +28,7 @@ from diagramas import diagramas
 from pyramid.decorator import reify
 from pyramid.httpexceptions import (HTTPNotFound)
 from pyramid.view import view_config
-from sqlalchemy import and_, case
+from sqlalchemy import and_
 from sqlalchemy.orm import aliased
 import string
 
@@ -102,26 +102,6 @@ class paris_views(diagramas):
 		var_cliente = self.obtener_cliente_padre(self.tipo_de_peticion, self.peticion_id)
 		
 		if var_cliente is not None:
-			"""
-			p = DBSession.query(parroquia).\
-			join(usuario).\
-			filter_by(usuario_id = var_cliente.usuario_p).subquery()
-			
-			m = DBSession.query(municipio).\
-			join(p, municipio.municipio_id == p.c.municipio).subquery()
-			
-			e = DBSession.query(estado).\
-			join(m, estado.estado_id == m.c.estado).subquery()
-			
-			reg_geo_parroquia = DBSession.query(region_geografica).\
-			join(p, region_geografica.region_geografica_id == p.c.region_geografica_p).one()
-			
-			reg_geo_municipio = DBSession.query(region_geografica).\
-			join(m, region_geografica.region_geografica_id == m.c.region_geografica_p).one()
-			
-			reg_geo_estado = DBSession.query(region_geografica).\
-			join(e, region_geografica.region_geografica_id == e.c.region_geografica_p).one()
-			"""
 			padre = aliased(territorio)
 			hijo = aliased(territorio)
 			
@@ -271,32 +251,6 @@ class paris_views(diagramas):
 	@reify
 	def territorios_hijos(self):
 		if self.tipo_de_peticion == 'listado':
-			"""
-			r = aliased(region_geografica)
-			p = aliased(parroquia)
-			m = aliased(municipio)
-			e = aliased(estado)
-			
-			entidad = self.obtener_entidad(self.region_geografica_id)
-			
-			def reg_parroquia():
-				return None
-			def reg_municipio():
-				return DBSession.query(r).join(p).filter(p.municipio == entidad['id']).all()
-			def reg_estado():
-				return DBSession.query(r).join(m).filter(m.estado == entidad['id']).all()
-			def reg_pais():
-				return DBSession.query(r).join(e).filter(e.pais == entidad['id']).all()
-			
-			resultado = {
-				'parroquia': lambda: reg_parroquia(), 
-				'municipio': lambda: reg_municipio(), 
-				'estado': lambda: reg_estado(), 
-				'pais': lambda: reg_pais()
-			}[entidad['tipo']]()
-		else:
-			resultado = None
-			"""
 			resultado = DBSession.query(territorio).\
 			filter_by(territorio_padre = self.territorio_id).all()
 		else:
@@ -367,67 +321,10 @@ class paris_views(diagramas):
 				break
 			else:
 				terr_id = terr.territorio_padre
-			"""	
-			entidad = self.obtener_entidad(terr_id)
-			
-			if (entidad['tipo'] == 'parroquia'):
-				reg_id = DBSession.query(region_geografica.region_geografica_id).\
-				join(municipio).\
-				join(parroquia).\
-				filter_by(parroquia_id = entidad['id']).one()[0]
-			elif (entidad['tipo'] == 'municipio'):
-				reg_id = DBSession.query(region_geografica.region_geografica_id).\
-				join(estado).\
-				join(municipio).\
-				filter_by(municipio_id = entidad['id']).one()[0]
-			elif (entidad['tipo'] == 'estado'):
-				reg_id = DBSession.query(region_geografica.region_geografica_id).\
-				join(pais).\
-				join(estado).\
-				filter_by(estado_id = entidad['id']).one()[0]
-			elif (entidad['tipo'] == 'pais'):
-				break
-			"""
+
 		ruta.reverse()
 		return ruta
-	"""
-	def obtener_entidad(self, reg_id):
-		r = aliased(region_geografica)
-		p = aliased(parroquia)
-		m = aliased(municipio)
-		c = aliased(ciudad)
-		e = aliased(estado)
-		i = aliased(pais)
-		t = aliased(continente)
-			
-		tipo_de_entidad, entidad_id = DBSession.query(
-			case([
-				(r.region_geografica_id == p.region_geografica_p, 'parroquia'),
-				(r.region_geografica_id == m.region_geografica_p, 'municipio'),
-				(r.region_geografica_id == c.region_geografica_p, 'ciudad'),
-				(r.region_geografica_id == e.region_geografica_p, 'estado'),
-				(r.region_geografica_id == i.region_geografica_p, 'pais'),
-				(r.region_geografica_id == t.region_geografica_p, 'continente'),
-			]),
-			case([
-				(r.region_geografica_id == p.region_geografica_p, p.parroquia_id),
-				(r.region_geografica_id == m.region_geografica_p, m.municipio_id),
-				(r.region_geografica_id == c.region_geografica_p, c.ciudad_id),
-				(r.region_geografica_id == e.region_geografica_p, e.estado_id),
-				(r.region_geografica_id == i.region_geografica_p, i.pais_id),
-				(r.region_geografica_id == t.region_geografica_p, t.continente_id),
-			])
-		).\
-		outerjoin(p, r.region_geografica_id == p.region_geografica_p).\
-		outerjoin(m, r.region_geografica_id == m.region_geografica_p).\
-		outerjoin(c, r.region_geografica_id == c.region_geografica_p).\
-		outerjoin(e, r.region_geografica_id == e.region_geografica_p).\
-		outerjoin(i, r.region_geografica_id == i.region_geografica_p).\
-		outerjoin(t, r.region_geografica_id == t.region_geografica_p).\
-		filter(r.region_geografica_id == reg_id).one()
-		
-		return {'tipo': tipo_de_entidad, 'id': entidad_id}
-		"""
+
 	def obtener_ruta_categoria(self, cat_id):
 		ruta = []
 		
@@ -541,14 +438,46 @@ class paris_views(diagramas):
 
 	@view_config(route_name='productos', renderer='plantillas/listado.pt')
 	def listado_productos_view(self):
-		productos = DBSession.query(producto).\
-		filter_by(categoria = self.categoria_id).all()
+		i = aliased(inventario_reciente)
+		p = aliased(producto)
+		t = aliased(tienda)
+		c = aliased(cliente)
+		u = aliased(usuario)
+		
+		# Este metodo me permite saber rapidamente si una
+		# categoria o territorio es hijo de otro(a).
+		cat = self.categoria_id.replace('.00', '')
+		terr = self.territorio_id.replace('.00', '')
+				
+		productos = DBSession.query(i).\
+		join(p, i.producto_id == p.producto_id).\
+		join(t, i.tienda_id == t.tienda_id).\
+		join(c, t.cliente_p == c.rif).\
+		join(u, c.usuario_p == u.usuario_id).\
+		filter(and_(
+			p.categoria.contains(cat),
+			u.ubicacion.contains(terr)
+		)).all()
+		
 		return {'pagina': 'Productos', 'lista': productos}
 	
 	@view_config(route_name='tiendas', renderer='plantillas/listado.pt')
 	def listado_tiendas_view(self):
-		tiendas = DBSession.query(tienda).join(cliente).\
-		filter_by(categoria = self.categoria_id).all()
+		t = aliased(tienda)
+		c = aliased(cliente)
+		u = aliased(usuario)
+		
+		cat = self.categoria_id.replace('.00', '')
+		terr = self.territorio_id.replace('.00', '')
+		
+		tiendas = DBSession.query(t).\
+		join(c, t.cliente_p == c.rif).\
+		join(u, c.usuario_p == u.usuario_id).\
+		filter(and_(
+			c.categoria.contains(cat),
+			u.ubicacion.contains(terr)
+		)).all()
+
 		return {'pagina': 'Tiendas', 'lista': tiendas}
 		
 	@view_config(route_name='inventario_producto', renderer='plantillas/inventario.pt')

@@ -34,8 +34,8 @@
         		<a class="brand" href="/">netzuela</a>
         		<div class="nav-collapse">
 	        		<ul id="navegacion" class="nav">
-						<li><a tal:attributes="href view.peticion.route_url('productos', categoria_id = 1, territorio_id = 2)">Productos</a></li>
-						<li><a tal:attributes="href view.peticion.route_url('tiendas', categoria_id = 1, territorio_id = 2)">Tiendas</a></li>
+						<li><a tal:attributes="href view.peticion.route_url('productos', categoria_id = '0.00.00.00.00.00', territorio_id =  '0.02.00.00.00.00')">Productos</a></li>
+						<li><a tal:attributes="href view.peticion.route_url('tiendas', categoria_id = '0.00.00.00.00.00', territorio_id =  '0.02.00.00.00.00')">Tiendas</a></li>
 					</ul>
 					<form class="navbar-search pull-left" action="">
 						<input type="text" class="search-query" placeholder="Busqueda" />
@@ -79,10 +79,10 @@
 					<ul id="categorias" class="nav nav-list" tal:condition="pagina == 'Productos' or pagina == 'Tiendas'">
 						<li class="nav-header">Categorias</li>
 						<tal:block tal:repeat="categoria view.ruta_categoria_actual">
-							<li class="active" tal:condition="categoria.categoria_id == long(view.categoria_id)">
+							<li class="active" tal:condition="categoria.categoria_id == view.categoria_id">
 								<div metal:use-macro="view.macros['enlace_categoria']"></div>
 							</li>
-							<li tal:condition="categoria.categoria_id != long(view.categoria_id)">
+							<li tal:condition="categoria.categoria_id != view.categoria_id">
 								<div metal:use-macro="view.macros['enlace_categoria']"></div>
 							</li>
 						</tal:block>
@@ -95,10 +95,10 @@
 					<ul id="ubicacion" class="nav nav-list" tal:condition="pagina == 'Productos' or pagina == 'Tiendas'">
 						<li class="nav-header">Ubicacion</li>
 						<tal:block tal:repeat="region view.ruta_territorio_actual">
-							<li class="active" tal:condition="region.territorio_id == long(view.territorio_id)">
+							<li class="active" tal:condition="region.territorio_id == view.territorio_id">
 								<div metal:use-macro="view.macros['enlace_ubicacion']"></div>
 							</li>
-							<li tal:condition="region.territorio_id != long(view.territorio_id)">
+							<li tal:condition="region.territorio_id != view.territorio_id">
 								<div metal:use-macro="view.macros['enlace_ubicacion']"></div>
 							</li>
 						</tal:block>
