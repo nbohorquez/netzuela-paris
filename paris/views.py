@@ -3,29 +3,23 @@ from .models import (
 	calificacion_resena,
 	categoria,
 	cliente,
-	ciudad,
 	consumidor,
-	continente,
 	croquis,
 	DBSession,
 	describible,
 	descripcion,
 	dibujable,	
-	estado, 
 	foto,
 	horario_de_trabajo,
 	inventario_reciente,
-	municipio, 
-	pais,
-	parroquia,
 	patrocinante,
 	producto,
 	publicidad,
 	punto,
 	punto_de_croquis,
 	rastreable,
-	region_geografica,
 	tamano_reciente,
+	territorio,
 	tienda,
 	turno,
 	usuario
@@ -56,9 +50,9 @@ class paris_views(diagramas):
 		elif 'patrocinante_id' in self.peticion.matchdict:
 			self.peticion_id = self.peticion.matchdict['patrocinante_id']
 			self.tipo_de_peticion = 'patrocinante'
-		elif 'categoria_id' in self.peticion.matchdict and 'region_geografica_id' in self.peticion.matchdict:
+		elif 'categoria_id' in self.peticion.matchdict and 'territorio_id' in self.peticion.matchdict:
 			self.categoria_id = self.peticion.matchdict['categoria_id']
-			self.region_geografica_id = self.peticion.matchdict['region_geografica_id']
+			self.territorio_id = self.peticion.matchdict['territorio_id']
 			self.tipo_de_peticion = 'listado'
 	
 	@reify
@@ -74,8 +68,8 @@ class paris_views(diagramas):
 		return self.categoria_id if self.tipo_de_peticion == 'listado' else None
 	
 	@reify
-	def region_geografica_id(self):
-		return self.region_geografica_id if self.tipo_de_peticion == 'listado' else None
+	def territorio_id(self):
+		return self.territorio_id if self.tipo_de_peticion == 'listado' else None
 	
 	@reify
 	def tipo_de_peticion(self):
@@ -108,6 +102,7 @@ class paris_views(diagramas):
 		var_cliente = self.obtener_cliente_padre(self.tipo_de_peticion, self.peticion_id)
 		
 		if var_cliente is not None:
+			"""
 			p = DBSession.query(parroquia).\
 			join(usuario).\
 			filter_by(usuario_id = var_cliente.usuario_p).subquery()
@@ -126,11 +121,26 @@ class paris_views(diagramas):
 			
 			reg_geo_estado = DBSession.query(region_geografica).\
 			join(e, region_geografica.region_geografica_id == e.c.region_geografica_p).one()
-
+			"""
+			padre = aliased(territorio)
+			hijo = aliased(territorio)
+			
+			p = DBSession.query(territorio).\
+			join(usuario).\
+			filter_by(usuario_id = var_cliente.usuario_p).one()
+			
+			m = DBSession.query(padre).\
+			join(hijo, padre.territorio_id == hijo.territorio_padre).\
+			filter_by(territorio_id = p.territorio_id).one()
+			
+			e = DBSession.query(padre).\
+			join(hijo, padre.territorio_id == hijo.territorio_padre).\
+			filter_by(territorio_id = m.territorio_id).one()
+			
 			resultado = {
-				'parroquia': reg_geo_parroquia.nombre, 
-				'municipio': reg_geo_municipio.nombre, 
-				'estado': reg_geo_estado.nombre 
+				'parroquia': p.nombre, 
+				'municipio': m.nombre, 
+				'estado': e.nombre 
 			}
 		else:
 			resultado = {'parroquia': 'N/D', 'municipio': 'N/D', 'estado': 'N/D' }
@@ -259,8 +269,9 @@ class paris_views(diagramas):
 		return resultado
 	
 	@reify
-	def regiones_geograficas_hijas(self):
+	def territorios_hijos(self):
 		if self.tipo_de_peticion == 'listado':
+			"""
 			r = aliased(region_geografica)
 			p = aliased(parroquia)
 			m = aliased(municipio)
@@ -285,18 +296,23 @@ class paris_views(diagramas):
 			}[entidad['tipo']]()
 		else:
 			resultado = None
+			"""
+			resultado = DBSession.query(territorio).\
+			filter_by(territorio_padre = self.territorio_id).all()
+		else:
+			resultado = None
 		return resultado
 
 	@reify
-	def ruta_region_geografica_actual(self):
+	def ruta_territorio_actual(self):
 		def reg_listado():
-			return self.region_geografica_id
+			return self.territorio_id
 		
-		reg_id = {
+		terr_id = {
 			'listado': lambda: reg_listado(), 
 		}[self.tipo_de_peticion]()
 		
-		return self.obtener_ruta_region_geografica(reg_id)
+		return self.obtener_ruta_territorio(terr_id)
 	
 	@reify
 	def categorias_hijas(self):
@@ -338,13 +354,21 @@ class paris_views(diagramas):
 		
 		return self.obtener_ruta_categoria(cat_padre)
 	
-	def obtener_ruta_region_geografica(self, reg_id):
+	def obtener_ruta_territorio(self, terr_id):
 		ruta = []
 		
 		while True:
-			reg = self.obtener_region_geografica(reg_id)
-			ruta.append(reg)
-			entidad = self.obtener_entidad(reg_id)
+			terr = self.obtener_territorio(terr_id)
+			ruta.append(terr)
+			
+			if (terr.territorio_padre == terr.territorio_id) \
+			or (terr.territorio_padre == None) \
+			or (terr.nivel == 1):
+				break
+			else:
+				terr_id = terr.territorio_padre
+			"""	
+			entidad = self.obtener_entidad(terr_id)
 			
 			if (entidad['tipo'] == 'parroquia'):
 				reg_id = DBSession.query(region_geografica.region_geografica_id).\
@@ -363,10 +387,10 @@ class paris_views(diagramas):
 				filter_by(estado_id = entidad['id']).one()[0]
 			elif (entidad['tipo'] == 'pais'):
 				break
-
+			"""
 		ruta.reverse()
 		return ruta
-	
+	"""
 	def obtener_entidad(self, reg_id):
 		r = aliased(region_geografica)
 		p = aliased(parroquia)
@@ -403,7 +427,7 @@ class paris_views(diagramas):
 		filter(r.region_geografica_id == reg_id).one()
 		
 		return {'tipo': tipo_de_entidad, 'id': entidad_id}
-		
+		"""
 	def obtener_ruta_categoria(self, cat_id):
 		ruta = []
 		
@@ -418,8 +442,8 @@ class paris_views(diagramas):
 		ruta.reverse()
 		return ruta
 		
-	def obtener_region_geografica(self, reg_id):
-		return DBSession.query(region_geografica).filter_by(region_geografica_id = reg_id).one()
+	def obtener_territorio(self, terr_id):
+		return DBSession.query(territorio).filter_by(territorio_id = terr_id).one()
 	
 	def obtener_categoria(self, cat_id):
 		return DBSession.query(categoria).filter_by(categoria_id = cat_id).one()

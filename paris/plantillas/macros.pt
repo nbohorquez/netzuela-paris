@@ -124,15 +124,15 @@
 	<!-- Enlace de categoria
 	================================================== -->	
 	<metal:enlace_categoria define-macro="enlace_categoria">
-		<a tal:condition="pagina == 'Productos'" tal:attributes="href view.peticion.route_url('productos', categoria_id = categoria.categoria_id, region_geografica_id = view.region_geografica_id)">${categoria.nombre}</a>
-		<a tal:condition="pagina == 'Tiendas'" tal:attributes="href view.peticion.route_url('tiendas', categoria_id = categoria.categoria_id, region_geografica_id = view.region_geografica_id)">${categoria.nombre}</a>
+		<a tal:condition="pagina == 'Productos'" tal:attributes="href view.peticion.route_url('productos', categoria_id = categoria.categoria_id, territorio_id = view.territorio_id)">${categoria.nombre}</a>
+		<a tal:condition="pagina == 'Tiendas'" tal:attributes="href view.peticion.route_url('tiendas', categoria_id = categoria.categoria_id, territorio_id = view.territorio_id)">${categoria.nombre}</a>
 	</metal:enlace_categoria>
 	
 	<!-- Enlace de ubicacion
 	================================================== -->	
 	<metal:enlace_ubicacion define-macro="enlace_ubicacion">
-		<a tal:condition="pagina == 'Productos'" tal:attributes="href view.peticion.route_url('productos', categoria_id = view.categoria_id, region_geografica_id = region.region_geografica_id)">${region.nombre}</a>
-		<a tal:condition="pagina == 'Tiendas'" tal:attributes="href view.peticion.route_url('tiendas', categoria_id = view.categoria_id, region_geografica_id = region.region_geografica_id)">${region.nombre}</a>
+		<a tal:condition="pagina == 'Productos'" tal:attributes="href view.peticion.route_url('productos', categoria_id = view.categoria_id, territorio_id = region.territorio_id)">${region.nombre}</a>
+		<a tal:condition="pagina == 'Tiendas'" tal:attributes="href view.peticion.route_url('tiendas', categoria_id = view.categoria_id, territorio_id = region.territorio_id)">${region.nombre}</a>
 	</metal:enlace_ubicacion>
 </body>
 </html>

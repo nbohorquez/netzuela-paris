@@ -21,8 +21,8 @@
         		<a class="brand" href="/">netzuela</a>
         		<div class="nav-collapse">
 	        		<ul id="navegacion" class="nav">
-						<li><a tal:attributes="href view.peticion.route_url('productos', categoria_id = 1, region_geografica_id = 8)">Productos</a></li>
-						<li><a tal:attributes="href view.peticion.route_url('tiendas', categoria_id = 1, region_geografica_id = 8)">Tiendas</a></li>
+						<li><a tal:attributes="href view.peticion.route_url('productos', categoria_id = 1, territorio_id = 2)">Productos</a></li>
+						<li><a tal:attributes="href view.peticion.route_url('tiendas', categoria_id = 1, territorio_id = 2)">Tiendas</a></li>
 					</ul>
         		</div>
 			</div>
