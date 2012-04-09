@@ -22,8 +22,8 @@
 	    	<div class="tab-pane" id="informacion">
 	      		<div class="row-fluid">
 	      			<div class="span4">
-	      				<div metal:use-macro="python:view.macros['fotos_medianas']"></div>
-	      				<div metal:use-macro="python:view.macros['ruta_de_categoria']"></div>
+	      				<div metal:use-macro="view.macros['fotos_medianas']"></div>
+	      				<div metal:use-macro="view.macros['ruta_de_categoria']"></div>
 	      				<div>
 							<table class="table">
 					  			<thead>

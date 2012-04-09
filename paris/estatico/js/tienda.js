@@ -45,7 +45,7 @@ tienda.actualizar = function () {
 		apertura = redondear(apertura, 2);
 		cierre = redondear(cierre, 2);
 		ahorita = redondear(ahorita, 2);
-
+		
 		if (cierre == apertura || ahorita < apertura) {
 			porcentaje = 0;
 		}

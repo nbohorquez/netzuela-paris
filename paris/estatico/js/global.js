@@ -11,15 +11,36 @@ $(document).ready(function() {
 			$(this).addClass("active");
 		}
 	});
+
+	var tab;	
+	$("ul.treeview").each(function() {
+		tab = 0;
+		$(this).children("li").each(function() {
+			if ($(this).hasClass("nodo_padre")){
+				$(this).css({'margin-left': tab.toString() + 'em'});
+				tab += 1.5;
+			}
+			else if ($(this).hasClass("nodo_hijo")) {
+				$(this).css({'margin-left': tab.toString() + 'em'});
+			}
+		});
+	});
 	
+	google_map.geocodificador.geocode( {'address': 'parroquia la rosa, cabimas, venezuela'}, function(resultado, estatus) {
+		if (estatus == google.maps.GeocoderStatus.OK) {
+			//google_map.mapa.setCenter(resultado[0].geometry.location);
+        	var marker = new google.maps.Marker({
+	            map: google_map.mapa,
+            	position: resultado[0].geometry.location
+        	});
+	        google_map.borde = resultado[0].geometry.bounds;
+      	} else {
+        	alert("Geocode was not successful for the following reason: " + status);
+      	}
+    });
+    
 	$(".collapse").collapse();
 	$('.carousel').carousel()
-	
-	//$.getJSON('/categorias.json', { categoria_id: 1 }, escribir_categorias);
-});
-
-$('#categorias li a').live('click', function() {
-	//$.getJSON('/categorias.json', { categoria_id: $(this).siblings('input[name=categoria_id]').val() }, escribir_categorias);
 });
 
 $('#gadget_colapsable').on('hidden', function () {
@@ -39,12 +60,3 @@ $('#gadget_colapsable').on('show', function () {
 		google_map.ajustar_mapa();
 	}
 });
-
-function escribir_categorias(data) {
-	var html = '<li class="nav-header">Categorias</li>';
-	$.each(data.categorias, function(indice, valor) {
-		html += (indice == 0) ? '<li class="active">' : '<li>';
-		html += '<a href="#">' + valor['nombre'] + '</a><input type="hidden" name="categoria_id" value="' + valor['categoria_id'] + '" /></li>';			
-	});
-	$('#categorias').html(html);
-}

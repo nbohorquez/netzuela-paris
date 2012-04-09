@@ -4,6 +4,8 @@ Created on 25/02/2012
 @author: Nestor
 '''
 
+MENSAJE_DE_ERROR = 'Vos lo que estais es loco! Esa verga no existe'
+
 TABLAS = [
           'acceso',
           'accion',

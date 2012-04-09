@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/estatico/css/bootstrap.css"/>
     <link rel="stylesheet" href="/estatico/css/bootstrap-responsive.css"/>
     <style type="text/css">
+    	html { height: 100%; }
     	body { height:100%; padding-top: 60px }
 	</style>
 </head>
@@ -44,13 +45,13 @@
    		<hr/>
    		<footer class="pull-right">
 			<p>
-			<span><a href="/acerca">Sobre nosotros</a></span>
-			<span><a href="/publicidad">Publicidad</a></span>
-			<span><a href="/desarrolladores">Desarrolladores</a></span>
-			<span><a href="/empleo">Empleo</a></span>
-			<span><a href="/condiciones">Condiciones</a></span>
-			<span><a href="/ayuda">Ayuda</a></span>
-			<span>&copy 2012 Zuliaworks</span>
+				<span><a href="/acerca">Sobre nosotros</a></span>
+				<span><a href="/publicidad">Publicidad</a></span>
+				<span><a href="/desarrolladores">Desarrolladores</a></span>
+				<span><a href="/empleo">Empleo</a></span>
+				<span><a href="/condiciones">Condiciones</a></span>
+				<span><a href="/ayuda">Ayuda</a></span>
+				<span>&copy 2012 Zuliaworks</span>
 			</p>	
 		</footer>
 	</div>

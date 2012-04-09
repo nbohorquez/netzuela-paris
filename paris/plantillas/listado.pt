@@ -56,7 +56,26 @@
 		<!-- Listado
 		================================================== -->
 		<div tal:condition="pagina == 'Productos'">
-			<div metal:use-macro="python:view.macros['inventario_de_productos']"></div>
+			<ul class="thumbnails">
+	        	<li class="span2" tal:repeat="item lista">
+	        		<div tal:define="enlace view.peticion.route_url('producto', producto_id = item.producto_id)">
+	        			<a href="${enlace}">
+	        				<div class="thumbnail">
+	        					<img tal:define="foto view.obtener_foto('producto', item.producto_id, 'pequenas')" src="/estatico/${foto.ruta_de_foto}" alt="producto.nombre" />
+	        				</div>
+	        			</a>
+	        			<div class="caption" tal:define="producto view.obtener_producto(item.producto_id)">
+							<a href="${enlace}">
+								<h5>${item.nombre}</h5>
+							</a>
+							<p>
+								<em>${item.codigo}</em><br />
+								<strong>Categoria</strong> <span tal:define="categoria_item view.obtener_categoria(producto.categoria)">${categoria_item.nombre}</span><br />
+							</p>
+						</div>
+		           	</div>
+		        </li>
+	        </ul>
 		</div>
 		<div tal:condition="pagina == 'Tiendas'">
 			<ul class="thumbnails">
