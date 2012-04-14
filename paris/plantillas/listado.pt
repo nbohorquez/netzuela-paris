@@ -6,53 +6,11 @@
 		<div class="page-header">
   			<h1>${pagina}</h1>
 		</div>
+		<div id="meta_datos">
+			<input type="hidden" name="territorio_id" value="${view.territorio_id}" />
+			<input type="hidden" name="categoria_id" value="${view.categoria_id}" />
+		</div>
 		
-		<!-- Cualquier verga
-		================================================== -->
-		<div class="row-fluid">
-            <div class="span4">
-                <h3><i class="icon-flag icon-large"></i> One font, 150+ icons</h3>
-                <p>In a single collection, Font Awesome is a pictographic language of web-related actions.</p>
-            </div>
-            <div class="span4">
-                <h3><i class="icon-gift icon-large"></i> Free for commercial use</h3>
-                <p>The Font Awesome webfont and CSS libraries are completely free for commercial use.</p>
-            </div>
-            <div class="span4">
-                <h3><i class="icon-search icon-large"></i> Screen reader compatible</h3>
-                <p>Font Awesome won't trip up screen readers, unlike most icon fonts.</p>
-            </div>
-        </div>
-        <div class="row-fluid">
-            <div class="span4">
-                <h3><i class="icon-resize-full icon-large"></i> Infinite scalability</h3>
-                <p>Scalable vector graphics means icons look awesome at any size.</p>
-            </div>
-            <div class="span4">
-                <h3><i class="icon-pencil icon-large"></i> CSS control</h3>
-                <p>Easily style icon color, size, shadow, and anything that's possible with CSS.</p>
-            </div>
-            <div class="span4">
-                <h3><i class="icon-ok icon-large"></i> Broad compatibility</h3>
-                <p>Wide @font-face support means Font Awesome works in <a href="#roadmap" rel="tooltip" data-original-title="IE7 support coming soon">modern browsers <i class="icon-info-sign"></i></a>.</p>
-            </div>
-        </div>
-        <div class="row-fluid">
-            <div class="span4">
-                <h3><i class="icon-thumbs-up icon-large"></i> Made for Twitter Bootstrap</h3>
-                <p>Designed from scratch to be fully backwards compatible with <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap 2.0</a>.</p>
-            </div>
-            <div class="span4">
-                <h3><i class="icon-refresh icon-large"></i> Growing set of icons</h3>
-                <p>Ever expanding to support a wider array of web-related actions.</p>
-            </div>
-            <div class="span4">
-                <h3><i class="icon-twitter-sign icon-large"></i> Follow on Twitter</h3>
-                <p>Follow <a href="http://twitter.com/fortaweso_me/" target="_blank">@fortaweso_me</a> on Twitter for icon updates and styling tricks.</p>
-            </div>
-        </div>
-        
-        <hr />
 		<!-- Listado
 		================================================== -->
 		<div tal:condition="pagina == 'Productos'">
@@ -104,5 +62,8 @@
 		        </li>
 	        </ul>
 		</div>
+	</div>
+	<div metal:fill-slot="scripts_extra">
+		<script type="text/javascript" src="/estatico/js/listado.js"></script>
 	</div>
 </div>

@@ -16,7 +16,8 @@ from .models import (
     publicidad,
     rastreable,
     territorio,
-    tienda
+    tienda,
+    usuario
 )
 from sqlalchemy import and_
 
@@ -37,11 +38,24 @@ class comunes(object):
             fecha = str(fecha_decimal)
             tmp['fecha'] = "{0}/{1}/{2} {3}:{4}".format(fecha[6:8], fecha[4:6], fecha[0:4], fecha[8:10], fecha[10:12])
             
-            tmp['consumidor'] = DBSession.query(consumidor).\
+            tmp['consumidor'] = DBSession.query(usuario).\
+            join(consumidor).\
             filter_by(consumidor_id = comentario.consumidor_id).one()
             
             resultado.append(tmp)
         return resultado
+    
+    def formatear_entrada_registro(self, reg):
+        entrada = {}
+        entrada['actor_activo'] = reg.actor_activo
+        entrada['actor_pasivo'] = reg.actor_pasivo 
+        entrada['accion'] = reg.accion 
+        entrada['parametros'] = reg.parametros
+        entrada['codigo_de_error'] = reg.codigo_de_error 
+        fecha = str(reg.fecha_hora)
+        entrada['fecha_hora'] = "{0}/{1}/{2} {3}:{4}".format(fecha[6:8], fecha[4:6], fecha[0:4], fecha[8:10], fecha[10:12])
+        return entrada
+
                 
     def obtener_ruta_territorio(self, terr_id):
         ruta = []

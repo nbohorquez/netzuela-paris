@@ -25,14 +25,19 @@ google_map.inicializar = function(ubicacion, latLng, zoom) {
 }
 
 google_map.agregar_marcador = function(latitud, longitud) {
-	var punto = new google.maps.LatLng(parseFloat(latitud),parseFloat(longitud));
+	var punto = new google.maps.LatLng(latitud,longitud);
 	var marcador = new google.maps.Marker({
 		position: punto,
 		map: this.mapa
 	});
+	this.extender_borde(latitud, longitud);
+}
+
+google_map.extender_borde = function(latitud, longitud) {
+	var punto = new google.maps.LatLng(latitud,longitud);
 	this.borde.extend(punto);
 }
 
-google_map.ajustar_mapa = function() {
+google_map.ajustar_borde = function() {
 	this.mapa.fitBounds(this.borde);
 }

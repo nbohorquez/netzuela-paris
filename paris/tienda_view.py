@@ -26,6 +26,7 @@ from .models import (
     punto,
     punto_de_croquis,
     rastreable,
+    registro,
     tamano_reciente,
     territorio,
     tienda,
@@ -36,7 +37,7 @@ from .diagramas import diagramas
 from pyramid.decorator import reify
 from pyramid.httpexceptions import (HTTPNotFound)
 from pyramid.view import view_config
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 from sqlalchemy.orm import aliased
 import string
 
@@ -76,6 +77,22 @@ class tienda_view(diagramas, comunes):
         return {""} if (resultado is None) else resultado     
 
     @reify
+    def registro(self):
+        r = aliased(rastreable)
+        c = aliased(cliente)
+        t = aliased(tienda)
+        
+        resultado = []
+        for reg in DBSession.query(registro).\
+        join(r, or_(registro.actor_activo == r.rastreable_id, registro.actor_pasivo == r.rastreable_id)).\
+        join(c, r.rastreable_id == c.rastreable_p).\
+        join(t, c.rif == t.cliente_p).\
+        filter(t.tienda_id == self.tienda_id).all():
+            resultado.append(self.formatear_entrada_registro(reg))
+        
+        return resultado
+        
+    @reify
     def direccion(self):
         var_cliente = self.obtener_cliente_padre(self.tipo_de_peticion, self.tienda_id)
         
@@ -84,8 +101,7 @@ class tienda_view(diagramas, comunes):
             hijo = aliased(territorio)
             
             p = DBSession.query(territorio).\
-            join(usuario).\
-            filter_by(usuario_id = var_cliente.usuario_p).one()
+            filter_by(territorio_id = var_cliente.ubicacion).one()
             
             m = DBSession.query(padre).\
             join(hijo, padre.territorio_id == hijo.territorio_padre).\
@@ -205,12 +221,15 @@ class tienda_view(diagramas, comunes):
     @view_config(route_name="tienda_coordenadas", renderer="json")
     def tienda_coordenadas_view(self):
         var_tienda = self.peticion.params['tienda_id']
+        puntos = []
         
-        latitud, longitud = DBSession.query(punto.latitud, punto.longitud).\
+        for lat, lng in DBSession.query(punto.latitud, punto.longitud).\
         join(punto_de_croquis).\
         join(croquis).\
         join(dibujable).\
         join(tienda).\
-        filter_by(tienda_id = var_tienda).one()
+        filter_by(tienda_id = var_tienda).all():
+            pto = {'latitud': "{0}".format(str(lat)), 'longitud': "{0}".format(str(lng))}
+            puntos.append(pto)
         
-        return { 'latitud': "{0}".format(str(latitud)), 'longitud': "{0}".format(str(longitud)) }
+        return { 'puntos': puntos }

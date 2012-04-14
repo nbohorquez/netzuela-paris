@@ -19,5 +19,6 @@ def main(global_config, **settings):
 	config.add_route('tiendas', '/tiendas/cat{categoria_id}geo{territorio_id}')
 	config.add_route('tienda_turno', '/tienda_turno.json')
 	config.add_route('tienda_coordenadas', '/tienda_coordenadas.json')
+	config.add_route('territorio_coordenadas', '/territorio_coordenadas.json')
 	config.scan()
 	return config.make_wsgi_app()

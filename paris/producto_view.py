@@ -26,6 +26,7 @@ from .models import (
     punto,
     punto_de_croquis,
     rastreable,
+    registro,
     tamano_reciente,
     territorio,
     tienda,
@@ -35,6 +36,8 @@ from .models import (
 from .diagramas import diagramas
 from pyramid.decorator import reify
 from pyramid.httpexceptions import (HTTPNotFound)
+from sqlalchemy import or_
+from sqlalchemy.orm import aliased
 from pyramid.view import view_config
 
 # Aptana siempre va a decir que las clases de spuria (tienda, producto, etc) no estan 
@@ -67,6 +70,20 @@ class producto_view(diagramas, comunes):
         resultado = [{""}] if (var_inventario is None) else var_inventario
         return resultado
 
+    @reify
+    def registro(self):
+        r = aliased(rastreable)
+        p = aliased(producto)
+        
+        resultado = []
+        for reg in DBSession.query(registro).\
+        join(r, or_(registro.actor_activo == r.rastreable_id, registro.actor_pasivo == r.rastreable_id)).\
+        join(p, r.rastreable_id == p.rastreable_p).\
+        filter(p.producto_id == self.producto_id).all():
+            resultado.append(self.formatear_entrada_registro(reg))
+
+        return resultado
+    
     @reify
     def descripciones(self):
         var_descripciones = DBSession.query(descripcion).\

@@ -187,7 +187,7 @@
     <script type="text/javascript" src="/estatico/js/bootstrap-collapse.js"></script>
     <script type="text/javascript" src="/estatico/js/bootstrap-dropdown.js"></script>
     <script type="text/javascript" src="/estatico/js/mapa.js"></script>
-    <script type="text/javascript" src="/estatico/js/global.js"></script>
     <div id="scripts" metal:define-slot="scripts_extra"></div>
+    <script type="text/javascript" src="/estatico/js/global.js"></script>
 </body>
 </html>
