@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/estatico/css/bootstrap.css"/>
     <link rel="stylesheet" href="/estatico/css/bootstrap-responsive.css"/>
     <style type="text/css">
+    	html { height: 100%; }
     	body { height:100%; padding-top: 60px }
 	</style>
 </head>
@@ -21,8 +22,8 @@
         		<a class="brand" href="/">netzuela</a>
         		<div class="nav-collapse">
 	        		<ul id="navegacion" class="nav">
-						<li><a tal:attributes="href view.peticion.route_url('productos', categoria_id = 1, region_geografica_id = 8)">Productos</a></li>
-						<li><a tal:attributes="href view.peticion.route_url('tiendas', categoria_id = 1, region_geografica_id = 8)">Tiendas</a></li>
+						<li><a tal:attributes="href view.peticion.route_url('productos', categoria_id = '0.00.00.00.00.00', territorio_id = '0.02.00.00.00.00')">Productos</a></li>
+						<li><a tal:attributes="href view.peticion.route_url('tiendas', categoria_id = '0.00.00.00.00.00', territorio_id = '0.02.00.00.00.00')">Tiendas</a></li>
 					</ul>
         		</div>
 			</div>
@@ -44,13 +45,13 @@
    		<hr/>
    		<footer class="pull-right">
 			<p>
-			<span><a href="/acerca">Sobre nosotros</a></span>
-			<span><a href="/publicidad">Publicidad</a></span>
-			<span><a href="/desarrolladores">Desarrolladores</a></span>
-			<span><a href="/empleo">Empleo</a></span>
-			<span><a href="/condiciones">Condiciones</a></span>
-			<span><a href="/ayuda">Ayuda</a></span>
-			<span>&copy 2012 Zuliaworks</span>
+				<span><a href="/acerca">Sobre nosotros</a></span>
+				<span><a href="/publicidad">Publicidad</a></span>
+				<span><a href="/desarrolladores">Desarrolladores</a></span>
+				<span><a href="/empleo">Empleo</a></span>
+				<span><a href="/condiciones">Condiciones</a></span>
+				<span><a href="/ayuda">Ayuda</a></span>
+				<span>&copy 2012 Zuliaworks</span>
 			</p>	
 		</footer>
 	</div>

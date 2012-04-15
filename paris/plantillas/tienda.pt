@@ -29,7 +29,7 @@
 			<!-- Noticias
 			================================================== -->	
         	<div class="tab-pane active" id="noticias">
-          		<p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</p>
+          		<div metal:use-macro="view.macros['noticias']"></div>
         	</div>
         	
         	<!-- Informacion
@@ -95,7 +95,7 @@
         	<!-- Inventario
 			================================================== -->	
             <div class="tab-pane" id="inventario">
-          		<div metal:use-macro="python:view.macros['inventario_tienda']"></div>
+          		<div tal:define="lista view.inventario_reciente" metal:use-macro="python:view.macros['inventario_de_productos']"></div>
           		<p class="pull-right" tal:define="tamano view.tamano_reciente">
           			<abbr title="Numero total de productos">N:</abbr>
           			<span tal:content="tamano.numero_total_de_productos"></span>

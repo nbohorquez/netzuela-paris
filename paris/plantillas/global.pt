@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
-      metal:define-macro="diagrama">
+      metal:define-macro="diagrama_global">
 <head>
     <title>Netzuela - ${pagina}</title>
     <link rel="stylesheet" href="/estatico/css/bootstrap.css"/>
@@ -34,8 +34,8 @@
         		<a class="brand" href="/">netzuela</a>
         		<div class="nav-collapse">
 	        		<ul id="navegacion" class="nav">
-						<li><a tal:attributes="href view.peticion.route_url('productos', categoria_id = 1, region_geografica_id = 8)">Productos</a></li>
-						<li><a tal:attributes="href view.peticion.route_url('tiendas', categoria_id = 1, region_geografica_id = 8)">Tiendas</a></li>
+						<li><a tal:attributes="href view.peticion.route_url('productos', categoria_id = '0.00.00.00.00.00', territorio_id =  '0.02.00.00.00.00')">Productos</a></li>
+						<li><a tal:attributes="href view.peticion.route_url('tiendas', categoria_id = '0.00.00.00.00.00', territorio_id =  '0.02.00.00.00.00')">Tiendas</a></li>
 					</ul>
 					<form class="navbar-search pull-left" action="">
 						<input type="text" class="search-query" placeholder="Busqueda" />
@@ -76,34 +76,34 @@
 			================================================== -->
 			<div class="span3">
 				<div class="well" style="padding: 8px 0;">
-					<ul id="categorias" class="nav nav-list" tal:condition="pagina == 'Productos' or pagina == 'Tiendas'">
+					<ul id="categorias" class="nav nav-list treeview" tal:condition="pagina == 'Productos' or pagina == 'Tiendas'">
 						<li class="nav-header">Categorias</li>
 						<tal:block tal:repeat="categoria view.ruta_categoria_actual">
-							<li class="active" tal:condition="categoria.categoria_id == long(view.categoria_id)">
+							<li class="active nodo_padre" tal:condition="categoria.categoria_id == view.categoria_id">
 								<div metal:use-macro="view.macros['enlace_categoria']"></div>
 							</li>
-							<li tal:condition="categoria.categoria_id != long(view.categoria_id)">
+							<li class="nodo_padre" tal:condition="categoria.categoria_id != view.categoria_id">
 								<div metal:use-macro="view.macros['enlace_categoria']"></div>
 							</li>
 						</tal:block>
 						<tal:block tal:repeat="categoria view.categorias_hijas">
-							<li>
+							<li class="nodo_hijo">
 								<div metal:use-macro="view.macros['enlace_categoria']"></div>
 							</li>
 						</tal:block>
 					</ul>
-					<ul id="ubicacion" class="nav nav-list" tal:condition="pagina == 'Productos' or pagina == 'Tiendas'">
+					<ul id="ubicacion" class="nav nav-list treeview" tal:condition="pagina == 'Productos' or pagina == 'Tiendas'">
 						<li class="nav-header">Ubicacion</li>
-						<tal:block tal:repeat="region view.ruta_region_geografica_actual">
-							<li class="active" tal:condition="region.region_geografica_id == long(view.region_geografica_id)">
+						<tal:block tal:repeat="region view.ruta_territorio_actual">
+							<li class="active nodo_padre" tal:condition="region.territorio_id == view.territorio_id">
 								<div metal:use-macro="view.macros['enlace_ubicacion']"></div>
 							</li>
-							<li tal:condition="region.region_geografica_id != long(view.region_geografica_id)">
+							<li class="nodo_padre" tal:condition="region.territorio_id != view.territorio_id">
 								<div metal:use-macro="view.macros['enlace_ubicacion']"></div>
 							</li>
 						</tal:block>
-						<tal:block tal:repeat="region view.regiones_geograficas_hijas">
-							<li>
+						<tal:block tal:repeat="region view.territorios_hijos">
+							<li class="nodo_hijo">
 								<div metal:use-macro="view.macros['enlace_ubicacion']"></div>
 							</li>
 						</tal:block>
@@ -168,13 +168,13 @@
 		================================================== -->
 		<footer class="pull-right">
 			<p>
-			<span><a href="/acerca">Sobre nosotros</a></span>
-			<span><a href="/publicidad">Publicidad</a></span>
-			<span><a href="/desarrolladores">Desarrolladores</a></span>
-			<span><a href="/empleo">Empleo</a></span>
-			<span><a href="/condiciones">Condiciones</a></span>
-			<span><a href="/ayuda">Ayuda</a></span>
-			<span>&copy 2012 Zuliaworks</span>
+				<span><a href="/acerca">Sobre nosotros</a></span>
+				<span><a href="/publicidad">Publicidad</a></span>
+				<span><a href="/desarrolladores">Desarrolladores</a></span>
+				<span><a href="/empleo">Empleo</a></span>
+				<span><a href="/condiciones">Condiciones</a></span>
+				<span><a href="/ayuda">Ayuda</a></span>
+				<span>&copy 2012 Zuliaworks</span>
 			</p>
 		</footer>
 	</div>
@@ -187,7 +187,7 @@
     <script type="text/javascript" src="/estatico/js/bootstrap-collapse.js"></script>
     <script type="text/javascript" src="/estatico/js/bootstrap-dropdown.js"></script>
     <script type="text/javascript" src="/estatico/js/mapa.js"></script>
-    <script type="text/javascript" src="/estatico/js/global.js"></script>
     <div id="scripts" metal:define-slot="scripts_extra"></div>
+    <script type="text/javascript" src="/estatico/js/global.js"></script>
 </body>
 </html>

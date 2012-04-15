@@ -14,7 +14,7 @@
 			<!-- Noticias
 			================================================== -->	
 	       	<div class="tab-pane active" id="noticias">
-	      		<p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</p>
+	      		<div metal:use-macro="view.macros['noticias']"></div>
 	    	</div>	
 	    	
 	    	<!-- Informacion
@@ -22,8 +22,8 @@
 	    	<div class="tab-pane" id="informacion">
 	      		<div class="row-fluid">
 	      			<div class="span4">
-	      				<div metal:use-macro="python:view.macros['fotos_medianas']"></div>
-	      				<div metal:use-macro="python:view.macros['ruta_de_categoria']"></div>
+	      				<div metal:use-macro="view.macros['fotos_medianas']"></div>
+	      				<div metal:use-macro="view.macros['ruta_de_categoria']"></div>
 	      				<div>
 							<table class="table">
 					  			<thead>
@@ -75,7 +75,7 @@
 	    	<!-- Inventario
 			================================================== -->
 	        <div class="tab-pane" id="inventario">
-	      		<div metal:use-macro="view.macros['inventario_producto']"></div>
+	      		<div tal:define="lista view.inventario_reciente" metal:use-macro="view.macros['inventario_de_tiendas']"></div>
 	        </div>
 	        
 	        <!-- Comentarios
