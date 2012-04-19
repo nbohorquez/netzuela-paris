@@ -7,6 +7,7 @@ Created on 08/04/2012
 from .comunes import comunes
 from .constantes import MENSAJE_DE_ERROR
 from .models import (
+    busqueda,
     calificable_seguible,
     calificacion_resena,
     categoria,
@@ -16,10 +17,14 @@ from .models import (
     DBSession,
     describible,
     descripcion,
-    dibujable,    
+    dibujable,
+    estadisticas,
+    factura,
     foto,
     horario_de_trabajo,
+    inventario,
     inventario_reciente,
+    mensaje,
     patrocinante,
     producto,
     publicidad,
@@ -27,6 +32,7 @@ from .models import (
     punto_de_croquis,
     rastreable,
     registro,
+    seguidor,
     tamano_reciente,
     territorio,
     tienda,
@@ -78,7 +84,7 @@ class tienda_view(diagramas, comunes):
 
     @reify
     def registro(self):
-        r = aliased(rastreable)
+        r = aliased(rastreable)                
         c = aliased(cliente)
         t = aliased(tienda)
         
@@ -87,9 +93,8 @@ class tienda_view(diagramas, comunes):
         join(r, or_(registro.actor_activo == r.rastreable_id, registro.actor_pasivo == r.rastreable_id)).\
         join(c, r.rastreable_id == c.rastreable_p).\
         join(t, c.rif == t.cliente_p).\
-        filter(t.tienda_id == self.tienda_id).all():
-            resultado.append(self.formatear_entrada_registro(reg))
-        
+        filter(t.tienda_id == self.tienda_id).order_by(registro.fecha_hora.desc()):
+            resultado.append(self.formatear_entrada_registro(reg, self.peticion))
         return resultado
         
     @reify

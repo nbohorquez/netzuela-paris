@@ -4,6 +4,16 @@ Created on 25/02/2012
 @author: Nestor
 '''
 
+ACCION = { 
+          'Insertar': 'inserto',
+          'Abrir': 'abrio',
+          'Actualizar': 'actualizo',
+          'Eliminar': 'elimino',
+          'Bloquear': 'bloqueo',
+          'Abrir sesion': 'abrio sesion',
+          'Cerrar sesion': 'cerro sesion'
+}
+
 MENSAJE_DE_ERROR = 'Vos lo que estais es loco! Esa verga no existe'
 
 TABLAS = [

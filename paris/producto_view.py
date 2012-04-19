@@ -80,7 +80,7 @@ class producto_view(diagramas, comunes):
         join(r, or_(registro.actor_activo == r.rastreable_id, registro.actor_pasivo == r.rastreable_id)).\
         join(p, r.rastreable_id == p.rastreable_p).\
         filter(p.producto_id == self.producto_id).all():
-            resultado.append(self.formatear_entrada_registro(reg))
+            resultado.append(self.formatear_entrada_registro(reg, self.peticion))
 
         return resultado
     
