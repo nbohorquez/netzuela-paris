@@ -82,14 +82,36 @@ class comunes(object):
             join(describible).\
             join(cliente).\
             filter(and_(cliente.rastreable_p == _id, foto.ruta_de_foto.like('%miniaturas%'))).first()[0]
-            valor['href'] = '#'
+
+            tmp1, tmp2 = DBSession.query(case([
+                (cliente.rif == tienda.cliente_p, 'tienda'),
+                (cliente.rif == patrocinante.cliente_p, 'patrocinante'),
+            ]),
+            case([
+                (cliente.rif == tienda.cliente_p, tienda.tienda_id),
+                (cliente.rif == patrocinante.cliente_p, patrocinante.patrocinante_id),
+            ])).\
+            filter(and_(
+                or_(
+                    cliente.rif == tienda.cliente_p, 
+                    cliente.rif == patrocinante.cliente_p
+                ),
+                cliente.rastreable_p == _id, 
+            )).first()
+            valor['href'] = {
+                'tienda': lambda x: peticion.route_url('tienda', tienda_id = x),
+                'patrocinante': lambda x: peticion.route_url('patrocinante', patrocinante_id = x)
+            }[tmp1](tmp2)
             return valor
         def reg_usuario(_id):
             valor = {}
             tmp1, tmp2 = DBSession.query(usuario.nombre, usuario.apellido).\
             filter_by(rastreable_p = _id).one()            
             valor['nombre'] = "{0} {1}".format(tmp1, tmp2)
-            valor['foto'] = ''
+            valor['foto'] = DBSession.query(foto.ruta_de_foto).\
+            join(describible).\
+            join(usuario).\
+            filter(and_(usuario.rastreable_p == _id, foto.ruta_de_foto.like('%miniaturas%'))).first()[0]
             valor['href'] = '#'
             return valor
         def reg_inventario(_id):
@@ -167,7 +189,7 @@ class comunes(object):
         
         entrada['contenido'] = {}
         entrada['contenido']['titulo'] = 'asd'
-        entrada['contenido']['foto'] = 'asdasd'
+        entrada['contenido']['foto'] = 'pasivo.foto'
         entrada['contenido']['texto'] = 'asdasdasdasdasdasdasdasd'
         
         fecha = str(reg.fecha_hora)
@@ -188,9 +210,9 @@ class comunes(object):
             if diferencia.seconds > 3600:
                 entrada['tiempo'] = "{0} hora(s)".format(str(diferencia.seconds/3600))
             elif diferencia.seconds < 3600 and diferencia.seconds > 60:
-                entrada['tiempo'] = "{0} minutos(s)".format(str(diferencia.seconds/60))
+                entrada['tiempo'] = "{0} minuto(s)".format(str(diferencia.seconds/60))
             else:
-                entrada['tiempo'] = "{0} segundos(s)".format(str(diferencia.seconds))
+                entrada['tiempo'] = "{0} segundo(s)".format(str(diferencia.seconds))
         
         return entrada
     

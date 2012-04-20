@@ -122,6 +122,12 @@ class producto_view(diagramas, comunes):
         return resultado
     
     @reify
+    def fotos_miniaturas(self):
+        var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'miniaturas')
+        resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
+        return resultado
+    
+    @reify
     def ruta_categoria_actual(self):
         cat_padre = DBSession.query(producto.categoria).\
         filter_by(producto_id = self.peticion_id).one()[0]        

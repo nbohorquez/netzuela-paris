@@ -146,16 +146,18 @@
 	    			<td>
 	    				<div class="row-fluid">
 	    					<div class="span1.5">
-	    						<div class="thumbnail">
-        							<img src="/estatico/${registro.actor_activo.foto}" alt="foto actor activo" />
-        						</div>
+	    						<a href="${registro.actor_activo.href}">
+		    						<div class="thumbnail">
+	        							<img src="/estatico/${registro.actor_activo.foto}" alt="foto actor activo" />
+	        						</div>
+	        					</a>
 	    					</div>
 	    					<div class="span10.5">
 		    					<p>
 			    					<tal:block tal:switch="registro.accion">
-										<i tal:case="'inserto'" class="icon-pencil"></i>
+										<i tal:case="'inserto'" class="icon-plus"></i>
 										<i tal:case="'abrio'" class="icon-eye-open"></i>
-										<i tal:case="'actualizo'" class="icon-edit"></i>
+										<i tal:case="'actualizo'" class="icon-pencil"></i>
 										<i tal:case="'elimino'" class="icon-trash"></i>
 										<i tal:case="'bloqueo'" class="icon-lock"></i>
 										<i tal:case="'abrio sesion'" class="icon-user"></i>
@@ -165,10 +167,10 @@
 									${registro.accion}
 									<a tal:attributes="href registro.actor_pasivo.href">${registro.actor_pasivo.nombre}</a>
 								</p>
-								<p>
-									<br /><br />
-									<small>hace ${registro.tiempo}</small>
-								</p>
+								<h5>Titulo</h5>
+								<p>Contenido</p>
+								<br /><br />
+								<p><small>hace ${registro.tiempo}</small></p>
 							</div>
 	    				</div>
 	    			</td>
