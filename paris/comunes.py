@@ -29,7 +29,7 @@ from .models import (
     tienda,
     usuario
 )
-from sqlalchemy import and_, or_, case
+from sqlalchemy import and_, or_, case, func
 from datetime import datetime
 
 class comunes(object):
@@ -76,12 +76,13 @@ class comunes(object):
             }[tipo](tipo_id)
         def reg_cliente(_id):
             valor = {}
-            valor['nombre'] = DBSession.query(cliente.nombre_comun).\
-            filter_by(rastreable_p = _id).one()[0]
+            valor['nombre'], valor['titulo'] = DBSession.query(cliente.nombre_comun, cliente.nombre_legal).\
+            filter_by(rastreable_p = _id).one()
+            
             valor['foto'] = DBSession.query(foto.ruta_de_foto).\
             join(describible).\
             join(cliente).\
-            filter(and_(cliente.rastreable_p == _id, foto.ruta_de_foto.like('%miniaturas%'))).first()[0]
+            filter(cliente.rastreable_p == _id)
 
             tmp1, tmp2 = DBSession.query(case([
                 (cliente.rif == tienda.cliente_p, 'tienda'),
@@ -98,45 +99,51 @@ class comunes(object):
                 ),
                 cliente.rastreable_p == _id, 
             )).first()
+            
             valor['href'] = {
                 'tienda': lambda x: peticion.route_url('tienda', tienda_id = x),
                 'patrocinante': lambda x: peticion.route_url('patrocinante', patrocinante_id = x)
             }[tmp1](tmp2)
+            
             return valor
         def reg_usuario(_id):
             valor = {}
             tmp1, tmp2 = DBSession.query(usuario.nombre, usuario.apellido).\
-            filter_by(rastreable_p = _id).one()            
+            filter_by(rastreable_p = _id).one()
             valor['nombre'] = "{0} {1}".format(tmp1, tmp2)
             valor['foto'] = DBSession.query(foto.ruta_de_foto).\
             join(describible).\
             join(usuario).\
-            filter(and_(usuario.rastreable_p == _id, foto.ruta_de_foto.like('%miniaturas%'))).first()[0]
+            filter(usuario.rastreable_p == _id)
             valor['href'] = '#'
             return valor
         def reg_inventario(_id):
             valor = {}
-            valor['nombre'] = DBSession.query(inventario.descripcion).\
+            valor['titulo'] = valor['nombre'] = DBSession.query(inventario.descripcion).\
             filter_by(rastreable_p = _id).one()[0]
             valor['foto'] = DBSession.query(foto.ruta_de_foto).\
             join(describible).\
             join(producto).\
             join(inventario).\
-            filter(and_(inventario.rastreable_p == _id, foto.ruta_de_foto.like('%miniaturas%'))).first()[0]
-            valor['titulo'] = DBSession.query(producto.nombre)
+            filter(inventario.rastreable_p == _id)
             valor['href'] = '#'
             return valor
         def reg_croquis(_id):
             valor = {}
-            valor['nombre'] = 'croquis'
+            valor['titulo'] = valor['nombre'] = 'croquis'
             valor['href'] = '#'
             return valor
         def reg_producto(_id):
             valor = {}
             tmp1, tmp2 = DBSession.query(producto.fabricante, producto.nombre).\
             filter_by(rastreable_p = _id).one()
-            valor['nombre'] = "{0} {1}".format(tmp1, tmp2)
-            valor['href'] = '#'
+            valor['foto'] = DBSession.query(foto.ruta_de_foto).\
+            join(describible).\
+            join(producto).\
+            filter(producto.rastreable_p == _id)
+            valor['nombre'] = valor['titulo'] = "{0} {1}".format(tmp1, tmp2)
+            tmp = DBSession.query(producto.producto_id).filter_by(rastreable_p = _id).one()[0]
+            valor['href'] = peticion.route_url('producto', producto_id = tmp)
             return valor
         def reg_mensaje(_id):
             valor = {}
@@ -161,11 +168,28 @@ class comunes(object):
         def reg_descripcion(_id):
             valor = {}
             valor['nombre'] = 'descripcion'
+            valor['titulo'] = DBSession.query(case([
+                (descripcion.describible == producto.describible_p, func.concat(producto.fabricante, ' ', producto.nombre)),
+                (descripcion.describible == cliente.describible_p, cliente.nombre_legal),
+                (descripcion.describible == usuario.describible_p, func.concat(usuario.nombre, ' ', usuario.apellido)),
+                (descripcion.describible == publicidad.describible_p, publicidad.nombre),
+            ])).\
+            filter(and_(
+                or_(
+                    descripcion.describible == producto.describible_p,
+                    descripcion.describible == cliente.describible_p,
+                    descripcion.describible == usuario.describible_p,
+                    descripcion.describible == publicidad.describible_p
+                ),
+                descripcion.rastreable_p == _id
+            )).first()[0]
             valor['href'] = '#'
             return valor
         def reg_publicidad(_id):
             valor = {}
             valor['nombre'] = 'publicidad'
+            valor['titulo'] = DBSession.query(publicidad.nombre).\
+            filter_by(rastreable_p = _id).one()[0]
             valor['href'] = '#'
             return valor
         def reg_estadisticas(_id):
@@ -180,17 +204,26 @@ class comunes(object):
             return valor
 
         activo = obtener_objeto(self.tipo_de_rastreable(reg.actor_activo), reg.actor_activo)
+        if 'foto' in activo:
+            tmp = activo['foto'].filter(foto.ruta_de_foto.like('%miniaturas%')).first()
+            activo['foto'] = tmp[0]
+        else:
+            activo['foto'] = ''
+        
         pasivo = obtener_objeto(self.tipo_de_rastreable(reg.actor_pasivo), reg.actor_pasivo)
+        if 'foto' in pasivo:
+            tmp = pasivo['foto'].filter(foto.ruta_de_foto.like('%pequenas%')).first()
+            pasivo['foto'] = tmp[0]
+        else:
+            pasivo['foto'] = ''
         
         entrada = {}
         entrada['actor_activo'] = activo
         entrada['actor_pasivo'] = pasivo
         entrada['accion'] = ACCION[reg.accion]
         
-        entrada['contenido'] = {}
-        entrada['contenido']['titulo'] = 'asd'
-        entrada['contenido']['foto'] = 'pasivo.foto'
-        entrada['contenido']['texto'] = 'asdasdasdasdasdasdasdasd'
+        entrada['columnas'] = reg.columna.split(',') 
+        entrada['contenido'] = reg.valor.split(',')
         
         fecha = str(reg.fecha_hora)
         ano = int(fecha[0:4])

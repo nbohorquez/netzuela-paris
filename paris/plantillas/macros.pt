@@ -167,8 +167,24 @@
 									${registro.accion}
 									<a tal:attributes="href registro.actor_pasivo.href">${registro.actor_pasivo.nombre}</a>
 								</p>
-								<h5>Titulo</h5>
-								<p>Contenido</p>
+								<img src="/estatico/${registro.actor_pasivo.foto}" alt="foto actor pasivo" />
+								<h5>${registro.actor_pasivo.titulo}</h5>
+								<table class="table">
+						  			<tbody>
+							    		<tr>
+							    			<td>
+							    				<p>
+							    					<span tal:repeat="columna registro.columnas">${columna}<br /></span>
+							    				</p>
+							    			</td>
+						  					<td>
+						  						<p>
+						  							<span tal:repeat="valor registro.contenido">${valor}<br /></span>
+						  						</p>
+						  					</td>
+						  				</tr>
+						  			</tbody>
+								</table>
 								<br /><br />
 								<p><small>hace ${registro.tiempo}</small></p>
 							</div>
