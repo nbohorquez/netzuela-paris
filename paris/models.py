@@ -1,12 +1,10 @@
+from constantes import TABLAS
+from pyramid.security import Allow, Everyone
 from sqlalchemy import MetaData, Table, Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker, mapper
 from zope.sqlalchemy import ZopeTransactionExtension
-from constantes import TABLAS
-#from .__init__ import motor
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
-Base = declarative_base()
 
 # Asocia las tablas de la base de datos con clases en python
 def cargar_tablas(motor):
@@ -17,7 +15,7 @@ def cargar_tablas(motor):
 		esquema_tabla = Table(tabla, metadata, autoload=True)
 		mixIn(objeto, [object])
 		mapper(globals()[objeto], esquema_tabla)
-	# Cargamos el "diferente": la vista InventarioReciente. Esta no tiene PK definida.
+	# Cargamos el primer "diferente": la vista inventario_reciente. Esta no tiene PK definida.
 	esquema_tabla = Table('inventario_reciente', metadata,
 						Column("tienda_id", Integer, primary_key=True),
 						Column("codigo", String, primary_key=True),
@@ -25,6 +23,7 @@ def cargar_tablas(motor):
 	mixIn('inventario_reciente', [object])
 	mapper(globals()['inventario_reciente'], esquema_tabla)
 	
+	# Cargamos el segundo "diferente": la vista tamano_reciente. Tampoco tiene PK definida.
 	esquema_tabla = Table('tamano_reciente', metadata,
 						Column("tienda_id", Integer, primary_key=True),
 						Column("fecha_inicio", String, primary_key=True),
@@ -41,3 +40,11 @@ def mixIn(classname, parentclasses):
 		createclass = "class %s:\n\tpass" % classname
 	exec createclass
 	globals()[classname] = eval(classname)
+
+class root_factory(object):
+	__acl__ = [ (Allow, Everyone, 'ver'),
+                (Allow, 'groupo:tiendas', 'editar_tienda'),
+				(Allow, 'groupo:consumidores', 'editar_consumidor') ]
+	
+	def __init__(self, request):
+		pass

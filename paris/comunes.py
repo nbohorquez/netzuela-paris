@@ -119,8 +119,9 @@ class comunes(object):
             return valor
         def reg_inventario(_id):
             valor = {}
-            valor['titulo'] = valor['nombre'] = DBSession.query(inventario.descripcion).\
-            filter_by(rastreable_p = _id).one()[0]
+            tmp = DBSession.query(inventario.descripcion).\
+            filter_by(rastreable_p = _id).one()
+            valor['titulo'] = valor['nombre'] = tmp[0] if (tmp is not None) else None
             valor['foto'] = DBSession.query(foto.ruta_de_foto).\
             join(describible).\
             join(producto).\
@@ -142,8 +143,9 @@ class comunes(object):
             join(producto).\
             filter(producto.rastreable_p == _id)
             valor['nombre'] = valor['titulo'] = "{0} {1}".format(tmp1, tmp2)
-            tmp = DBSession.query(producto.producto_id).filter_by(rastreable_p = _id).one()[0]
-            valor['href'] = peticion.route_url('producto', producto_id = tmp)
+            tmp3 = DBSession.query(producto.producto_id).filter_by(rastreable_p = _id).one()
+            tmp4 = tmp3[0] if (tmp3 is not None) else None
+            valor['href'] = peticion.route_url('producto', producto_id = tmp4)
             return valor
         def reg_mensaje(_id):
             valor = {}
@@ -168,7 +170,7 @@ class comunes(object):
         def reg_descripcion(_id):
             valor = {}
             valor['nombre'] = 'descripcion'
-            valor['titulo'] = DBSession.query(case([
+            tmp = DBSession.query(case([
                 (descripcion.describible == producto.describible_p, func.concat(producto.fabricante, ' ', producto.nombre)),
                 (descripcion.describible == cliente.describible_p, cliente.nombre_legal),
                 (descripcion.describible == usuario.describible_p, func.concat(usuario.nombre, ' ', usuario.apellido)),
@@ -182,14 +184,16 @@ class comunes(object):
                     descripcion.describible == publicidad.describible_p
                 ),
                 descripcion.rastreable_p == _id
-            )).first()[0]
+            )).first()
+            valor['titulo'] = tmp[0] if (tmp is not None) else ""
             valor['href'] = '#'
             return valor
         def reg_publicidad(_id):
             valor = {}
             valor['nombre'] = 'publicidad'
-            valor['titulo'] = DBSession.query(publicidad.nombre).\
-            filter_by(rastreable_p = _id).one()[0]
+            tmp = DBSession.query(publicidad.nombre).\
+            filter_by(rastreable_p = _id).one()
+            valor['titulo'] = tmp[0] if (tmp is not None) else ""
             valor['href'] = '#'
             return valor
         def reg_estadisticas(_id):
@@ -202,18 +206,24 @@ class comunes(object):
             valor['nombre'] = 'factura'
             valor['href'] = '#'
             return valor
-
-        activo = obtener_objeto(self.tipo_de_rastreable(reg.actor_activo), reg.actor_activo)
+        
+        por_defecto = {}
+        por_defecto['nombre'] = por_defecto['titulo'] = ''
+        por_defecto['href'] = '#'
+        
+        tipo_activo = self.tipo_de_rastreable(reg.actor_activo)
+        activo = obtener_objeto(tipo_activo, reg.actor_activo) if (tipo_activo is not None) else por_defecto
         if 'foto' in activo:
             tmp = activo['foto'].filter(foto.ruta_de_foto.like('%miniaturas%')).first()
-            activo['foto'] = tmp[0]
+            activo['foto'] = tmp[0] if (tmp is not None) else ''
         else:
             activo['foto'] = ''
         
-        pasivo = obtener_objeto(self.tipo_de_rastreable(reg.actor_pasivo), reg.actor_pasivo)
+        tipo_pasivo = self.tipo_de_rastreable(reg.actor_pasivo)
+        pasivo = obtener_objeto(tipo_pasivo, reg.actor_pasivo) if (tipo_pasivo is not None) else por_defecto
         if 'foto' in pasivo:
             tmp = pasivo['foto'].filter(foto.ruta_de_foto.like('%pequenas%')).first()
-            pasivo['foto'] = tmp[0]
+            pasivo['foto'] = tmp[0] if (tmp is not None) else ''
         else:
             pasivo['foto'] = ''
         
@@ -222,8 +232,8 @@ class comunes(object):
         entrada['actor_pasivo'] = pasivo
         entrada['accion'] = ACCION[reg.accion]
         
-        entrada['columnas'] = reg.columna.split(',') 
-        entrada['contenido'] = reg.valor.split(',')
+        entrada['columnas'] = reg.columna.split(',') if (reg.columna is not None) else '' 
+        entrada['contenido'] = reg.valor.split(',') if (reg.valor is not None) else ''
         
         fecha = str(reg.fecha_hora)
         ano = int(fecha[0:4])
@@ -250,7 +260,7 @@ class comunes(object):
         return entrada
     
     def tipo_de_rastreable(self, rastreable_id):
-        return DBSession.query(case([
+        tmp = DBSession.query(case([
             (rastreable_id == cliente.rastreable_p, 'cliente'),
             (rastreable_id == inventario.rastreable_p, 'inventario'),
             (rastreable_id == producto.rastreable_p, 'producto'),
@@ -279,7 +289,9 @@ class comunes(object):
             rastreable_id == estadisticas.rastreable_p,
             rastreable_id == croquis.rastreable_p,
             rastreable_id == factura.rastreable_p
-        )).first()[0]
+        )).first()
+        
+        return tmp[0] if (tmp is not None) else None
             
     def obtener_ruta_territorio(self, terr_id):
         ruta = []
@@ -339,10 +351,17 @@ class comunes(object):
         return resultado
     
     def obtener_tienda(self, tie_id):
-        return DBSession.query(tienda).filter_by(tienda_id = tie_id).one()
+        tmp = DBSession.query(tienda).filter_by(tienda_id = tie_id).first()
+        return tmp if (tmp is not None) else {}
     
     def obtener_producto(self, pro_id):
-        return DBSession.query(producto).filter_by(producto_id = pro_id).one()
+        tmp = DBSession.query(producto).filter_by(producto_id = pro_id).first()
+        return tmp if (tmp is not None) \
+        else { 
+        'codigo': 'no registrado', 
+        'nombre': '', 
+        'categoria': '0.0A.00.00.00.00' 
+        }
         
     def sql_foto(self, objeto, objeto_id, tamano):
         def foto_tienda():
@@ -384,8 +403,11 @@ class comunes(object):
         return sql
             
     def obtener_foto(self, objeto, objeto_id, tamano):
-        resultado = self.sql_foto(objeto, objeto_id, tamano)
-        return resultado.first()
+        por_defecto = {}
+        por_defecto['ruta_de_foto'] = ''
+        por_defecto['foto_id'] = por_defecto['describible'] = 0
+        tmp = self.sql_foto(objeto, objeto_id, tamano).first()
+        return tmp if (tmp is not None) else por_defecto
     
     def obtener_fotos(self, objeto, objeto_id, tamano):
         resultado = self.sql_foto(objeto, objeto_id, tamano)

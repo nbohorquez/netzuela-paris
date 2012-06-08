@@ -5,7 +5,6 @@ Created on 09/04/2012
 '''
 
 from .comunes import comunes
-from .constantes import MENSAJE_DE_ERROR
 from .models import (
     calificable_seguible,
     calificacion_resena,
@@ -34,7 +33,7 @@ from .models import (
 )
 from .diagramas import diagramas
 from pyramid.decorator import reify
-from pyramid.httpexceptions import (HTTPNotFound)
+from pyramid.security import authenticated_userid
 from pyramid.view import view_config
 from sqlalchemy import and_, func
 from sqlalchemy.orm import aliased
@@ -52,6 +51,7 @@ p = aliased(producto)
 class listado_view(diagramas, comunes):
     def __init__(self, peticion):
         self.peticion = peticion
+        self.pagina_anterior = peticion.url
         if 'categoria_id' in self.peticion.matchdict and 'territorio_id' in self.peticion.matchdict:
             self.categoria_id = self.peticion.matchdict['categoria_id']
             self.territorio_id = self.peticion.matchdict['territorio_id']
@@ -59,6 +59,10 @@ class listado_view(diagramas, comunes):
     @reify
     def peticion(self):
         return self.peticion
+    
+    @reify
+    def pagina_anterior(self):
+        return self.pagina_anterior
         
     @reify
     def categoria_id(self):
@@ -165,7 +169,7 @@ class listado_view(diagramas, comunes):
         )).all()
         
         self.subtipo_de_peticion = 'Productos'
-        return {'pagina': self.subtipo_de_peticion, 'lista': productos}
+        return {'pagina': self.subtipo_de_peticion, 'lista': productos, 'autentificado': authenticated_userid(self.peticion)}
     
     @view_config(route_name='tiendas', renderer='plantillas/listado.pt')
     def listado_tiendas_view(self):
@@ -180,7 +184,7 @@ class listado_view(diagramas, comunes):
         tiendas = DBSession.query(tie).all()
         
         self.subtipo_de_peticion = 'Tiendas'        
-        return {'pagina': self.subtipo_de_peticion, 'lista': set(tiendas)}
+        return {'pagina': self.subtipo_de_peticion, 'lista': set(tiendas), 'autentificado': authenticated_userid(self.peticion)}
     
     @view_config(route_name="territorio_coordenadas", renderer="json")
     def territorio_coordenadas_view(self):

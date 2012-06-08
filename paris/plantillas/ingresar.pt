@@ -1,0 +1,17 @@
+<div metal:use-macro="view.diagrama_global">
+	<div metal:fill-slot="contenido">
+		
+		<!-- Encabezado
+		================================================== -->
+		<div class="page-header">
+  			<h1>Autentificación</h1>
+  			<span tal:replace="mensaje"></span>
+		</div>
+		
+		<!-- Contenido
+		================================================== -->	
+		<div id="contenido_pestanas" class="tab-content">
+			<div metal:use-macro="view.macros['ingresar']"></div>
+		</div>
+	</div>
+</div>

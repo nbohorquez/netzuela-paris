@@ -41,7 +41,8 @@ from .models import (
 )
 from .diagramas import diagramas
 from pyramid.decorator import reify
-from pyramid.httpexceptions import (HTTPNotFound)
+from pyramid.httpexceptions import HTTPNotFound
+from pyramid.security import authenticated_userid
 from pyramid.view import view_config
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import aliased
@@ -54,12 +55,17 @@ import string
 class tienda_view(diagramas, comunes):
     def __init__(self, peticion):
         self.peticion = peticion
+        self.pagina_anterior = peticion.url
         if 'tienda_id' in self.peticion.matchdict:
             self.tienda_id = self.peticion.matchdict['tienda_id']
         
     @reify
     def peticion(self):
         return self.peticion
+    
+    @reify
+    def pagina_anterior(self):
+        return self.pagina_anterior
     
     @reify
     def peticion_id(self):
@@ -213,7 +219,7 @@ class tienda_view(diagramas, comunes):
         var_tienda = self.obtener_tienda(self.tienda_id)
         resultado = HTTPNotFound(MENSAJE_DE_ERROR) \
         if (var_tienda is None) \
-        else {'pagina': 'Tienda', 'tienda': var_tienda}
+        else {'pagina': 'Tienda', 'tienda': var_tienda, 'autentificado': authenticated_userid(self.peticion)}
         return resultado
 
     @view_config(route_name="tienda_turno", renderer="json")

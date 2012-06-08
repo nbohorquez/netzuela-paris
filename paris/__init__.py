@@ -1,16 +1,27 @@
+from .models import DBSession, cargar_tablas
+from pyramid.authentication import AuthTktAuthenticationPolicy
+from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
-
-from .models import DBSession, cargar_tablas
 
 def main(global_config, **settings):
 	""" This function returns a Pyramid WSGI application.
 	"""
+	# Cargamos de forma dinamica todas las tablas desde la base de datos
 	engine = engine_from_config(settings, 'sqlalchemy.')
 	cargar_tablas(engine)
-	#globals()['motor'] = engine
 	DBSession.configure(bind=engine)
-	config = Configurator(settings=settings)
+	
+	# Tengo que cargar paris.seguridad.obtener_grupos de forma dinamica porque depende de una clase
+	# (acceso) que fue cargado de forma dinamica tambien en el paso anterior.
+	modulo = __import__('paris.seguridad', fromlist=['obtener_grupos'])
+	obtener_grupos = getattr(modulo, 'obtener_grupos')
+	authn_policy = AuthTktAuthenticationPolicy('iuahxN151_!=QSC?', callback=obtener_grupos)
+	authz_policy = ACLAuthorizationPolicy()
+	
+	config = Configurator(settings=settings, root_factory='paris.models.root_factory')
+	config.set_authentication_policy(authn_policy)
+	config.set_authorization_policy(authz_policy)
 	config.add_static_view('estatico', 'estatico', cache_max_age=3600)
 	config.add_route('inicio', '/')
 	config.add_route('producto', '/producto/{producto_id}')
@@ -20,5 +31,7 @@ def main(global_config, **settings):
 	config.add_route('tienda_turno', '/tienda_turno.json')
 	config.add_route('tienda_coordenadas', '/tienda_coordenadas.json')
 	config.add_route('territorio_coordenadas', '/territorio_coordenadas.json')
+	config.add_route('ingresar', '/ingresar')
+	config.add_route('salir', '/salir')
 	config.scan()
 	return config.make_wsgi_app()

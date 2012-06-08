@@ -167,25 +167,22 @@
 									${registro.accion}
 									<a tal:attributes="href registro.actor_pasivo.href">${registro.actor_pasivo.nombre}</a>
 								</p>
-								<img src="/estatico/${registro.actor_pasivo.foto}" alt="foto actor pasivo" />
 								<h5>${registro.actor_pasivo.titulo}</h5>
 								<table class="table">
-						  			<tbody>
-							    		<tr>
-							    			<td>
-							    				<p>
-							    					<span tal:repeat="columna registro.columnas">${columna}<br /></span>
-							    				</p>
-							    			</td>
-						  					<td>
-						  						<p>
-						  							<span tal:repeat="valor registro.contenido">${valor}<br /></span>
-						  						</p>
-						  					</td>
-						  				</tr>
-						  			</tbody>
+									<tbody>
+										<tr>
+											<td>
+												<img src="/estatico/${registro.actor_pasivo.foto}" alt="foto actor pasivo" />
+											</td>
+											<td>
+							    				<p><span tal:repeat="columna registro.columnas">${columna}<br /></span></p>
+											</td>
+											<td>
+										  		<p><span tal:repeat="valor registro.contenido">${valor}<br /></span></p>
+										  	</td>
+										</tr>
+									</tbody>
 								</table>
-								<br /><br />
 								<p><small>hace ${registro.tiempo}</small></p>
 							</div>
 	    				</div>
@@ -194,5 +191,19 @@
   			</tbody>
 		</table>
 	</metal:noticias>
+	
+	<!-- Ingresar
+	================================================== -->	
+	<metal:ingresar define-macro="ingresar">
+		<form action="/ingresar" method="post" accept-charset="UTF-8">
+		  	<input type="text" name="usuario" style="margin-bottom: 15px;" size="30" placeholder="Correo electrónico" />
+			<input type="password" name="contrasena" style="margin-bottom: 15px;" size="30" placeholder="Contraseña" />
+			<label class="checkbox">
+				<input type="checkbox" name="recordame" />
+				Recordame
+			</label>
+		 	<input class="btn btn-primary" type="submit" name="ingresar" style="clear: left; width: 100%; height: 32px; font-size: 13px;" value="Ingresar" />
+		</form>
+	</metal:ingresar>	
 </body>
 </html>

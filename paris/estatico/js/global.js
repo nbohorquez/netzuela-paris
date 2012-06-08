@@ -26,6 +26,13 @@ $(document).ready(function() {
 		});
 	});
 
+	// Este codigo evita que se cierre el dropdown al hacer clic sobre el formulario de ingreso
+	$('.dropdown-menu').find('form').click(function(e) {
+		e.stopPropagation();
+	});
+	
+	// No escribais nada despues de estas lineas porque el javascript no lo va a ejecutar
+	// No se por que...
 	$(".collapse").collapse();
 	$('.carousel').carousel()
 });
