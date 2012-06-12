@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:tal="http://xml.zope.org/namespaces/tal">
@@ -193,16 +192,17 @@
 	</metal:noticias>
 	
 	<!-- Ingresar
-	================================================== -->	
+	================================================== -->
 	<metal:ingresar define-macro="ingresar">
 		<form action="/ingresar" method="post" accept-charset="UTF-8">
-		  	<input type="text" name="usuario" style="margin-bottom: 15px;" size="30" placeholder="Correo electrónico" />
-			<input type="password" name="contrasena" style="margin-bottom: 15px;" size="30" placeholder="Contraseña" />
+			<input type="hidden" name="pagina_anterior" class="input-large" value="${view.pagina_anterior}" />
+		  	<input type="text" name="usuario" class="input-large" placeholder="Correo electrónico" />
+			<input type="password" name="contrasena" class="input-large" placeholder="Contraseña" />
 			<label class="checkbox">
 				<input type="checkbox" name="recordame" />
 				Recordame
 			</label>
-		 	<input class="btn btn-primary" type="submit" name="ingresar" style="clear: left; width: 100%; height: 32px; font-size: 13px;" value="Ingresar" />
+		 	<input class="btn btn-primary" type="submit" name="ingresar" value="Ingresar" />
 		</form>
 	</metal:ingresar>	
 </body>

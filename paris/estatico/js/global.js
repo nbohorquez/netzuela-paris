@@ -4,6 +4,8 @@
 
 $(document).ready(function() {
 	var pagina = $("input[name=pagina]").val();
+	pantalla.alto = screen.height;
+	pantalla.ancho = screen.width;
 	
 	$("#navegacion li").each(function() {
 		// Chequeo si this.text() contiene la cadena de caracteres objeto.val()
@@ -37,6 +39,11 @@ $(document).ready(function() {
 	$('.carousel').carousel()
 });
 
+var pantalla = {
+	alto: null,
+	ancho: null
+}
+
 $('#gadget_colapsable').on('hidden', function () {
 	$("#gadget").css({'height':'auto'});
 	google.maps.event.trigger(google_map.mapa, 'resize');
@@ -44,7 +51,10 @@ $('#gadget_colapsable').on('hidden', function () {
 });
 
 $('#gadget_colapsable').on('show', function () {
-	$("#gadget").css({'height':'40%'});
+	// Debido a que la pagina tiene el encabezado "DOCTYPE html", es necesario especificar
+	// el tamaño del lienzo del mapa en pixeles y no en porcentajes. Mas informacion aqui:
+	// http://stackoverflow.com/questions/3217928/google-map-not-working-with-xhtml-doctype-document-type
+	$("#gadget").css({'height': (pantalla.alto * 0.4).toString() + 'px'});
 	$("#mapa").height($("#gadget").height() - $("#gadget_encabezado").height());
 	google.maps.event.trigger(google_map.mapa, 'resize');
 	

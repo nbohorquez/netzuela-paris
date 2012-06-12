@@ -10,7 +10,6 @@ from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import remember, forget
 from pyramid.view import view_config, forbidden_view_config
-from sqlalchemy import exists
 
 class acceso_view(diagramas):
     def __init__(self, peticion):

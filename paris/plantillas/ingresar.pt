@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <div metal:use-macro="view.diagrama_global">
 	<div metal:fill-slot="contenido">
 		
@@ -11,7 +12,11 @@
 		<!-- Contenido
 		================================================== -->	
 		<div id="contenido_pestanas" class="tab-content">
-			<div metal:use-macro="view.macros['ingresar']"></div>
+			<div class="row-fluid">
+				<div class="span4">
+					<div metal:use-macro="view.macros['ingresar']"></div>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
