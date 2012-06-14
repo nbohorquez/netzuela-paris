@@ -51,7 +51,7 @@ p = aliased(producto)
 class listado_view(diagramas, comunes):
     def __init__(self, peticion):
         self.peticion = peticion
-        self.pagina_anterior = peticion.url
+        self.pagina_actual = peticion.url
         if 'categoria_id' in self.peticion.matchdict and 'territorio_id' in self.peticion.matchdict:
             self.categoria_id = self.peticion.matchdict['categoria_id']
             self.territorio_id = self.peticion.matchdict['territorio_id']
@@ -61,8 +61,8 @@ class listado_view(diagramas, comunes):
         return self.peticion
     
     @reify
-    def pagina_anterior(self):
-        return self.pagina_anterior
+    def pagina_actual(self):
+        return self.pagina_actual
         
     @reify
     def categoria_id(self):

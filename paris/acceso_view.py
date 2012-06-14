@@ -10,17 +10,22 @@ from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import remember, forget
 from pyramid.view import view_config, forbidden_view_config
+import bcrypt
 
 class acceso_view(diagramas):
     def __init__(self, peticion):
         ingresar_url = peticion.route_url('ingresar')
         # never use the login form itself as came_from
-        self.referido_por = peticion.url if (peticion.url != ingresar_url) else '/'
+        self.referido_por = peticion.url if (peticion.url != ingresar_url) else '/productos'
         self.peticion = peticion
     
     @reify
     def peticion(self):
         return self.peticion
+    
+    @reify
+    def pagina_actual(self):
+        return self.peticion.route_url
     
     @reify
     def pagina_anterior(self):
@@ -30,7 +35,7 @@ class acceso_view(diagramas):
         resultado = False
         tmp = DBSession.query(acceso.contrasena).filter_by(correo_electronico = usuario).first()
         if tmp is not None:
-            if tmp[0] == contrasena:
+            if bcrypt.hashpw(contrasena, tmp[0]) == tmp[0]:
                 resultado = True
         
         return resultado
@@ -49,6 +54,8 @@ class acceso_view(diagramas):
                 return HTTPFound(location = self.pagina_anterior, headers = headers)
             else:
                 mensaje = 'Ingreso fallido (par usuario/contrasena invalido)'
+        elif 'registrarse' in self.peticion.params:
+            return HTTPFound(location = self.peticion.route_url('registro'))
     
         return { 'pagina': 'Ingresar', 'mensaje': mensaje }
         

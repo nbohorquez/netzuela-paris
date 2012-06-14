@@ -15,6 +15,7 @@ requires = [
     'zope.sqlalchemy',
     'waitress',
     'mysql-python',
+	'py-bcrypt'
     ]
 
 setup(name='paris',

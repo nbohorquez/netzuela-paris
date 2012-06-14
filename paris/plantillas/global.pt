@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
@@ -44,7 +44,17 @@
 						<li class="dropdown" tal:condition="not autentificado">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Ingresar<b class="caret"></b></a>
 							<div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
-								<div metal:use-macro="view.macros['ingresar']"></div>
+								<form action="/ingresar" method="post" accept-charset="UTF-8">
+									<input type="hidden" name="pagina_anterior" value="${view.pagina_actual}" />
+								  	<input type="text" name="usuario" class="input-large" placeholder="Correo electrónico" />
+									<input type="password" name="contrasena" class="input-large" placeholder="Contraseña" />
+									<label class="checkbox">
+										<input type="checkbox" name="recordame" />
+										Recordame
+									</label>
+								 	<input class="btn btn-primary" type="submit" name="ingresar" value="Ingresar" />
+								 	<input class="btn" type="submit" name="registrarse" value="No tengo cuenta" />
+								</form>
 							</div>
 						</li>
 						<li tal:condition="autentificado">

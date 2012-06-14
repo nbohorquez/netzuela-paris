@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <div metal:use-macro="view.diagrama_global">
 	<div metal:fill-slot="contenido">
 		

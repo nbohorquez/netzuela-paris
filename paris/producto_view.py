@@ -48,7 +48,7 @@ from pyramid.view import view_config
 class producto_view(diagramas, comunes):
     def __init__(self, peticion):
         self.peticion = peticion
-        self.pagina_anterior = peticion.url
+        self.pagina_actual = peticion.url
         if 'producto_id' in self.peticion.matchdict:
             self.producto_id = self.peticion.matchdict['producto_id']
 
@@ -57,8 +57,8 @@ class producto_view(diagramas, comunes):
         return self.peticion
     
     @reify
-    def pagina_anterior(self):
-        return self.pagina_anterior
+    def pagina_actual(self):
+        return self.pagina_actual
     
     @reify
     def peticion_id(self):

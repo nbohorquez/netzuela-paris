@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<div metal:use-macro="view.diagrama_global">
+	<div metal:fill-slot="contenido">
+		
+		<!-- Encabezado
+		================================================== -->
+		<div class="page-header">
+  			<h1>Registro</h1>
+		</div>
+		
+		<!-- Contenido
+		================================================== -->	
+		<div id="contenido_pestanas" class="tab-content">
+			<form class="form-horizontal">
+		        <fieldset>
+		        	<div class="control-group">
+		            	<label class="control-label" for="usuario">Correo electrónico</label>
+		            	<div class="controls">
+		              		<input type="text" class="input-xlarge" placeholder="usuario@proveedor.com" id="usuario" />
+		            	</div>
+		          	</div>
+		          	<div class="control-group">
+		            	<label class="control-label" for="contrasena">Contraseña</label>
+		            	<div class="controls">
+		              		<input type="password" class="input-xlarge" id="contrasena" />
+		              		<p class="help-block">De al menos 8 carácteres, que contenga números, letras de diferente tamaño y carácteres especiales</p>
+		            	</div>
+		          	</div>
+		          	<div class="control-group">
+		            	<label class="control-label" for="nombre">Nombre</label>
+		            	<div class="controls">
+		              		<input type="text" class="input-xlarge" id="nombre" />
+		            	</div>
+		          	</div>
+		          	<div class="control-group">
+		            	<label class="control-label" for="apellido">Apellido</label>
+		            	<div class="controls">
+		              		<input type="text" class="input-xlarge" id="apellido" />
+		            	</div>
+		          	</div>
+		          	<div class="form-actions">
+		            	<button type="submit" class="btn btn-primary">Enviar</button>
+		            	<button class="btn">Cancelar</button>
+		          	</div>
+		        </fieldset>
+			</form>
+		</div>
+	</div>
+</div>

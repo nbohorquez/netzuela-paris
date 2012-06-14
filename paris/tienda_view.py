@@ -55,7 +55,7 @@ import string
 class tienda_view(diagramas, comunes):
     def __init__(self, peticion):
         self.peticion = peticion
-        self.pagina_anterior = peticion.url
+        self.pagina_actual = peticion.url
         if 'tienda_id' in self.peticion.matchdict:
             self.tienda_id = self.peticion.matchdict['tienda_id']
         
@@ -64,8 +64,8 @@ class tienda_view(diagramas, comunes):
         return self.peticion
     
     @reify
-    def pagina_anterior(self):
-        return self.pagina_anterior
+    def pagina_actual(self):
+        return self.pagina_actual
     
     @reify
     def peticion_id(self):

@@ -42,5 +42,6 @@ def main(global_config, **settings):
 	config.add_route('territorio_coordenadas', '/territorio_coordenadas.json')
 	config.add_route('ingresar', '/ingresar')
 	config.add_route('salir', '/salir')
+	config.add_route('registro', '/registro')
 	config.scan()
 	return config.make_wsgi_app()

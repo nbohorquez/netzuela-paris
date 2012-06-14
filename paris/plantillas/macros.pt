@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:tal="http://xml.zope.org/namespaces/tal">
@@ -190,20 +190,5 @@
   			</tbody>
 		</table>
 	</metal:noticias>
-	
-	<!-- Ingresar
-	================================================== -->
-	<metal:ingresar define-macro="ingresar">
-		<form action="/ingresar" method="post" accept-charset="UTF-8">
-			<input type="hidden" name="pagina_anterior" class="input-large" value="${view.pagina_anterior}" />
-		  	<input type="text" name="usuario" class="input-large" placeholder="Correo electrónico" />
-			<input type="password" name="contrasena" class="input-large" placeholder="Contraseña" />
-			<label class="checkbox">
-				<input type="checkbox" name="recordame" />
-				Recordame
-			</label>
-		 	<input class="btn btn-primary" type="submit" name="ingresar" value="Ingresar" />
-		</form>
-	</metal:ingresar>	
 </body>
 </html>
