@@ -36,13 +36,13 @@ $(document).ready(function() {
 	// No escribais nada despues de estas lineas porque el javascript no lo va a ejecutar
 	// No se por que...
 	$(".collapse").collapse();
-	$('.carousel').carousel()
+	$('.carousel').carousel();
 });
 
 var pantalla = {
 	alto: null,
 	ancho: null
-}
+};
 
 $('#gadget_colapsable').on('hidden', function () {
 	$("#gadget").css({'height':'auto'});

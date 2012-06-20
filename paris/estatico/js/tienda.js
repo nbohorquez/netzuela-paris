@@ -27,7 +27,7 @@ var tienda = {
 	id: null,
 	puntos: new Array(),
 	temporizador: null
-}
+};
 
 tienda.actualizar = function () {
 	var dias = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];

@@ -190,5 +190,84 @@
   			</tbody>
 		</table>
 	</metal:noticias>
+	<metal:condiciones define-macro="condiciones">
+		<div class="modal-header">
+        	<button type="button" class="close" data-dismiss="modal">&times;</button>
+          	<h3>Condiciones del Servicio</h3>
+        </div>
+        <div class="modal-body">
+        	<p>
+        		Estas Condiciones de Servicio ("Condiciones") gobiernan el acceso y uso 
+        		de los servicios, incluyendo nuestras distintas páginas web, SMS, APIs, 
+        		notificaciones por correo electrónico, aplicaciones, iconos y widgets 
+        		(en adelante, los "Servicios" o "Twitter"), así como el acceso y uso de 
+        		cualquier información, texto, gráficos, fotos u otro material cargado, 
+        		descargado o que se reproduzca a través de los Servicios (en adelante, 
+        		de forma conjunta, el "Contenido"). El acceso y uso de los Servicios queda
+        		condicionado a la aceptación y cumplimiento de estas Condiciones. Al acceder 
+        		o usar los Servicios, usted consiente la aplicación de estas Condiciones.
+        	</p>
+
+			<h4>1. Condiciones Básicas</h4>
+			<p>
+				Usted es el único responsable por el uso que pueda dar a los Servicios, por 
+				todo Contenido que usted reproduzca a través de los Servicios y por cualquier 
+				consecuencia que de ello se derive. El Contenido que usted envíe, muestre o 
+				reproduzca podrá ser visto por otros usuarios de los Servicios y a través de 
+				páginas web o servicios de terceros (diríjase por favor a la configuración de 
+				su cuenta para determinar quién puede acceder a su Contenido). Tenga en cuenta 
+				que tan solo debe proporcionar el Contenido que usted considere oportuno compartir 
+				con terceros de conformidad con lo dispuesto en estas Condiciones.
+          	</p>
+          	
+          	<h4>2. Privacidad</h4>
+			<p>
+				Cualquier información que usted facilite a Twitter está sujeta a nuestra Política 
+				de Privacidad que rige la recogida y el uso de su información por parte de Twitter. 
+				Por la presente se le informa de que el uso de los Servicios comporta su 
+				consentimiento implícito a la recogida y el uso de esta información (conforme a lo 
+				dispuesto en la Política de Privacidad), incluyendo, asimismo, su consentimiento 
+				implícito a la transferencia de esta información a Estados Unidos o a otros países 
+				para su almacenamiento, tratamiento y uso por parte de Twitter. Como parte de la 
+				prestación de los Servicios, es posible que tengamos que notificarle determinada 
+				información como, por ejemplo, las novedades en relación con la prestación de los 
+				Servicios o mensajes de carácter administrativo. Estas notificaciones se consideran 
+				parte integrante de los Servicios y de su cuenta de Twitter y es posible que, por 
+				este motivo, usted no pueda negarse a recibirlas.
+			</p>
+
+			<h4>3. Contraseñas</h4>
+			<p>
+				Usted es el responsable de la custodia de la contraseña que emplea para acceder a 
+				los Servicios y de cualquier actividad o acto que se lleve a cabo con su contraseña. 
+				Recomendamos que proteja su cuenta con una contraseña difícil de descifrar (una 
+				contraseña que contenga combinaciones de letras mayúsculas y minúsculas, números y 
+				símbolos). Twitter no será responsable de ningún perjuicio o daño que resulte del 
+				incumplimiento de lo mencionado con anterioridad.
+			</p>
+			
+          	<h4>4. Sus Derechos</h4>
+			<p>
+				Usted es el titular de los derechos que le amparan sobre cualquier Contenido que 
+				envíe, reproduzca o exponga en los Servicios o a través de los mismos. Mediante el 
+				envío, la reproducción o la exposición de Contenido en los Servicios o a través de 
+				los mismos, usted concede a Twitter una licencia mundial, no-exclusiva y gratuita 
+				(así como el derecho de sub-licenciar) sobre el uso, copia, reproducción, procesamiento, 
+				adaptación, modificación, publicación, transmisión, exposición y distribución de 
+				tal Contenido a través de cualquier medio o método de distribución presente o futuro.
+			</p>
+			
+			<address>
+      			<strong>Zuliaworks C.A.</strong><br />
+        		Calle 77, Urb. Los Olivos<br />
+        		Resd. Robalo Apto 9A<br />
+        		Maracaibo, ZU 4005<br />
+        		Correo electrónico: copyright@zuliaworks.com
+      		</address>
+        </div>
+        <div class="modal-footer">
+          	<a href="#" class="btn" data-dismiss="modal">Cerrar</a>
+        </div>
+	</metal:condiciones>
 </body>
 </html>

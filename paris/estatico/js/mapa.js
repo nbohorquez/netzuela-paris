@@ -11,7 +11,7 @@ var google_map = {
   	mapa: null,
   	geocodificador: null,
   	borde: null
-}
+};
 
 google_map.inicializar = function(ubicacion, latLng, zoom) {
 	var opciones = {

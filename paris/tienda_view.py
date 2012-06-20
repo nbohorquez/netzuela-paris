@@ -15,6 +15,7 @@ from .models import (
     consumidor,
     croquis,
     DBSession,
+    dia,
     describible,
     descripcion,
     dibujable,
@@ -46,6 +47,7 @@ from pyramid.security import authenticated_userid
 from pyramid.view import view_config
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import aliased
+from sqlalchemy.sql import asc
 import string
 
 # Aptana siempre va a decir que las clases de spuria (tienda, producto, etc) no estan 
@@ -146,7 +148,8 @@ class tienda_view(diagramas, comunes):
     @reify
     def horarios(self):
         var_horario = DBSession.query(horario_de_trabajo).\
-        filter_by(tienda_id = self.tienda_id).all()
+        join(dia).\
+        filter(horario_de_trabajo.tienda_id == self.tienda_id).order_by(asc(dia.orden)).all()
         
         if var_horario is not None:
             resultado = []
@@ -159,7 +162,7 @@ class tienda_view(diagramas, comunes):
                 horario['turnos'] = string.join(["{0.hora_de_apertura} - {0.hora_de_cierre} ".format(t) for t in turnos])
                 resultado.append(horario)
         else:
-            resultado = [{""}]
+            resultado = [{'dia': 'N/A', 'laborable': 0, 'turnos': ''}]
 
         return resultado
     

@@ -4,6 +4,9 @@ Created on 25/02/2012
 @author: Nestor
 '''
 
+CREADOR = 1
+EDAD_MINIMA = 18
+
 ACCION = { 
           'Insertar': 'inserto',
           'Abrir': 'abrio',

@@ -16,7 +16,7 @@ class acceso_view(diagramas):
     def __init__(self, peticion):
         ingresar_url = peticion.route_url('ingresar')
         # never use the login form itself as came_from
-        self.referido_por = peticion.url if (peticion.url != ingresar_url) else '/productos'
+        self.referido_por = peticion.url if (peticion.url != ingresar_url) else '/'
         self.peticion = peticion
     
     @reify
@@ -53,7 +53,8 @@ class acceso_view(diagramas):
                 headers = remember(self.peticion, usuario)
                 return HTTPFound(location = self.pagina_anterior, headers = headers)
             else:
-                mensaje = 'Ingreso fallido (par usuario/contrasena invalido)'
+                mensaje = 'Par usuario/contrasena invalido'
+                
         elif 'registrarse' in self.peticion.params:
             return HTTPFound(location = self.peticion.route_url('registro'))
     

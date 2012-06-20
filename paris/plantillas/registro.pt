@@ -11,39 +11,96 @@
 		<!-- Contenido
 		================================================== -->	
 		<div id="contenido_pestanas" class="tab-content">
-			<form class="form-horizontal">
+			<div class="alert alert-error" tal:condition="python:len(mensaje) > 0">
+  				<button type="button" class="close" data-dismiss="alert">&times;</button>
+  				<strong>Error</strong> <span tal:replace="mensaje"></span>
+			</div>
+			<form class="form-horizontal" id="formulario_registro" method="post" accept-charset="UTF-8">
 		        <fieldset>
+		        	<input type="hidden" name="pagina_anterior" value="${view.pagina_anterior}" />
 		        	<div class="control-group">
-		            	<label class="control-label" for="usuario">Correo electrónico</label>
+		            	<label class="control-label" for="correo_electronico">Correo electrónico</label>
 		            	<div class="controls">
-		              		<input type="text" class="input-xlarge" placeholder="usuario@proveedor.com" id="usuario" />
+		              		<input type="text" class="input-xlarge required email" placeholder="usuario@proveedor.com" id="correo_electronico" name="correo_electronico" />
 		            	</div>
 		          	</div>
 		          	<div class="control-group">
 		            	<label class="control-label" for="contrasena">Contraseña</label>
 		            	<div class="controls">
-		              		<input type="password" class="input-xlarge" id="contrasena" />
-		              		<p class="help-block">De al menos 8 carácteres, que contenga números, letras de diferente tamaño y carácteres especiales</p>
+		              		<input type="password" class="input-xlarge" id="contrasena" name="contrasena" />
 		            	</div>
 		          	</div>
 		          	<div class="control-group">
+		            	<label class="control-label" for="repetir_contrasena">Repetir contraseña</label>
+		            	<div class="controls">
+		              		<input type="password" class="input-xlarge" id="repetir_contrasena" name="repetir_contrasena"/>
+		            	</div>
+		          	</div>
+		          	<hr />
+		          	<div class="control-group">
 		            	<label class="control-label" for="nombre">Nombre</label>
 		            	<div class="controls">
-		              		<input type="text" class="input-xlarge" id="nombre" />
+		              		<input type="text" class="input-xlarge" id="nombre" name="nombre" />
 		            	</div>
 		          	</div>
 		          	<div class="control-group">
 		            	<label class="control-label" for="apellido">Apellido</label>
 		            	<div class="controls">
-		              		<input type="text" class="input-xlarge" id="apellido" />
+		              		<input type="text" class="input-xlarge" id="apellido" name="apellido" />
 		            	</div>
 		          	</div>
+			        <div class="control-group">
+			            <label class="control-label">Sexo</label>
+			            <div class="controls">
+			            	<label class="radio inline" tal:repeat="item view.sexos">
+			                	<input type="radio" name="sexo" tal:condition="repeat.item.index == 0" value="${item.valor}" checked />
+			                	<input type="radio" name="sexo" tal:condition="repeat.item.index != 0" value="${item.valor}" />
+			                	<span class="help-inline">${item.valor}</span>
+			              	</label>
+		            	</div>
+		            </div>
+		            <div class="control-group">
+			        	<label class="control-label" for="grado_de_instruccion">Grado de instrucción</label>
+			            <div class="controls">
+			            	<select id="grado_de_instruccion" name="grado_de_instruccion">
+			            		<option tal:repeat="item view.grados_de_instruccion" tal:content="item.valor"></option>
+			              	</select>
+			            </div>
+			        </div>
+			        <div class="control-group">
+			            <label class="control-label" for="fecha_de_nacimiento">Fecha de nacimiento</label>
+			            <div class="controls">
+			                <input data-datepicker="datepicker" id="fecha_de_nacimiento" name="fecha_de_nacimiento" class="small" type="text" />
+						</div>
+					</div>
+					<hr />
+					<div class="control-group">
+			            <label class="control-label" for="condiciones">
+			            	<a data-toggle="modal" href="#condiciones_servicio">Condiciones del servicio</a>
+			            </label>
+			            <div class="controls">
+			            	<label class="checkbox">
+			                	<input type="checkbox" id="condiciones" name="condiciones" value="Acepto" />
+			                	Acepto
+			              	</label>
+		            	</div>
+		            </div>
 		          	<div class="form-actions">
-		            	<button type="submit" class="btn btn-primary">Enviar</button>
-		            	<button class="btn">Cancelar</button>
+		          		<button class="btn btn-primary" type="submit" name="enviar" id="enviar">Enviar</button>
+		            	<button class="btn" type="submit" name="cancelar" id="cancelar">Cancelar</button>
 		          	</div>
 		        </fieldset>
 			</form>
+			<div id="condiciones_servicio" class="modal hide fade">
+	            <div metal:use-macro="view.macros['condiciones']"></div>
+			</div>
 		</div>
+	</div>
+	<div metal:fill-slot="scripts_extra">
+		<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
+		<script type="text/javascript" src="/estatico/js/bootstrap-datepicker.js"></script>
+		<script type="text/javascript" src="/estatico/js/bootstrap-alert.js"></script>
+		<script type="text/javascript" src="/estatico/js/bootstrap-modal.js"></script>
+		<script type="text/javascript" src="/estatico/js/registro.js"></script>
 	</div>
 </div>
