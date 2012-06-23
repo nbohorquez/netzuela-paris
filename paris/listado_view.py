@@ -52,8 +52,9 @@ class listado_view(diagramas, comunes):
     def __init__(self, peticion):
         self.peticion = peticion
         self.pagina_actual = peticion.url
-        if 'categoria_id' in self.peticion.matchdict and 'territorio_id' in self.peticion.matchdict:
+        if 'categoria_id' in self.peticion.matchdict: 
             self.categoria_id = self.peticion.matchdict['categoria_id']
+        if 'territorio_id' in self.peticion.matchdict:
             self.territorio_id = self.peticion.matchdict['territorio_id']
         
     @reify
@@ -188,16 +189,20 @@ class listado_view(diagramas, comunes):
     
     @view_config(route_name="territorio_coordenadas", renderer="json")
     def territorio_coordenadas_view(self):
-        var_territorio = self.peticion.params['territorio_id']
-        puntos = []
+        #var_territorio = self.peticion.params['territorio_id']
+        poligonos = []
         
-        for lat, lng in DBSession.query(punto.latitud, punto.longitud).\
-        join(punto_de_croquis).\
-        join(croquis).\
+        for crq in DBSession.query(croquis.croquis_id).\
         join(dibujable).\
         join(territorio).\
-        filter_by(territorio_id = var_territorio).all():
-            pto = {'latitud': "{0}".format(str(lat)), 'longitud': "{0}".format(str(lng))}
-            puntos.append(pto)
+        filter_by(territorio_id = self.territorio_id).all():
+            poligono = []
+            for lat, lng in DBSession.query(punto.latitud, punto.longitud).\
+            join(punto_de_croquis).\
+            join(croquis).\
+            filter_by(croquis_id = crq[0]).all():
+                pto = {'latitud': "{0}".format(str(lat)), 'longitud': "{0}".format(str(lng))}
+                poligono.append(pto)
+            poligonos.append(poligono)
 
-        return { 'puntos': puntos }
+        return { 'poligonos': poligonos }

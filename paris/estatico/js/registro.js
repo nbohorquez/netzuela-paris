@@ -25,6 +25,12 @@ $.extend($.fn.datepicker.defaults, {
 });
 
 $(document).ready(function() {
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(mostrar_posicion, error_posicion);
+	} else {
+		alert('Tu navegador no soporta Geolocation API, ¡usa vergas buenas!');
+	}
+	
 	$('#formulario_registro').validate({
 		rules: {
 			correo_electronico: {
@@ -82,3 +88,11 @@ $(document).ready(function() {
 	    }
 	});
 });
+
+function mostrar_posicion(posicion) {
+	google_map.agregar_marcador(posicion.coords.latitude, posicion.coords.longitude);
+}
+
+function error_posicion() {
+	alert('Error al obtener tu posicion');
+}

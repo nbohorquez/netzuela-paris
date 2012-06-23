@@ -5,7 +5,9 @@
 $(document).ready(function() {
 	tienda.temporizador = setInterval(tienda.actualizar, 5000);
 	tienda.id = $('input[name=tienda_id]').val();
-	$.getJSON('/tienda_coordenadas.json', { tienda_id: tienda.id }, function(data) {
+	$.getJSON('/tienda/' + tienda.id + '/coordenadas.json', function(data) {
+		// Se extienden los bordes para que toda la tienda sea visible en el mapa. 
+		// Las tiendas pueden tener mas de un punto, es decir, pueden ser un poligono
 		for (var i = 0; i < data.puntos.length; i++) {
 			var punto = new Array();
 			punto['latitud'] = data.puntos[i].latitud.replace(",", ".");
@@ -13,9 +15,12 @@ $(document).ready(function() {
 			google_map.extender_borde(punto['latitud'], punto['longitud']);
 			tienda.puntos.push(punto);
 		}
+		// Sin embargo colocamos el marcador en el primer punto solamente. Se podria emplear
+		// alguna funcion matematica para calcular el centro del poligono tambien.
 		google_map.agregar_marcador(tienda.puntos[0]['latitud'], tienda.puntos[0]['longitud']);		
 	});
 	
+	// Esto activa los popover sobre los dias de la semana en el horario de la tienda
 	$('a[rel="popover"]').popover();
 });
 
@@ -34,7 +39,7 @@ tienda.actualizar = function () {
 	var hoy = new Date();
 	//var tienda = $('input[name=tienda_id]').val();
 	
-	$.getJSON('/tienda_turno.json', { dia: dias[hoy.getDay()], tienda_id: tienda.id }, function(data) {
+	$.getJSON('/tienda/' + tienda.id + '/turno.json', { dia: dias[hoy.getDay()] }, function(data) {
 		var milisegundos_a_horas = 1/(1000*60*60);
 		var porcentaje;
 
