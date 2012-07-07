@@ -10,15 +10,32 @@ $(document).ready(function() {
 var google_map = {
   	mapa: null,
   	geocodificador: null,
-  	borde: null
+  	borde: null,
+  	estilos : [{
+	    featureType: "road",
+	    stylers: [
+	    	{ visibility: "off" }
+	    ]
+	},{
+		featureType: "poi",
+	    stylers: [
+	    	{ visibility: "off" }
+	    ]
+	},{
+		featureType: "transit",
+	    stylers: [
+	    	{ visibility: "off" }
+	    ]
+	}]
 };
 
 google_map.inicializar = function(ubicacion, latLng, zoom) {
 	var opciones = {
-	    zoom:zoom,
+	    zoom: zoom,
 	    center: latLng,
-	    mapTypeId: google.maps.MapTypeId.ROADMAP
-  	}
+	    mapTypeId: google.maps.MapTypeId.ROADMAP,
+	    styles: google_map.estilos
+  	};
   	this.mapa = new google.maps.Map($(ubicacion)[0], opciones);
   	this.geocodificador = new google.maps.Geocoder();
 	this.borde = new google.maps.LatLngBounds();

@@ -228,7 +228,6 @@ class tienda_view(diagramas, comunes):
     @view_config(route_name="tienda_turno", renderer="json")
     def tienda_turno_view(self):
         var_dia = self.peticion.params['dia']
-        #var_tienda = self.peticion.matchdict['tienda_id']
         
         apertura, cierre = DBSession.query(turno.hora_de_apertura, turno.hora_de_cierre).\
         filter(and_(
@@ -240,7 +239,6 @@ class tienda_view(diagramas, comunes):
         
     @view_config(route_name="tienda_coordenadas", renderer="json")
     def tienda_coordenadas_view(self):
-        #var_tienda = self.peticion.matchdict['tienda_id']
         puntos = []
         
         for lat, lng in DBSession.query(punto.latitud, punto.longitud).\

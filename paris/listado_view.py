@@ -189,7 +189,6 @@ class listado_view(diagramas, comunes):
     
     @view_config(route_name="territorio_coordenadas", renderer="json")
     def territorio_coordenadas_view(self):
-        #var_territorio = self.peticion.params['territorio_id']
         poligonos = []
         
         for crq in DBSession.query(croquis.croquis_id).\
