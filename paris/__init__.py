@@ -39,7 +39,7 @@ def main(global_config, **settings):
 	config.add_route('tiendas', '/tiendas/cat{categoria_id}geo{territorio_id}')
 	config.add_route('tienda_turno', '/tienda/{tienda_id}/turno.json')
 	config.add_route('tienda_coordenadas', '/tienda/{tienda_id}/coordenadas.json')
-	config.add_route('territorio_coordenadas', '/territorio/{territorio_id}/coordenadas.json')
+	config.add_route('territorio_coordenadas', '/territorio/terr{territorio_id}niv{nivel}/coordenadas.json')
 	config.add_route('ingresar', '/ingresar')
 	config.add_route('salir', '/salir')
 	config.add_route('registro', '/registro')

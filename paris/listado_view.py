@@ -5,6 +5,7 @@ Created on 09/04/2012
 '''
 
 from .comunes import comunes
+from .constantes import MENSAJE_DE_ERROR
 from .models import (
     calificable_seguible,
     calificacion_resena,
@@ -33,6 +34,7 @@ from .models import (
 )
 from .diagramas import diagramas
 from pyramid.decorator import reify
+from pyramid.httpexceptions import HTTPNotFound
 from pyramid.security import authenticated_userid
 from pyramid.view import view_config
 from sqlalchemy import and_, func
@@ -56,6 +58,8 @@ class listado_view(diagramas, comunes):
             self.categoria_id = self.peticion.matchdict['categoria_id']
         if 'territorio_id' in self.peticion.matchdict:
             self.territorio_id = self.peticion.matchdict['territorio_id']
+        if 'nivel' in self.peticion.matchdict:
+            self.nivel = self.peticion.matchdict['nivel']
         
     @reify
     def peticion(self):
@@ -189,19 +193,30 @@ class listado_view(diagramas, comunes):
     
     @view_config(route_name="territorio_coordenadas", renderer="json")
     def territorio_coordenadas_view(self):
-        poligonos = []
-        
-        for crq in DBSession.query(croquis.croquis_id).\
-        join(dibujable).\
-        join(territorio).\
-        filter_by(territorio_id = self.territorio_id).all():
-            poligono = []
-            for lat, lng in DBSession.query(punto.latitud, punto.longitud).\
-            join(punto_de_croquis).\
-            join(croquis).\
-            filter_by(croquis_id = crq[0]).all():
-                pto = {'latitud': "{0}".format(str(lat)), 'longitud': "{0}".format(str(lng))}
-                poligono.append(pto)
-            poligonos.append(poligono)
+        nivel_terr = DBSession.query(territorio.nivel).filter_by(territorio_id = self.territorio_id).first()[0]
 
-        return { 'poligonos': poligonos }
+        if nivel_terr + int(self.nivel) < 0:
+            return HTTPNotFound(MENSAJE_DE_ERROR)
+        
+        dibus = DBSession.query(territorio.dibujable_p).\
+        filter(and_(
+            territorio.nivel == nivel_terr + int(self.nivel),
+            territorio.territorio_id.contains(self.territorio_base)
+        )).all()
+        
+        terrs = []
+        for dibu in dibus:
+            poligonos = []
+            for crq in DBSession.query(croquis.croquis_id).\
+            join(dibujable, croquis.dibujable == dibujable.dibujable_id).\
+            filter(dibujable.dibujable_id == dibu[0]).all():
+                poligono = ''
+                for lat, lng in DBSession.query(punto.latitud, punto.longitud).\
+                join(punto_de_croquis).\
+                join(croquis).\
+                filter_by(croquis_id = crq[0]).all():
+                    poligono += "{0}:{1} ".format(str(lat),str(lng))
+                poligonos.append(poligono.strip(' '))
+            terrs.append(poligonos)
+
+        return { 'territorios': terrs }

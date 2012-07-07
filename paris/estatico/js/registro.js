@@ -25,11 +25,57 @@ $.extend($.fn.datepicker.defaults, {
 });
 
 $(document).ready(function() {
+	var venezuela = '0.02.00.00.00.00';
+	// Colores provistos por http://colorbrewer2.org/index.php?type=diverging&scheme=RdBu&n=10
+	var colores = ["#67001F", "#B2182B", "#D6604D", "#F4A582", "#FDDBC7", "#D1E5F0", "#92C5DE", "#4393C3", "#2166AC", "#053061"];
+	$.getJSON('/territorio/terr' + venezuela + 'niv2/coordenadas.json', function(data) {
+		//var terrs = new Array();
+		
+		// Este lazo recorre cada territorio
+		for (var i = 0; i < data.territorios.length; i++) {
+			var territorio = {
+				contornos: new Array(),
+				poligono: null
+			};
+			
+			// Este lazo recorre cada poligono (contorno) de cada territorio
+			for (var j = 0; j < data.territorios[i].length; j++) {			
+				var contorno = new Array();
+				var coordenadas = data.territorios[i][j].split(' ');
+				// Este lazo recorre cada coordenada de cada poligono
+				for (var k = 0; k < coordenadas.length; k++) {
+					var pto = coordenadas[k].split(':');
+					pto[0] = pto[0].replace(",", ".");
+					pto[1] = pto[1].replace(",", ".");			
+					google_map.extender_borde(pto[0], pto[1]);
+					var punto_gmap = new google.maps.LatLng(pto[0], pto[1]);
+					contorno.push(punto_gmap);
+				}
+				territorio.contornos.push(contorno);
+			}
+			
+			var color = colores[Math.floor(Math.random()*5)];
+			territorio.poligono = new google.maps.Polygon({
+			    paths: territorio.contornos,
+	    		strokeColor: "#000000",
+	    		strokeOpacity: 0.8,
+	    		strokeWeight: 0.5,
+	    		fillColor: color,
+	    		fillOpacity: 0.35
+			});
+			
+			territorio.poligono.setMap(google_map.mapa);
+			//terrs.push(territorio);
+		}
+	});	
+			
+	/*
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(mostrar_posicion, error_posicion);
 	} else {
-		alert('Tu navegador no soporta Geolocation API, ¡usa vergas buenas!');
+		alert('Tu navegador no soporta Geolocation API');
 	}
+	*/
 	
 	$('#formulario_registro').validate({
 		rules: {

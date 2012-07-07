@@ -73,8 +73,8 @@ class registro_view(diagramas, comunes):
                 fecha_time = strptime(valido['fecha_de_nacimiento'], '%d/%m/%Y')
                 fecha_string = strftime('%Y-%m-%d', fecha_time)
                 
-                DBSession.connection().execute('begin')
-                resultado = DBSession.connection().execute(sql, 
+                DBSession.execute('begin')
+                resultado = DBSession.execute(sql, params=dict(
                     a_creador = CREADOR,
                     a_nombre = valido['nombre'],
                     a_apellido = valido['apellido'],
@@ -86,8 +86,8 @@ class registro_view(diagramas, comunes):
                     a_ubicacion = '0.02.01.03.00.00',
                     a_correo_electronico = valido['correo_electronico'],
                     a_contrasena = bcrypt.hashpw(valido['contrasena'], bcrypt.gensalt())
-                ).scalar()
-                DBSession.connection().execute('commit')
+                )).scalar()
+                DBSession.execute('commit')
                 
                 if resultado == 1048:
                     mensaje = 'Error de valor nulo: ¿le faltó por llenar algún campo?'

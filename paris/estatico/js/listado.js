@@ -4,22 +4,23 @@
 
 $(document).ready(function() {
 	territorio.id = $('input[name=territorio_id]').val();
-	$.getJSON('/territorio/' + territorio.id + '/coordenadas.json', function(data) {
-		for (var i = 0; i < data.poligonos.length; i++) {			
-			var poligono = new Array();
-			for (var j = 0; j < data.poligonos[i].length; j++) {
-				var punto = new Array();
-				punto['latitud'] = data.poligonos[i][j].latitud.replace(",", ".");
-				punto['longitud'] = data.poligonos[i][j].longitud.replace(",", ".");
-				google_map.extender_borde(punto['latitud'], punto['longitud']);
-				var punto_gmap = new google.maps.LatLng(punto['latitud'], punto['longitud']);
-				poligono.push(punto_gmap);
+	$.getJSON('/territorio/terr' + territorio.id + 'niv0/coordenadas.json', function(data) {
+		for (var j = 0; j < data.territorios[0].length; j++) {			
+			var contorno = new Array();
+			var coordenadas = data.territorios[0][j].split(' ');
+			for (var k = 0; k < coordenadas.length; k++) {
+				var pto = coordenadas[k].split(':');
+				pto[0] = pto[0].replace(",", ".");
+				pto[1] = pto[1].replace(",", ".");
+				google_map.extender_borde(pto[0], pto[1]);
+				var punto_gmap = new google.maps.LatLng(pto[0], pto[1]);
+				contorno.push(punto_gmap);
 			}
-			territorio.poligonos.push(poligono);
+			territorio.contornos.push(contorno);
 		}
 		
-		var poligono_visible = new google.maps.Polygon({
-		    paths: territorio.poligonos,
+		territorio.poligono = new google.maps.Polygon({
+		    paths: territorio.contornos,
     		strokeColor: "#FF0000",
     		strokeOpacity: 0.8,
     		strokeWeight: 2,
@@ -27,26 +28,12 @@ $(document).ready(function() {
     		fillOpacity: 0.35
 		});
 		
-		poligono_visible.setMap(google_map.mapa);
-		/*
-		var valores = "";
-		paths = poligono_visible.getPaths();
-		for (var i = 0; i < paths.getLength(); i++)
-		{
-			valores += 'Poligono[' + i.toString() + ']:';
-			for(var j = 0; j < paths.getAt(i).getLength(); j++)
-			{
-				valores += paths.getAt(i).getAt(j).lat() + ',' + paths.getAt(i).getAt(j).lng() + ' ';
-			}
-			valores += "\n";
-		}
-		alert(valores);
-		*/
+		territorio.poligono.setMap(google_map.mapa);
 	});
 });
 
 var territorio = {
 	id: null,
-	poligonos: new Array(),
-	contornos: new Array()
+	contornos: new Array(),
+	poligono: null
 };
