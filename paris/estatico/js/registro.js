@@ -2,73 +2,14 @@
  * @author Nestor Bohorquez
  */
 
-/* Cambio el formato de la fecha a dd/mm/aaaa */
-$.extend($.fn.datepicker.defaults, {
-	parse: function (string) {
-  		var matches;
-  		if ((matches = string.match(/^(\d{2,2})\/(\d{2,2})\/(\d{4,4})$/))) {
-        	return new Date(matches[3], matches[2] - 1, matches[1]);
-  		} else {
-            return null;
-      	}
-	},
-	format: function (date) {
-    	var month = (date.getMonth() + 1).toString(), dom = date.getDate().toString();
-  		if (month.length === 1) {
-          	month = "0" + month;
-    	}
-  		if (dom.length === 1) {
-          	dom = "0" + dom;
-  		}
-  		return dom + "/" + month + "/" + date.getFullYear();
-	}
-});
-
 $(document).ready(function() {
-	var venezuela = '0.02.00.00.00.00';
-	// Colores provistos por http://colorbrewer2.org/index.php?type=diverging&scheme=RdBu&n=10
-	var colores = ["#67001F", "#B2182B", "#D6604D", "#F4A582", "#FDDBC7", "#D1E5F0", "#92C5DE", "#4393C3", "#2166AC", "#053061"];
-	$.getJSON('/territorio/terr' + venezuela + 'niv2/coordenadas.json', function(data) {
-		//var terrs = new Array();
-		
-		// Este lazo recorre cada territorio
-		for (var i = 0; i < data.territorios.length; i++) {
-			var territorio = {
-				contornos: new Array(),
-				poligono: null
-			};
-			
-			// Este lazo recorre cada poligono (contorno) de cada territorio
-			for (var j = 0; j < data.territorios[i].length; j++) {			
-				var contorno = new Array();
-				var coordenadas = data.territorios[i][j].split(' ');
-				// Este lazo recorre cada coordenada de cada poligono
-				for (var k = 0; k < coordenadas.length; k++) {
-					var pto = coordenadas[k].split(':');
-					pto[0] = pto[0].replace(",", ".");
-					pto[1] = pto[1].replace(",", ".");			
-					google_map.extender_borde(pto[0], pto[1]);
-					var punto_gmap = new google.maps.LatLng(pto[0], pto[1]);
-					contorno.push(punto_gmap);
-				}
-				territorio.contornos.push(contorno);
-			}
-			
-			var color = colores[Math.floor(Math.random()*5)];
-			territorio.poligono = new google.maps.Polygon({
-			    paths: territorio.contornos,
-	    		strokeColor: "#000000",
-	    		strokeOpacity: 0.8,
-	    		strokeWeight: 0.5,
-	    		fillColor: color,
-	    		fillOpacity: 0.35
-			});
-			
-			territorio.poligono.setMap(google_map.mapa);
-			//terrs.push(territorio);
-		}
-	});	
-			
+	google_map.extender_borde("7.623887", "-68.730469");
+	google_map.extender_borde("11.22151", "-63.896484");
+	
+	var Venezuela = '0.02.00.00.00.00';
+	$.getJSON('/territorio/terr' + Venezuela + 'niv1/coordenadas.json', dibujar_limites);
+	$.getJSON('/territorio/terr' + Venezuela + 'niv2/coordenadas.json', dibujar_regiones);
+	
 	/*
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(mostrar_posicion, error_posicion);
@@ -99,6 +40,9 @@ $(document).ready(function() {
 	      	},
 	      	grado_de_instruccion: {
 	      		required: true
+	      	},
+	      	region: {
+	      		required: false
 	      	},
 	      	fecha_de_nacimiento: {
 	      		required: true
@@ -135,6 +79,92 @@ $(document).ready(function() {
 	});
 });
 
+function dibujar_limites(data) {
+	// Este lazo recorre cada territorio
+	for (var i = 0; i < data.territorios.length; i++) {
+		var terr = new Territorio({
+			id: data.territorios[i].id,
+			nombre: data.territorios[i].nombre,
+			mapa: google_map
+		});
+		
+		// Este lazo recorre cada contorno de cada territorio
+		for (var j = 0; j < data.territorios[i].poligonos.length; j++) {
+			var contorno = new Array();
+			var coordenadas = data.territorios[i].poligonos[j].split(' ');
+			// Este lazo recorre cada coordenada de cada poligono
+			for (var k = 0; k < coordenadas.length; k++) {
+				var pto = coordenadas[k].split(':');
+				pto[0] = pto[0].replace(",", ".");
+				pto[1] = pto[1].replace(",", ".");
+				contorno.push(new google.maps.LatLng(pto[0], pto[1]));
+			}
+			
+			terr.crear_polilinea(contorno);
+		}
+	}
+}
+
+function dibujar_regiones(data) {
+	// Colores provistos por http://colorbrewer2.org/index.php?type=diverging&scheme=RdBu&n=10
+	var colores = ["#67001F", "#B2182B", "#D6604D", "#F4A582", "#FDDBC7", "#D1E5F0", "#92C5DE", "#4393C3", "#2166AC", "#053061"];
+	var infobox = $(document.createElement('div'))
+		.attr({'id': 'infobox'})
+		.css({
+			'border': '1px solid black',
+			'margin-top': '8px',
+			'background': '#FFFFFF',
+			'padding': '5px' 
+		});
+			
+	// Este lazo recorre cada territorio
+	for (var i = 0; i < data.territorios.length; i++) {
+		var terr = new Territorio({
+			id: data.territorios[i].id,
+			nombre: data.territorios[i].nombre,
+			color: colores[Math.floor(Math.random()*5)],
+			mapa: google_map
+		});
+		
+		var contornos = new Array();
+		
+		// Este lazo recorre cada poligono (contorno) de cada territorio
+		for (var j = 0; j < data.territorios[i].poligonos.length; j++) {			
+			var contorno = new Array();
+			var coordenadas = data.territorios[i].poligonos[j].split(' ');
+			// Este lazo recorre cada coordenada de cada poligono
+			for (var k = 0; k < coordenadas.length; k++) {
+				var pto = coordenadas[k].split(':');
+				pto[0] = pto[0].replace(",", ".");
+				pto[1] = pto[1].replace(",", ".");
+				contorno.push(new google.maps.LatLng(pto[0], pto[1]));
+			}
+			contornos.push(contorno);
+		}
+		
+		terr.crear_poligono(contornos);
+			
+		terr.attachEvent('mouseover', function(remitente, args) {
+			infobox.html('<span>' + remitente.nombre + '</span>');
+			remitente.poligono.setOptions({fillColor: "#FF0000"});
+			remitente.mapa.infobox.setContent(infobox.outerHtml());
+			remitente.mapa.infobox.setPosition(remitente.mapa.malla.getProjection().fromContainerPixelToLatLng(new google.maps.Point(80, 230)));
+			remitente.mapa.infobox.open(remitente.mapa.mapa);			
+		});
+		
+		terr.attachEvent('mouseout', function(remitente, args) {
+			remitente.poligono.setOptions({fillColor: remitente.color});
+			remitente.mapa.infobox.close();				
+		});		
+		
+		terr.attachEvent('click', function(remitente, args) {
+			$("#ubicacion_visible").text($('#infobox').text());
+			$("#ubicacion").val(contexto.id);
+		});
+	}
+}
+
+/*
 function mostrar_posicion(posicion) {
 	google_map.agregar_marcador(posicion.coords.latitude, posicion.coords.longitude);
 }
@@ -142,3 +172,26 @@ function mostrar_posicion(posicion) {
 function error_posicion() {
 	alert('Error al obtener tu posicion');
 }
+*/
+
+/* Cambio el formato de la fecha a dd/mm/aaaa */
+$.extend($.fn.datepicker.defaults, {
+	parse: function(string) {
+  		var matches;
+  		if ((matches = string.match(/^(\d{2,2})\/(\d{2,2})\/(\d{4,4})$/))) {
+        	return new Date(matches[3], matches[2] - 1, matches[1]);
+  		} else {
+            return null;
+      	}
+	},
+	format: function(date) {
+    	var month = (date.getMonth() + 1).toString(), dom = date.getDate().toString();
+  		if (month.length === 1) {
+          	month = "0" + month;
+    	}
+  		if (dom.length === 1) {
+          	dom = "0" + dom;
+  		}
+  		return dom + "/" + month + "/" + date.getFullYear();
+	}
+});

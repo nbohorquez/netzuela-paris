@@ -3,37 +3,28 @@
  */
 
 $(document).ready(function() {
-	territorio.id = $('input[name=territorio_id]').val();
-	$.getJSON('/territorio/terr' + territorio.id + 'niv0/coordenadas.json', function(data) {
-		for (var j = 0; j < data.territorios[0].length; j++) {			
+	var terr = new Territorio({
+		id: $('input[name=territorio_id]').val(),
+		mapa: google_map,
+		color: "#FF0000"
+	});
+
+	$.getJSON('/territorio/terr' + terr.id + 'niv0/coordenadas.json', function(data) {
+		terr.nombre = data.territorios[0].nombre;
+		var contornos = new Array();
+		for (var j = 0; j < data.territorios[0].poligonos.length; j++) {			
 			var contorno = new Array();
-			var coordenadas = data.territorios[0][j].split(' ');
+			var coordenadas = data.territorios[0].poligonos[j].split(' ');
 			for (var k = 0; k < coordenadas.length; k++) {
 				var pto = coordenadas[k].split(':');
 				pto[0] = pto[0].replace(",", ".");
 				pto[1] = pto[1].replace(",", ".");
-				google_map.extender_borde(pto[0], pto[1]);
-				var punto_gmap = new google.maps.LatLng(pto[0], pto[1]);
-				contorno.push(punto_gmap);
+				terr.mapa.extender_borde(pto[0], pto[1]);
+				contorno.push(new google.maps.LatLng(pto[0], pto[1]));
 			}
-			territorio.contornos.push(contorno);
+			contornos.push(contorno);
 		}
 		
-		territorio.poligono = new google.maps.Polygon({
-		    paths: territorio.contornos,
-    		strokeColor: "#FF0000",
-    		strokeOpacity: 0.8,
-    		strokeWeight: 2,
-    		fillColor: "#FF0000",
-    		fillOpacity: 0.35
-		});
-		
-		territorio.poligono.setMap(google_map.mapa);
+		terr.crear_poligono(contornos);
 	});
 });
-
-var territorio = {
-	id: null,
-	contornos: new Array(),
-	poligono: null
-};

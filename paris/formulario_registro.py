@@ -7,10 +7,11 @@ Created on 19/06/2012
 
 import formencode, re
 from .constantes import EDAD_MINIMA
-from .models import acceso, DBSession, grado_de_instruccion, sexo
+from .models import acceso, DBSession, grado_de_instruccion, sexo, territorio
 from datetime import date, timedelta
 from formencode import validators
 from formencode.api import Invalid
+from sqlalchemy.sql.expression import exists, select
 
 class contrasena_segura(validators.FancyValidator):
     minimo = 8
@@ -78,6 +79,17 @@ class sexo_valido(validators.FancyValidator):
         if valor not in sexos:
             raise Invalid(self.mensaje, valor, estado)
 
+class ubicacion_valida(validators.FancyValidator):
+    mensaje = unicode('Región no conocida', 'utf-8')
+    
+    def _to_python(self, valor, estado):
+        return valor.strip()
+    
+    def validate_python(self, valor, estado):
+        resultado = DBSession.query(territorio.nombre).filter_by(territorio_id = valor).first()
+        if resultado is None:
+            raise Invalid(self.mensaje, valor, estado)
+    
 class edad_valida(validators.FancyValidator):
     convertidor = validators.DateConverter(month_style='dd/mm/yyyy')
     validador = validators.DateValidator(latest_date=date.today()-timedelta(days=EDAD_MINIMA*365.24))
@@ -98,6 +110,7 @@ class formulario(formencode.Schema):
     nombre = validators.String(not_empty=True)
     apellido = validators.String(not_empty=True)
     grado_de_instruccion = formencode.All(validators.String(not_empty=True), grado_de_instruccion_valido())
+    ubicacion = formencode.All(validators.String(not_empty=True), ubicacion_valida())
     sexo = formencode.All(validators.String(not_empty=True), sexo_valido())
     fecha_de_nacimiento = edad_valida()
     chained_validators = [validators.FieldsMatch('contrasena', 'repetir_contrasena')]

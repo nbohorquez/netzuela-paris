@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 Created on 09/04/2012
 
@@ -198,18 +199,18 @@ class listado_view(diagramas, comunes):
         if nivel_terr + int(self.nivel) < 0:
             return HTTPNotFound(MENSAJE_DE_ERROR)
         
-        dibus = DBSession.query(territorio.dibujable_p).\
+        terrs = DBSession.query(territorio.dibujable_p, territorio.nombre, territorio.territorio_id).\
         filter(and_(
             territorio.nivel == nivel_terr + int(self.nivel),
             territorio.territorio_id.contains(self.territorio_base)
         )).all()
         
-        terrs = []
-        for dibu in dibus:
+        resultado = []
+        for dibujo, nombre, cedula in terrs:
             poligonos = []
             for crq in DBSession.query(croquis.croquis_id).\
             join(dibujable, croquis.dibujable == dibujable.dibujable_id).\
-            filter(dibujable.dibujable_id == dibu[0]).all():
+            filter(dibujable.dibujable_id == dibujo).all():
                 poligono = ''
                 for lat, lng in DBSession.query(punto.latitud, punto.longitud).\
                 join(punto_de_croquis).\
@@ -217,6 +218,6 @@ class listado_view(diagramas, comunes):
                 filter_by(croquis_id = crq[0]).all():
                     poligono += "{0}:{1} ".format(str(lat),str(lng))
                 poligonos.append(poligono.strip(' '))
-            terrs.append(poligonos)
+            resultado.append({'nombre': nombre.decode('latin-1'), 'id': cedula, 'poligonos': poligonos})
 
-        return { 'territorios': terrs }
+        return { 'territorios': resultado }

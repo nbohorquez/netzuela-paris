@@ -83,7 +83,7 @@ class registro_view(diagramas, comunes):
                     a_fecha_de_nacimiento = fecha_string,
                     a_grupo_de_edad = 'Adultos jovenes',
                     a_grado_de_instruccion = valido['grado_de_instruccion'],
-                    a_ubicacion = '0.02.01.03.00.00',
+                    a_ubicacion = valido['ubicacion'],
                     a_correo_electronico = valido['correo_electronico'],
                     a_contrasena = bcrypt.hashpw(valido['contrasena'], bcrypt.gensalt())
                 )).scalar()

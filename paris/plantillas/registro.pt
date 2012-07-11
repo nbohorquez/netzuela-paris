@@ -68,6 +68,13 @@
 			            </div>
 			        </div>
 			        <div class="control-group">
+			            <label class="control-label">Ubicación</label>
+			            <div class="controls">
+			            	<span id="ubicacion_visible" class="input-xlarge uneditable-input">Seleccione su región en el mapa de arriba</span>
+		              		<input type="hidden" class="input-xlarge" id="ubicacion" name="ubicacion" />
+		            	</div>
+		            </div>
+			        <div class="control-group">
 			            <label class="control-label" for="fecha_de_nacimiento">Fecha de nacimiento</label>
 			            <div class="controls">
 			                <input data-datepicker="datepicker" id="fecha_de_nacimiento" name="fecha_de_nacimiento" class="small" type="text" />
