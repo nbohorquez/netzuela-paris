@@ -9,9 +9,9 @@ $(document).ready(function() {
 
 var google_map = {
 	infobox: null,
+	infobox_abierto: false,
 	malla: null,
 	cursor: null,
-	cursor_px: null,
   	mapa: null,
   	borde: null,
   	estilos : [{
@@ -38,12 +38,15 @@ var google_map = {
 };
 
 google_map.inicializar = function(ubicacion, latLng, zoom) {
+	var infobox_posicion = new google.maps.Point(80, 230);
+	var contexto = this;
 	var opciones = {
 	    zoom: zoom,
 	    center: latLng,
 	    mapTypeId: google.maps.MapTypeId.ROADMAP,
 	    styles: google_map.estilos
   	};
+  	
   	this.mapa = new google.maps.Map($(ubicacion)[0], opciones);
 	this.borde = new google.maps.LatLngBounds();
 
@@ -52,6 +55,7 @@ google_map.inicializar = function(ubicacion, latLng, zoom) {
 	this.malla.setMap(this.mapa);
 	
 	this.infobox = new InfoBox({
+		content: '',
 		disableAutoPan: false,
 		zIndex: null,
 		closeBoxURL: "",
@@ -60,14 +64,15 @@ google_map.inicializar = function(ubicacion, latLng, zoom) {
 		infoBoxClearance: new google.maps.Size(1, 1),
 		isHidden: false,
 		pane: "floatPane",
-		enableEventPropagation: false
+		enableEventPropagation: false,
 	});
 	
-	var contexto = this;
-	
+	google.maps.event.addListener(this.mapa, 'bounds_changed', function(event) {
+		contexto.infobox.setPosition(contexto.malla.getProjection().fromContainerPixelToLatLng(infobox_posicion));
+	});
+		
 	google.maps.event.addListener(this.mapa, 'mousemove', function(event) {
 		contexto.cursor = event.latLng;
-		contexto.cursor_px = contexto.malla.getProjection().fromLatLngToContainerPixel(event.latLng);
 	});
 }
 

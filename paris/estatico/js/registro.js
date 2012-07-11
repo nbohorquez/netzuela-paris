@@ -81,7 +81,7 @@ $(document).ready(function() {
 
 function dibujar_limites(data) {
 	// Este lazo recorre cada territorio
-	for (var i = 0; i < data.territorios.length; i++) {
+	for (var i = 0, len_i = data.territorios.length; i < len_i; i++) {
 		var terr = new Territorio({
 			id: data.territorios[i].id,
 			nombre: data.territorios[i].nombre,
@@ -89,11 +89,11 @@ function dibujar_limites(data) {
 		});
 		
 		// Este lazo recorre cada contorno de cada territorio
-		for (var j = 0; j < data.territorios[i].poligonos.length; j++) {
+		for (var j = 0, len_j = data.territorios[i].poligonos.length; j < len_j; j++) {
 			var contorno = new Array();
 			var coordenadas = data.territorios[i].poligonos[j].split(' ');
 			// Este lazo recorre cada coordenada de cada poligono
-			for (var k = 0; k < coordenadas.length; k++) {
+			for (var k = 0, len_k = coordenadas.length; k < len_k; k++) {
 				var pto = coordenadas[k].split(':');
 				pto[0] = pto[0].replace(",", ".");
 				pto[1] = pto[1].replace(",", ".");
@@ -108,6 +108,7 @@ function dibujar_limites(data) {
 function dibujar_regiones(data) {
 	// Colores provistos por http://colorbrewer2.org/index.php?type=diverging&scheme=RdBu&n=10
 	var colores = ["#67001F", "#B2182B", "#D6604D", "#F4A582", "#FDDBC7", "#D1E5F0", "#92C5DE", "#4393C3", "#2166AC", "#053061"];
+	var infobox_posicion = new google.maps.Point(80, 230);
 	var infobox = $(document.createElement('div'))
 		.attr({'id': 'infobox'})
 		.css({
@@ -116,9 +117,9 @@ function dibujar_regiones(data) {
 			'background': '#FFFFFF',
 			'padding': '5px' 
 		});
-			
+	
 	// Este lazo recorre cada territorio
-	for (var i = 0; i < data.territorios.length; i++) {
+	for (var i = 0, len_i = data.territorios.length; i < len_i; i++) {
 		var terr = new Territorio({
 			id: data.territorios[i].id,
 			nombre: data.territorios[i].nombre,
@@ -129,11 +130,11 @@ function dibujar_regiones(data) {
 		var contornos = new Array();
 		
 		// Este lazo recorre cada poligono (contorno) de cada territorio
-		for (var j = 0; j < data.territorios[i].poligonos.length; j++) {			
+		for (var j = 0, len_j = data.territorios[i].poligonos.length; j < len_j; j++) {			
 			var contorno = new Array();
 			var coordenadas = data.territorios[i].poligonos[j].split(' ');
 			// Este lazo recorre cada coordenada de cada poligono
-			for (var k = 0; k < coordenadas.length; k++) {
+			for (var k = 0, len_k = coordenadas.length; k < len_k; k++) {
 				var pto = coordenadas[k].split(':');
 				pto[0] = pto[0].replace(",", ".");
 				pto[1] = pto[1].replace(",", ".");
@@ -145,21 +146,25 @@ function dibujar_regiones(data) {
 		terr.crear_poligono(contornos);
 			
 		terr.attachEvent('mouseover', function(remitente, args) {
-			infobox.html('<span>' + remitente.nombre + '</span>');
 			remitente.poligono.setOptions({fillColor: "#FF0000"});
-			remitente.mapa.infobox.setContent(infobox.outerHtml());
-			remitente.mapa.infobox.setPosition(remitente.mapa.malla.getProjection().fromContainerPixelToLatLng(new google.maps.Point(80, 230)));
-			remitente.mapa.infobox.open(remitente.mapa.mapa);			
+			//infobox.html('<span>' + remitente.nombre + '</span>');
+			//remitente.mapa.infobox.setContent(infobox.outerHtml());
+			remitente.mapa.infobox.setContent(remitente.nombre);
+			if (!remitente.mapa.infobox_abierto) {
+				remitente.mapa.infobox_abierto = true;
+				remitente.mapa.infobox.setPosition(remitente.mapa.malla.getProjection().fromContainerPixelToLatLng(infobox_posicion));
+				remitente.mapa.infobox.open(remitente.mapa.mapa);
+			}
 		});
 		
 		terr.attachEvent('mouseout', function(remitente, args) {
 			remitente.poligono.setOptions({fillColor: remitente.color});
-			remitente.mapa.infobox.close();				
+			remitente.mapa.infobox.setContent('');				
 		});		
 		
 		terr.attachEvent('click', function(remitente, args) {
-			$("#ubicacion_visible").text($('#infobox').text());
-			$("#ubicacion").val(contexto.id);
+			$("#ubicacion_visible").text(remitente.nombre);
+			$("#ubicacion").val(remitente.id);
 		});
 	}
 }

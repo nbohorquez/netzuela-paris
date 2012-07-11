@@ -2,6 +2,13 @@
  * @author Nestor Bohorquez
  */
 
+/*
+ * Autor: Chris Pietschmann
+ * JavaScript: Mixing OOP and Event Driven Programming
+ * http://pietschsoft.com/post/2008/11/04/JavaScript-Mixing-OOP-and-Event-Driven-Programming.aspx
+ * vista el 11/07/2012
+ */
+
 EventObject = function() {};
 EventObject.prototype = {
     _eventList: {},
