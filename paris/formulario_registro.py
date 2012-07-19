@@ -7,7 +7,7 @@ Created on 19/06/2012
 
 import formencode, re
 from .constantes import EDAD_MINIMA
-from .models import acceso, DBSession, grado_de_instruccion, sexo, territorio
+from .models import acceso, categoria, DBSession, grado_de_instruccion, sexo, territorio
 from datetime import date, timedelta
 from formencode import validators
 from formencode.api import Invalid
@@ -62,9 +62,19 @@ class grado_de_instruccion_valido(validators.FancyValidator):
         return valor.strip()
     
     def validate_python(self, valor, estado):
-        resultados = DBSession.query(grado_de_instruccion.valor).all()
-        grados = [resultado[0] for resultado in resultados]
-        if valor not in grados:
+        grados = DBSession.query(grado_de_instruccion).filter(grado_de_instruccion.valor == valor).first()
+        if grados is None:
+            raise Invalid(self.mensaje, valor, estado)
+        
+class categoria_valida(validators.FancyValidator):
+    mensaje = unicode('Categoria no conocida', 'utf-8')
+    
+    def _to_python(self, valor, estado):
+        return valor.strip()
+    
+    def validate_python(self, valor, estado):
+        categorias = DBSession.query(categoria).filter(categoria.categoria_id == valor).first()
+        if categorias is None:
             raise Invalid(self.mensaje, valor, estado)
     
 class sexo_valido(validators.FancyValidator):
@@ -74,11 +84,10 @@ class sexo_valido(validators.FancyValidator):
         return valor.strip()
     
     def validate_python(self, valor, estado):
-        resultados = DBSession.query(sexo.valor).all()
-        sexos = [resultado[0] for resultado in resultados]
-        if valor not in sexos:
+        sexos = DBSession.query(sexo).filter(sexo.valor == valor).first()
+        if sexos is None:
             raise Invalid(self.mensaje, valor, estado)
-
+        
 class ubicacion_valida(validators.FancyValidator):
     mensaje = unicode('Región no conocida', 'utf-8')
     
@@ -101,7 +110,16 @@ class edad_valida(validators.FancyValidator):
         convertida = self.convertidor.to_python(valor)
         self.validador.to_python(convertida)
         
-class formulario(formencode.Schema):
+class rif_valido(validators.FancyValidator):
+    validador = validators.Regex(regex='^[JVG]-[0-9]{8}-[0-9]$')
+    
+    def _to_python(self, valor, estado):
+        return valor.strip()
+    
+    def validate_python(self, valor, estado):
+        self.validador.to_python(valor)
+        
+class formulario_consumidor(formencode.Schema):
     allow_extra_fields = True
     filter_extra_fields = True
     correo_electronico = formencode.All(validators.Email(resolve_domain=True), usuario_unico())
@@ -114,3 +132,26 @@ class formulario(formencode.Schema):
     sexo = formencode.All(validators.String(not_empty=True), sexo_valido())
     fecha_de_nacimiento = edad_valida()
     chained_validators = [validators.FieldsMatch('contrasena', 'repetir_contrasena')]
+    
+class formulario_usuario(formencode.Schema):
+    allow_extra_fields = True
+    filter_extra_fields = True
+    correo_electronico = formencode.All(validators.Email(resolve_domain=True), usuario_unico())
+    contrasena = contrasena_segura()
+    repetir_contrasena = validators.String(not_empty=True)
+    nombre = validators.String(not_empty=True)
+    apellido = validators.String(not_empty=True)
+    ubicacion = formencode.All(validators.String(not_empty=True), ubicacion_valida())
+    chained_validators = [validators.FieldsMatch('contrasena', 'repetir_contrasena')]
+    
+class formulario_tienda(formencode.Schema):
+    allow_extra_fields = True
+    filter_extra_fields = True
+    rif = formencode.All(validators.String(not_empty=True), rif_valido())
+    nombre_legal = validators.String(not_empty=True)
+    nombre_comun = validators.String(not_empty=True)
+    categoria = formencode.All(validators.String(not_empty=True), categoria_valida())
+    telefono = formencode.All(validators.String(not_empty=True), validators.Regex(regex='^[1-9][0-9]{2}-[1-9][0-9]{6}$'))
+    calle = validators.String(not_empty=True)
+    urbanizacion = validators.String(not_empty=True)
+    ubicacion = formencode.All(validators.String(not_empty=True), ubicacion_valida())

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from constantes import TABLAS
 from pyramid.security import Allow, Everyone
 from sqlalchemy import MetaData, Table, Column, Integer, String

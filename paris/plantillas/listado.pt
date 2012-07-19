@@ -10,6 +10,7 @@
 		<div id="meta_datos">
 			<input type="hidden" name="territorio_id" value="${view.territorio_id}" />
 			<input type="hidden" name="categoria_id" value="${view.categoria_id}" />
+			<input type="hidden" name="territorio_padre" value="${view.territorio_padre}" />
 		</div>
 		
 		<!-- Listado
@@ -19,8 +20,9 @@
 	        	<li class="span2" tal:repeat="item lista">
 	        		<div tal:define="enlace view.peticion.route_url('producto', producto_id = item.producto_id)">
 	        			<a href="${enlace}">
-	        				<div class="thumbnail">
-	        					<img tal:define="foto view.obtener_foto('producto', item.producto_id, 'pequenas')" src="/estatico/${foto.ruta_de_foto}" alt="producto.nombre" />
+	        				<div class="thumbnail" tal:define="foto view.obtener_foto('producto', item.producto_id, 'pequenas')">
+	        					<img src="http://placehold.it/160x160" alt="producto.nombre" tal:condition="foto.ruta_de_foto == ''"/>
+	        					<img src="/estatico/${foto.ruta_de_foto}" alt="producto.nombre" tal:condition="foto.ruta_de_foto != ''"/>
 	        				</div>
 	        			</a>
 	        			<div class="caption" tal:define="producto view.obtener_producto(item.producto_id)">
@@ -41,8 +43,9 @@
 	        	<li class="span2" tal:repeat="tienda lista">
 	        		<div tal:define="enlace view.peticion.route_url('tienda', tienda_id = tienda.tienda_id)">
 	        			<a href="${enlace}">
-	        				<div class="thumbnail">
-	        					<img tal:define="foto view.obtener_foto('tienda', tienda.tienda_id, 'pequenas')" src="/estatico/${foto.ruta_de_foto}" alt="cliente.nombre_comun" />
+	        				<div class="thumbnail" tal:define="foto view.obtener_foto('tienda', tienda.tienda_id, 'pequenas')">
+	        					<img src="http://placehold.it/160x160" alt="cliente.nombre_comun" tal:condition="foto.ruta_de_foto == ''" />
+	        					<img src="/estatico/${foto.ruta_de_foto}" alt="cliente.nombre_comun" tal:condition="foto.ruta_de_foto != ''" />
 	        				</div>
 	        			</a>
 	        			<div class="caption" tal:define="cliente view.obtener_cliente_padre('tienda', tienda.tienda_id)">

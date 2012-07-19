@@ -2,94 +2,122 @@
  * @author Nestor Bohorquez
  */
 
-$(document).ready(function() {
-	var latLng = new google.maps.LatLng(10.40, -71.44);
-  	google_map.inicializar('#mapa', latLng, 11);
-});
+function Mapa(opciones) {
+	var territorios_crudos = this.parsear_json(opciones.json);
+	switch(opciones.tipo) {
+		case 'poligonos':
+			this.territorios = this.dibujar_poligonos(territorios_crudos, opciones.proveedor);
+			break;
+		case 'polilineas':
+			this.territorios = this.dibujar_limites(territorios_crudos, opciones.proveedor);
+			break;
+		default:
+			break;
+	}
+}
 
-var google_map = {
-	infobox: null,
-	infobox_abierto: false,
-	malla: null,
-	cursor: null,
-  	mapa: null,
-  	borde: null,
-  	estilos : [{
-	    featureType: "road",
-	    stylers: [
-	    	{ visibility: "off" }
-	    ]
-	},{
-		featureType: "poi",
-	    stylers: [
-	    	{ visibility: "off" }
-	    ]
-	},{
-		featureType: "transit",
-	    stylers: [
-	    	{ visibility: "off" }
-	    ]
-	},{
-		featureType: "administrative.province",
-	    stylers: [
-	    	{ visibility: "off" }
-	    ]
-	}]
-};
-
-google_map.inicializar = function(ubicacion, latLng, zoom) {
-	var infobox_posicion = new google.maps.Point(80, 230);
-	var contexto = this;
-	var opciones = {
-	    zoom: zoom,
-	    center: latLng,
-	    mapTypeId: google.maps.MapTypeId.ROADMAP,
-	    styles: google_map.estilos
-  	};
-  	
-  	this.mapa = new google.maps.Map($(ubicacion)[0], opciones);
-	this.borde = new google.maps.LatLngBounds();
-
-    this.malla = new google.maps.OverlayView();
-	this.malla.draw = function() {};
-	this.malla.setMap(this.mapa);
+Mapa.prototype.parsear_json = function(data) {
+	var resultado = [];
 	
-	this.infobox = new InfoBox({
-		content: '',
-		disableAutoPan: false,
-		zIndex: null,
-		closeBoxURL: "",
-		boxStyle: { width: "280px" },
-		closeBoxMargin: "10px 2px 2px 2px",
-		infoBoxClearance: new google.maps.Size(1, 1),
-		isHidden: false,
-		pane: "floatPane",
-		enableEventPropagation: false,
-	});
-	
-	google.maps.event.addListener(this.mapa, 'bounds_changed', function(event) {
-		contexto.infobox.setPosition(contexto.malla.getProjection().fromContainerPixelToLatLng(infobox_posicion));
-	});
+	// Este lazo recorre cada territorio
+	for (var i = 0, len_i = data.territorios.length; i < len_i; i++) {
+		var terr = {
+			id: data.territorios[i].id,
+			nombre: data.territorios[i].nombre,
+			contornos: new Array()
+		};
 		
-	google.maps.event.addListener(this.mapa, 'mousemove', function(event) {
-		contexto.cursor = event.latLng;
-	});
+		// Este lazo recorre cada contorno de cada territorio
+		for (var j = 0, len_j = data.territorios[i].poligonos.length; j < len_j; j++) {
+			var contorno = new Array();
+			var coordenadas = data.territorios[i].poligonos[j].split(' ');
+			// Este lazo recorre cada coordenada de cada poligono
+			for (var k = 0, len_k = coordenadas.length; k < len_k; k++) {
+				var pto = coordenadas[k].split(':');
+				pto[0] = pto[0].replace(",", ".");
+				pto[1] = pto[1].replace(",", ".");
+				contorno.push(new google.maps.LatLng(pto[0], pto[1]));
+			}
+			
+			terr.contornos.push(contorno);
+		}
+		
+		resultado.push(terr);
+	}
+	
+	return resultado;
 }
 
-google_map.agregar_marcador = function(latitud, longitud) {
-	var punto = new google.maps.LatLng(latitud,longitud);
-	var marcador = new google.maps.Marker({
-		position: punto,
-		map: this.mapa
-	});
-	this.extender_borde(latitud, longitud);
+Mapa.prototype.dibujar_limites = function(territorios, proveedor) {
+	var resultado = [];
+	
+	// Este lazo recorre cada territorio
+	for (var i = 0, len_i = territorios.length; i < len_i; i++) {
+		var terr = new Territorio({
+			id: territorios[i].id,
+			nombre: territorios[i].nombre,
+			mapa: proveedor
+		});
+		
+		// Este lazo recorre cada contorno de cada territorio
+		for (var j = 0, len_j = territorios[i].contornos.length; j < len_j; j++) {
+			terr.crear_polilinea(territorios[i].contornos[j]);
+		}
+		
+		resultado.push(terr);
+	}
+	
+	return resultado;
 }
 
-google_map.extender_borde = function(latitud, longitud) {
-	var punto = new google.maps.LatLng(latitud,longitud);
-	this.borde.extend(punto);
-}
-
-google_map.ajustar_borde = function() {
-	this.mapa.fitBounds(this.borde);
+Mapa.prototype.dibujar_poligonos = function(territorios, proveedor) {
+	// Colores provistos por http://colorbrewer2.org/index.php?type=diverging&scheme=RdBu&n=10
+	var colores = ["#67001F", "#B2182B", "#D6604D", "#F4A582", "#FDDBC7", "#D1E5F0", "#92C5DE", "#4393C3", "#2166AC", "#053061"];
+	var infobox_posicion = new google.maps.Point(80, 230);
+	var infobox = $(document.createElement('div'))
+		.attr({'id': 'infobox'})
+		.css({
+			'border': '1px solid black',
+			'margin-top': '8px',
+			'background': '#FFFFFF',
+			'padding': '5px' 
+		});
+	var resultado = [];
+		
+	for (var i = 0, len_i = territorios.length; i < len_i; i++) {
+		var terr = new Territorio({
+			id: territorios[i].id,
+			nombre: territorios[i].nombre,
+			color: colores[Math.floor(Math.random()*5)],
+			mapa: proveedor
+		});
+		
+		terr.crear_poligono(territorios[i].contornos);
+			
+		terr.attachEvent('mouseover', function(remitente, args) {
+			remitente.poligono.setOptions({fillColor: "#FF0000"});
+			//infobox.html('<span>' + remitente.nombre + '</span>');
+			//remitente.mapa.infobox.setContent(infobox.outerHtml());
+			remitente.mapa.infobox.setContent(remitente.nombre);
+			if (!remitente.mapa.infobox_abierto) {
+				remitente.mapa.infobox_abierto = true;
+				remitente.mapa.infobox.setPosition(remitente.mapa.malla.getProjection().fromContainerPixelToLatLng(infobox_posicion));
+				remitente.mapa.infobox.open(remitente.mapa.mapa);
+			}
+		});
+		
+		terr.attachEvent('mouseout', function(remitente, args) {
+			remitente.poligono.setOptions({fillColor: remitente.color});
+			remitente.mapa.infobox.setContent('');				
+		});		
+		
+		terr.attachEvent('click', function(remitente, args) {
+			$("#ubicacion_visible").text(remitente.nombre);
+			$("#ubicacion").val(remitente.id);
+		});
+		
+		resultado.push(terr);
+	}
+	
+	return resultado;
 }

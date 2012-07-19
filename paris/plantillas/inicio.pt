@@ -18,7 +18,9 @@
           			<span class="icon-bar"></span>
           			<span class="icon-bar"></span>
         		</a>
-        		<a class="brand" href="/">netzuela</a>
+        		<a class='brand' href='/' title='Tu mundo en tiempo real'>
+            		<img alt='Logo de Netzuela' height='16' src='/estatico/img/Netzuela-w-.png' width='83' />
+          		</a>
         		<div class="nav-collapse">
 	        		<ul id="navegacion" class="nav">
 						<li><a tal:attributes="href view.peticion.route_url('productos', categoria_id = '0.00.00.00.00.00', territorio_id = '0.02.00.00.00.00')">Productos</a></li>
@@ -32,8 +34,11 @@
 		<div class="row-fluid">
 			<div class="span12">
 				<div class="hero-unit">
-					<h1 align="center">netzuela</h1>
-    				<p align="center">Tu mundo en tiempo real</p>
+					<div class='big-media'>
+						<p style="text-align:center;margin-top:0px;margin-bottom:0px;padding:0px;">
+							<img alt='Tu mundo en tiempo real' height='218' src='/estatico/img/Netzuela-.png' width='685' />
+						</p>
+			        </div>
     				<form class="form-search" align="center">
 						<input type="text" class="input-medium search-query" />
 						<button type="submit" class="btn">Búsqueda</button>

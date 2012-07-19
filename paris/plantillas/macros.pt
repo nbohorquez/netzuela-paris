@@ -14,8 +14,9 @@
         	<li class="span2" tal:repeat="item lista">
         		<div tal:define="enlace view.peticion.route_url('producto', producto_id = item.producto_id)">
         			<a href="${enlace}">
-        				<div class="thumbnail">
-        					<img tal:define="foto view.obtener_foto('producto', item.producto_id, 'pequenas')" src="/estatico/${foto.ruta_de_foto}" alt="producto.nombre" />
+        				<div class="thumbnail" tal:define="foto view.obtener_foto('producto', item.producto_id, 'pequenas')">
+        					<img src="http://placehold.it/70x70" alt="producto.nombre" tal:condition="foto == ''"/>
+        					<img src="/estatico/${foto.ruta_de_foto}" alt="producto.nombre" tal:condition="foto != ''"/>
         				</div>
         			</a>
         			<div class="caption" tal:define="producto view.obtener_producto(item.producto_id)">
@@ -43,8 +44,9 @@
         	<li class="span2" tal:repeat="item lista">
         		<div tal:define="enlace view.peticion.route_url('tienda', tienda_id = item.tienda_id)">
         			<a href="${enlace}">
-        				<div class="thumbnail">
-        					<img tal:define="foto view.obtener_foto('tienda', item.tienda_id, 'pequenas')" src="/estatico/${foto.ruta_de_foto}" alt="cliente.nombre_comun" />
+        				<div class="thumbnail" tal:define="foto view.obtener_foto('tienda', item.tienda_id, 'pequenas')">
+    						<img src="http://placehold.it/70x70" alt="cliente.nombre_comun" tal:condition="foto == ''" />
+    						<img src="/estatico/${foto.ruta_de_foto}" alt="cliente.nombre_comun" tal:condition="foto != ''" />	
         				</div>
         			</a>
         			<div class="caption" tal:define="cliente view.obtener_cliente_padre('tienda', item.tienda_id)">
@@ -147,7 +149,8 @@
 	    					<div class="span1.5">
 	    						<a href="${registro.actor_activo.href}">
 		    						<div class="thumbnail">
-	        							<img src="/estatico/${registro.actor_activo.foto}" alt="foto actor activo" />
+		    							<img src="http://placehold.it/70x70" alt="foto actor pasivo" tal:condition="registro.actor_activo.foto == ''" />
+	        							<img src="/estatico/${registro.actor_activo.foto}" alt="foto actor activo" tal:condition="registro.actor_activo.foto != ''" />
 	        						</div>
 	        					</a>
 	    					</div>
@@ -171,7 +174,8 @@
 									<tbody>
 										<tr>
 											<td>
-												<img src="/estatico/${registro.actor_pasivo.foto}" alt="foto actor pasivo" />
+												<img src="http://placehold.it/160x160" alt="foto actor pasivo" tal:condition="registro.actor_pasivo.foto == ''" />
+												<img src="/estatico/${registro.actor_pasivo.foto}" alt="foto actor pasivo" tal:condition="registro.actor_pasivo.foto != ''" />
 											</td>
 											<td>
 							    				<p><span tal:repeat="columna registro.columnas">${columna}<br /></span></p>
@@ -268,6 +272,38 @@
         <div class="modal-footer">
           	<a href="#" class="btn" data-dismiss="modal">Cerrar</a>
         </div>
+	</metal:condiciones>
+	<metal:condiciones define-macro="registro_usuario">
+		<div class="control-group">
+        	<label class="control-label" for="correo_electronico">Correo electrónico</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" placeholder="usuario@proveedor.com" id="correo_electronico" name="correo_electronico" />
+        	</div>
+      	</div>
+      	<div class="control-group">
+        	<label class="control-label" for="contrasena">Contraseña</label>
+        	<div class="controls">
+          		<input type="password" class="input-large" id="contrasena" name="contrasena" />
+        	</div>
+      	</div>
+      	<div class="control-group">
+        	<label class="control-label" for="repetir_contrasena">Repetir contraseña</label>
+        	<div class="controls">
+          		<input type="password" class="input-large" id="repetir_contrasena" name="repetir_contrasena"/>
+        	</div>
+      	</div>
+      	<div class="control-group">
+        	<label class="control-label" for="nombre">Nombre</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" id="nombre" name="nombre" />
+        	</div>
+      	</div>
+      	<div class="control-group">
+        	<label class="control-label" for="apellido">Apellido</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" id="apellido" name="apellido" />
+        	</div>
+      	</div>
 	</metal:condiciones>
 </body>
 </html>

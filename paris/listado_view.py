@@ -82,6 +82,12 @@ class listado_view(diagramas, comunes):
     def territorio_id(self):
         return self.territorio_id
     
+    @reify 
+    def territorio_padre(self):
+        tmp = DBSession.query(territorio.territorio_padre).\
+        filter_by(territorio_id = self.territorio_id).first()
+        return tmp[0] if (tmp is not None) else None
+    
     @reify
     def territorio_base(self):
         return self.territorio_id.replace('.00', '')
@@ -195,7 +201,7 @@ class listado_view(diagramas, comunes):
     @view_config(route_name="territorio_coordenadas", renderer="json")
     def territorio_coordenadas_view(self):
         nivel_terr = DBSession.query(territorio.nivel).filter_by(territorio_id = self.territorio_id).first()[0]
-
+        
         if nivel_terr + int(self.nivel) < 0:
             return HTTPNotFound(MENSAJE_DE_ERROR)
         

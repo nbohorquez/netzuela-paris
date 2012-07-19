@@ -11,7 +11,7 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <style type="text/css">
     	html { height: 100%; }
-  		body { height: 100%; padding-top: 60px;	}
+  		body { height: 100%; padding-top: 60px; }
     </style>
     <div id="meta_datos_global">
 		<input type="hidden" name="pagina" value="${pagina}" />
@@ -30,7 +30,9 @@
           			<span class="icon-bar"></span>
           			<span class="icon-bar"></span>
         		</a>
-        		<a class="brand" href="/">netzuela</a>
+        		<a class='brand' href='/' title='Tu mundo en tiempo real'>
+            		<img alt='Logo de Netzuela' height='16' src='/estatico/img/Netzuela-w-.png' width='83' />
+          		</a>
         		<div class="nav-collapse">
 	        		<ul id="navegacion" class="nav">
 						<li><a tal:attributes="href view.peticion.route_url('productos', categoria_id = '0.00.00.00.00.00', territorio_id =  '0.02.00.00.00.00')">Productos</a></li>
@@ -61,7 +63,7 @@
 							<a href="/salir">Salir</a>
 						</li>
 						<li>
-							<a href="/tiendas">
+							<a href="/registro_tienda">
 								<i class="icon-user icon-white"></i>	
 								Soy tienda
 							</a>
@@ -193,10 +195,11 @@
 	<script type="text/javascript" src="/estatico/js/bootstrap-tab.js"></script>
     <script type="text/javascript" src="/estatico/js/bootstrap-collapse.js"></script>
     <script type="text/javascript" src="/estatico/js/bootstrap-dropdown.js"></script>
-    <script type="text/javascript" src="/estatico/js/infobox.js"></script>
     <script type="text/javascript" src="/estatico/js/EventObject.js"></script>
     <script type="text/javascript" src="/estatico/js/territorio.js"></script>
     <script type="text/javascript" src="/estatico/js/mapa.js"></script>
+    <script type="text/javascript" src="/estatico/js/infobox.js"></script>
+    <script type="text/javascript" src="/estatico/js/google_map.js"></script>
     <div id="scripts" metal:define-slot="scripts_extra"></div>
     <script type="text/javascript" src="/estatico/js/global.js"></script>
 </body>

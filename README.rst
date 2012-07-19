@@ -9,6 +9,6 @@ Instalación
 
 - cd <directorio que contiene este archivo>
 
-- $venv/bin/python setup.py develop
+- $env/bin/python setup.py develop
 
-- $venv/bin/pserve development.ini --reload
+- $env/bin/pserve development.ini --reload

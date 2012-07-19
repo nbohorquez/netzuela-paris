@@ -39,11 +39,7 @@ Territorio.prototype.crear_poligono = function (contornos) {
 	this.poligono.setMap(this.mapa.mapa);
 	
 	google.maps.event.addListener(this.poligono, 'mouseover', function(args) {
-		//var start = new Date().getTime();
 		contexto.raiseEvent('mouseover', args);
-		/*var end = new Date().getTime();
-		var time = end - start;
-		alert('Execution time: ' + time);*/
 	});
 	
 	google.maps.event.addListener(this.poligono, 'mouseout', function(args) {

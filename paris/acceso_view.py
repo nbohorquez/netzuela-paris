@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 Created on 07/06/2012
 
@@ -56,7 +57,7 @@ class acceso_view(diagramas):
                 mensaje = 'Par usuario/contrasena invalido'
                 
         elif 'registrarse' in self.peticion.params:
-            return HTTPFound(location = self.peticion.route_url('registro'))
+            return HTTPFound(location = self.peticion.route_url('registro_consumidor'))
     
         return { 'pagina': 'Ingresar', 'mensaje': mensaje }
         

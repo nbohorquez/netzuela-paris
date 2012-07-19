@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 Created on 28/02/2012
 
@@ -7,6 +8,7 @@ Created on 28/02/2012
 from .models import (
     accion,
     calificacion,
+    categoria,
     codigo_de_error,
     DBSession,
     dia,
@@ -36,6 +38,10 @@ class diagramas(object):
     def macros(self):
         renderer = get_renderer("plantillas/macros.pt")
         return renderer.implementation().macros
+    
+    @reify
+    def categorias(self):
+        return DBSession.query(categoria).filter_by(nivel = 1).all()
     
     @reify
     def grados_de_instruccion(self):
