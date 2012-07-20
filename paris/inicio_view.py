@@ -4,11 +4,11 @@ Created on 08/04/2012
 
 @author: nestor
 '''
-from .diagramas import diagramas
+from .diagramas import Diagramas
 from pyramid.decorator import reify
 from pyramid.view import view_config
 
-class inicio_view(diagramas):
+class InicioView(Diagramas):
     def __init__(self, peticion):
         self.peticion = peticion
         

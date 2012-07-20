@@ -5,7 +5,7 @@ Created on 09/04/2012
 @author: nestor
 '''
 
-from .comunes import comunes
+from .comunes import Comunes
 from .constantes import MENSAJE_DE_ERROR
 from .models import (
     calificable_seguible,
@@ -33,7 +33,7 @@ from .models import (
     turno,
     usuario
 )
-from .diagramas import diagramas
+from .diagramas import Diagramas
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.security import authenticated_userid
@@ -51,7 +51,7 @@ u = aliased(usuario)
 i = aliased(inventario_reciente)
 p = aliased(producto)
 
-class listado_view(diagramas, comunes):
+class ListadoView(Diagramas, Comunes):
     def __init__(self, peticion):
         self.peticion = peticion
         self.pagina_actual = peticion.url

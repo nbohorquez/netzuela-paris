@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from constantes import TABLAS
+from .constantes import TABLAS
 from pyramid.security import Allow, Everyone
 from sqlalchemy import MetaData, Table, Column, Integer, String
 from sqlalchemy.orm import scoped_session, sessionmaker, mapper

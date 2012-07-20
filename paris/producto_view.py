@@ -5,7 +5,7 @@ Created on 08/04/2012
 @author: nestor
 '''
 
-from .comunes import comunes
+from .comunes import Comunes
 from .constantes import MENSAJE_DE_ERROR
 from .models import (
     calificable_seguible,
@@ -34,7 +34,7 @@ from .models import (
     turno,
     usuario
 )
-from .diagramas import diagramas
+from .diagramas import Diagramas
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.security import authenticated_userid
@@ -46,7 +46,7 @@ from pyramid.view import view_config
 # definidas explicitamente en ninguna parte. Esto es porque yo las cargo de forma 
 # dinamica cuando inicia la aplicacion.
 
-class producto_view(diagramas, comunes):
+class ProductoView(Diagramas, Comunes):
     def __init__(self, peticion):
         self.peticion = peticion
         self.pagina_actual = peticion.url

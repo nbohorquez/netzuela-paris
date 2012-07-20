@@ -44,6 +44,7 @@ def main(global_config, **settings):
 	config.add_route('territorio_coordenadas', '/territorio/terr{territorio_id}niv{nivel}/coordenadas.json')
 	config.add_route('ingresar', '/ingresar')
 	config.add_route('salir', '/salir')
+	config.add_route('registro', '/registro')
 	config.add_route('registro_consumidor', '/registro_consumidor')
 	config.add_route('registro_tienda', '/registro_tienda')
 	config.scan()

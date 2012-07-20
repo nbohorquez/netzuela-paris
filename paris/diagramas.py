@@ -25,7 +25,7 @@ from pyramid.decorator import reify
 from pyramid.renderers import get_renderer
 from sqlalchemy.sql import asc
 
-class diagramas(object):
+class Diagramas(object):
     def __init__(self):
         pass
 

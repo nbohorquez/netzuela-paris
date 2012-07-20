@@ -44,7 +44,11 @@
           			</form>
 					<ul class="nav pull-right" tal:condition="exists:autentificado">
 						<li class="dropdown" tal:condition="not autentificado">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Ingresar<b class="caret"></b></a>
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-target="#">
+								<i class="icon-user icon-white"></i>
+								Ingresar
+								<b class="caret"></b>
+							</a>							
 							<div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
 								<form action="/ingresar" method="post" accept-charset="UTF-8">
 									<input type="hidden" name="pagina_anterior" value="${view.pagina_actual}" />
@@ -61,12 +65,6 @@
 						</li>
 						<li tal:condition="autentificado">
 							<a href="/salir">Salir</a>
-						</li>
-						<li>
-							<a href="/registro_tienda">
-								<i class="icon-user icon-white"></i>	
-								Soy tienda
-							</a>
 						</li>
 					</ul>
         		</div>

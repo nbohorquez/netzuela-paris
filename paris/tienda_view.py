@@ -5,7 +5,7 @@ Created on 08/04/2012
 @author: nestor
 '''
 
-from .comunes import comunes
+from .comunes import Comunes
 from .constantes import MENSAJE_DE_ERROR
 from .models import (
     busqueda,
@@ -41,7 +41,7 @@ from .models import (
     turno,
     usuario
 )
-from .diagramas import diagramas
+from .diagramas import Diagramas
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.security import authenticated_userid
@@ -55,7 +55,7 @@ import string
 # definidas explicitamente en ninguna parte. Lo que ocurre es que yo las cargo de forma 
 # dinamica cuando inicia la aplicacion.
 
-class tienda_view(diagramas, comunes):
+class TiendaView(Diagramas, Comunes):
     def __init__(self, peticion):
         self.peticion = peticion
         self.pagina_actual = peticion.url
@@ -110,27 +110,27 @@ class tienda_view(diagramas, comunes):
     def direccion(self):
         var_cliente = self.obtener_cliente_padre(self.tipo_de_peticion, self.tienda_id)
         
-        if var_cliente is not None:
+        try:
             padre = aliased(territorio)
             hijo = aliased(territorio)
             
             p = DBSession.query(territorio).\
-            filter_by(territorio_id = var_cliente.ubicacion).one()
+            filter_by(territorio_id = var_cliente.ubicacion).first()
             
             m = DBSession.query(padre).\
             join(hijo, padre.territorio_id == hijo.territorio_padre).\
-            filter_by(territorio_id = p.territorio_id).one()
+            filter_by(territorio_id = p.territorio_id).first()
             
             e = DBSession.query(padre).\
             join(hijo, padre.territorio_id == hijo.territorio_padre).\
-            filter_by(territorio_id = m.territorio_id).one()
+            filter_by(territorio_id = m.territorio_id).first()
             
             resultado = {
                 'parroquia': p.nombre, 
                 'municipio': m.nombre, 
                 'estado': e.nombre 
             }
-        else:
+        except Exception, e:
             resultado = {'parroquia': 'N/D', 'municipio': 'N/D', 'estado': 'N/D' }
             
         return resultado
@@ -170,7 +170,7 @@ class tienda_view(diagramas, comunes):
     @reify
     def tamano_reciente(self):
         var_tamano = DBSession.query(tamano_reciente).\
-        filter(tamano_reciente.tienda_id == self.tienda_id).one()
+        filter(tamano_reciente.tienda_id == self.tienda_id).first()
         
         resultado = {
             'numero_total_de_productos': 'ND', 
@@ -215,7 +215,7 @@ class tienda_view(diagramas, comunes):
     def ruta_categoria_actual(self):
         cat_padre = DBSession.query(cliente.categoria).\
         join(tienda).\
-        filter(tienda.tienda_id == self.peticion_id).one()[0]        
+        filter(tienda.tienda_id == self.peticion_id).first()[0]        
         return self.obtener_ruta_categoria(cat_padre)
     
     @view_config(route_name='tienda', renderer='plantillas/tienda.pt')
@@ -234,7 +234,7 @@ class tienda_view(diagramas, comunes):
         filter(and_(
             turno.tienda_id == self.tienda_id, 
             turno.dia == var_dia)
-        ).one()
+        ).first()
         
         return { 'apertura': "{0}".format(str(apertura)), 'cierre': "{0}".format(str(cierre)) } 
         

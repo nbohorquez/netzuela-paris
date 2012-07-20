@@ -5,7 +5,7 @@ Created on 07/06/2012
 @author: nestor
 '''
 
-from .diagramas import diagramas
+from .diagramas import Diagramas
 from .models import (acceso, DBSession)
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
@@ -13,7 +13,7 @@ from pyramid.security import remember, forget
 from pyramid.view import view_config, forbidden_view_config
 import bcrypt
 
-class acceso_view(diagramas):
+class AccesoView(Diagramas):
     def __init__(self, peticion):
         ingresar_url = peticion.route_url('ingresar')
         # never use the login form itself as came_from
@@ -55,10 +55,9 @@ class acceso_view(diagramas):
                 return HTTPFound(location = self.pagina_anterior, headers = headers)
             else:
                 mensaje = 'Par usuario/contrasena invalido'
-                
         elif 'registrarse' in self.peticion.params:
-            return HTTPFound(location = self.peticion.route_url('registro_consumidor'))
-    
+            return HTTPFound(location = self.peticion.route_url('registro'))
+            
         return { 'pagina': 'Ingresar', 'mensaje': mensaje }
         
     @view_config(route_name='salir')

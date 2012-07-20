@@ -11,9 +11,8 @@ from .models import acceso, categoria, DBSession, grado_de_instruccion, sexo, te
 from datetime import date, timedelta
 from formencode import validators
 from formencode.api import Invalid
-from sqlalchemy.sql.expression import exists, select
 
-class contrasena_segura(validators.FancyValidator):
+class ContrasenaSegura(validators.FancyValidator):
     minimo = 8
     minimo_no_letras = 2
     letras = re.compile(r'[a-zA-Z]')
@@ -44,7 +43,7 @@ class contrasena_segura(validators.FancyValidator):
         if len(no_letras) < self.minimo_no_letras:
             raise Invalid(self.message("solo_letras", estado, minimo_no_letras=self.minimo_no_letras), valor, estado)
 
-class usuario_unico(validators.FancyValidator):
+class UsuarioUnico(validators.FancyValidator):
     mensaje = unicode('El usuario especificado ya existe en la base de datos', 'utf-8')
     
     def _to_python(self, valor, estado):
@@ -55,7 +54,7 @@ class usuario_unico(validators.FancyValidator):
         if existe is not None:
             raise Invalid(self.mensaje, valor, estado)
     
-class grado_de_instruccion_valido(validators.FancyValidator):
+class GradoDeInstruccionValido(validators.FancyValidator):
     mensaje = unicode('Grado de instrucción no conocido', 'utf-8')
     
     def _to_python(self, valor, estado):
@@ -66,7 +65,7 @@ class grado_de_instruccion_valido(validators.FancyValidator):
         if grados is None:
             raise Invalid(self.mensaje, valor, estado)
         
-class categoria_valida(validators.FancyValidator):
+class CategoriaValida(validators.FancyValidator):
     mensaje = unicode('Categoria no conocida', 'utf-8')
     
     def _to_python(self, valor, estado):
@@ -77,7 +76,7 @@ class categoria_valida(validators.FancyValidator):
         if categorias is None:
             raise Invalid(self.mensaje, valor, estado)
     
-class sexo_valido(validators.FancyValidator):
+class SexoValido(validators.FancyValidator):
     mensaje = unicode('Sexo no conocido', 'utf-8')
     
     def _to_python(self, valor, estado):
@@ -88,8 +87,9 @@ class sexo_valido(validators.FancyValidator):
         if sexos is None:
             raise Invalid(self.mensaje, valor, estado)
         
-class ubicacion_valida(validators.FancyValidator):
+class UbicacionExistente(validators.FancyValidator):
     mensaje = unicode('Región no conocida', 'utf-8')
+    if_missing = None
     
     def _to_python(self, valor, estado):
         return valor.strip()
@@ -99,7 +99,7 @@ class ubicacion_valida(validators.FancyValidator):
         if resultado is None:
             raise Invalid(self.mensaje, valor, estado)
     
-class edad_valida(validators.FancyValidator):
+class EdadValida(validators.FancyValidator):
     convertidor = validators.DateConverter(month_style='dd/mm/yyyy')
     validador = validators.DateValidator(latest_date=date.today()-timedelta(days=EDAD_MINIMA*365.24))
     
@@ -110,7 +110,7 @@ class edad_valida(validators.FancyValidator):
         convertida = self.convertidor.to_python(valor)
         self.validador.to_python(convertida)
         
-class rif_valido(validators.FancyValidator):
+class RifValido(validators.FancyValidator):
     validador = validators.Regex(regex='^[JVG]-[0-9]{8}-[0-9]$')
     
     def _to_python(self, valor, estado):
@@ -119,39 +119,57 @@ class rif_valido(validators.FancyValidator):
     def validate_python(self, valor, estado):
         self.validador.to_python(valor)
         
-class formulario_consumidor(formencode.Schema):
+class NullableString(validators.FancyValidator):
+    if_missing = None
+    
+    def _to_python(self, valor, estado):
+        return valor.strip()
+    
+    def validate_python(self, valor, estado):
+        self.validador.to_python(valor)
+        
+class FormularioConsumidor(formencode.Schema):
     allow_extra_fields = True
     filter_extra_fields = True
-    correo_electronico = formencode.All(validators.Email(resolve_domain=True), usuario_unico())
-    contrasena = contrasena_segura()
+    correo_electronico = formencode.All(validators.Email(resolve_domain=True), UsuarioUnico())
+    contrasena = ContrasenaSegura()
     repetir_contrasena = validators.String(not_empty=True)
     nombre = validators.String(not_empty=True)
     apellido = validators.String(not_empty=True)
-    grado_de_instruccion = formencode.All(validators.String(not_empty=True), grado_de_instruccion_valido())
-    ubicacion = formencode.All(validators.String(not_empty=True), ubicacion_valida())
-    sexo = formencode.All(validators.String(not_empty=True), sexo_valido())
-    fecha_de_nacimiento = edad_valida()
+    grado_de_instruccion = formencode.All(validators.String(not_empty=True), GradoDeInstruccionValido())
+    ubicacion = UbicacionExistente()
+    sexo = formencode.All(validators.String(not_empty=True), SexoValido())
+    fecha_de_nacimiento = EdadValida()
     chained_validators = [validators.FieldsMatch('contrasena', 'repetir_contrasena')]
     
-class formulario_usuario(formencode.Schema):
+class FormularioUsuario(formencode.Schema):
     allow_extra_fields = True
     filter_extra_fields = True
-    correo_electronico = formencode.All(validators.Email(resolve_domain=True), usuario_unico())
-    contrasena = contrasena_segura()
+    correo_electronico = formencode.All(validators.Email(resolve_domain=True), UsuarioUnico())
+    contrasena = ContrasenaSegura()
     repetir_contrasena = validators.String(not_empty=True)
     nombre = validators.String(not_empty=True)
     apellido = validators.String(not_empty=True)
-    ubicacion = formencode.All(validators.String(not_empty=True), ubicacion_valida())
+    ubicacion = UbicacionExistente()
     chained_validators = [validators.FieldsMatch('contrasena', 'repetir_contrasena')]
     
-class formulario_tienda(formencode.Schema):
+class FormularioTienda(formencode.Schema):
     allow_extra_fields = True
     filter_extra_fields = True
-    rif = formencode.All(validators.String(not_empty=True), rif_valido())
+    rif = formencode.All(validators.String(not_empty=True), RifValido())
     nombre_legal = validators.String(not_empty=True)
     nombre_comun = validators.String(not_empty=True)
-    categoria = formencode.All(validators.String(not_empty=True), categoria_valida())
+    categoria = formencode.All(validators.String(not_empty=True), CategoriaValida())
     telefono = formencode.All(validators.String(not_empty=True), validators.Regex(regex='^[1-9][0-9]{2}-[1-9][0-9]{6}$'))
+    edificio_cc = NullableString()
+    piso = NullableString()
+    apartamento = NullableString()
+    local_no = NullableString()
+    casa = NullableString()
     calle = validators.String(not_empty=True)
     urbanizacion = validators.String(not_empty=True)
-    ubicacion = formencode.All(validators.String(not_empty=True), ubicacion_valida())
+    pagina_web = NullableString()
+    facebook = NullableString()
+    twitter = NullableString()
+    correo_electronico_publico = NullableString()
+    ubicacion = UbicacionExistente()

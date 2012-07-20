@@ -33,7 +33,7 @@ from .models import (
 from sqlalchemy import and_, or_, case, func
 from datetime import datetime
 
-class comunes(object):
+class Comunes(object):
     def __init__(self):
         pass
     
