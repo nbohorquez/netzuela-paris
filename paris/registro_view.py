@@ -7,7 +7,7 @@ Created on 07/06/2012
 
 from .comunes import Comunes
 from .diagramas import Diagramas
-from .spuria import Spuria
+from .models import Spuria
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config

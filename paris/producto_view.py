@@ -137,7 +137,7 @@ class ProductoView(Diagramas, Comunes):
     @reify
     def ruta_categoria_actual(self):
         cat_padre = DBSession.query(producto.categoria).\
-        filter_by(producto_id = self.peticion_id).one()[0]        
+        filter_by(producto_id = self.peticion_id).first()[0]        
         return self.obtener_ruta_categoria(cat_padre)
         
     @view_config(route_name='producto', renderer='plantillas/producto.pt')

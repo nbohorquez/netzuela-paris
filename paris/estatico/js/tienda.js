@@ -3,8 +3,12 @@
  */
 
 $(document).ready(function() {
-	tienda.temporizador = setInterval(tienda.actualizar, 5000);
-	tienda.id = $('input[name=tienda_id]').val();
+	var tienda = new Tienda({
+		id: $('input[name=tienda_id]').val(),
+		temporizador: 60000
+	});
+	tienda.actualizar();
+	
 	$.getJSON('/tienda/' + tienda.id + '/coordenadas.json', function(data) {
 		// Se extienden los bordes para que toda la tienda sea visible en el mapa. 
 		// Las tiendas pueden tener mas de un punto, es decir, pueden ser un poligono
@@ -27,19 +31,20 @@ $(document).ready(function() {
 $(window).unload(function() {
  	clearInterval(tienda.temporizador);
 });
+	
+function Tienda(opciones) {
+	this.id = ('id' in opciones) ? opciones.id : null;
+	this.puntos = ('puntos' in opciones) ? opciones.puntos : new Array();
+	var intervalo = ('temporizador' in opciones) ? opciones.temporizador : null;
+	var contexto = this;
+	this.temporizador = setInterval(function() { Tienda.prototype.actualizar.call(contexto); }, intervalo);
+}
 
-var tienda = {
-	id: null,
-	puntos: new Array(),
-	temporizador: null
-};
-
-tienda.actualizar = function () {
+Tienda.prototype.actualizar = function () {
 	var dias = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
 	var hoy = new Date();
-	//var tienda = $('input[name=tienda_id]').val();
-	
-	$.getJSON('/tienda/' + tienda.id + '/turno.json', { dia: dias[hoy.getDay()] }, function(data) {
+
+	$.getJSON('/tienda/' + this.id + '/turno.json', { dia: dias[hoy.getDay()] }, function(data) {
 		var milisegundos_a_horas = 1/(1000*60*60);
 		var porcentaje;
 
@@ -69,17 +74,17 @@ tienda.actualizar = function () {
 		
         $("#barra_de_turno").css({'width': porcentaje.toString() + "%"});
     });
-}
-
-function string2date(str) {
-	var date = new Date();	
-	date.setHours(str.substr(0,2));
- 	date.setMinutes(str.substr(3,2));
- 	date.setSeconds(str.substr(6,2));
- 	return date;
-}
-
-function redondear(numero, decimales) {
-	var uno = 10^decimales;
-	return Math.round(numero*uno)/uno;
+    
+    function string2date(str) {
+    	var date = new Date();	
+		date.setHours(str.substr(0,2));
+		date.setMinutes(str.substr(3,2));
+		date.setSeconds(str.substr(6,2));
+		return date;
+	}
+	
+	function redondear(numero, decimales) {
+		var uno = 10^decimales;
+		return Math.round(numero*uno)/uno;
+	}
 }

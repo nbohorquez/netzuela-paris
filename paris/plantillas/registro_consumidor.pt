@@ -79,6 +79,6 @@
 		<script type="text/javascript" src="/estatico/js/bootstrap-datepicker.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-alert.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-modal.js"></script>
-		<script type="text/javascript" src="/estatico/js/registro.js"></script>
+		<script type="text/javascript" src="/estatico/js/registro_consumidor.js"></script>
 	</div>
 </div>

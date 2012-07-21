@@ -64,3 +64,24 @@ $('#gadget_colapsable').on('show', function () {
 		google_map.ajustar_borde();
 	}
 });
+
+function dibujar_venezuela_municipios() {
+	google_map.extender_borde("7.623887", "-68.730469");
+	google_map.extender_borde("11.22151", "-63.896484");
+	
+	var Venezuela = '0.02.00.00.00.00';
+	$.getJSON('/territorio/terr' + Venezuela + 'niv1/coordenadas.json', function (data) {
+		var lineas = new Mapa({
+			json: data,
+			tipo: 'polilineas',
+			proveedor: google_map
+		});
+	});
+	$.getJSON('/territorio/terr' + Venezuela + 'niv2/coordenadas.json', function (data) {
+		var poligonos = new Mapa({
+			json: data,
+			tipo: 'poligonos',
+			proveedor: google_map
+		});
+	});
+}

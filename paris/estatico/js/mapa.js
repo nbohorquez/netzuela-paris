@@ -74,14 +74,14 @@ Mapa.prototype.dibujar_poligonos = function(territorios, proveedor) {
 	// Colores provistos por http://colorbrewer2.org/index.php?type=diverging&scheme=RdBu&n=10
 	var colores = ["#67001F", "#B2182B", "#D6604D", "#F4A582", "#FDDBC7", "#D1E5F0", "#92C5DE", "#4393C3", "#2166AC", "#053061"];
 	var infobox_posicion = new google.maps.Point(80, 230);
-	var infobox = $(document.createElement('div'))
+	/*var infobox = $(document.createElement('div'))
 		.attr({'id': 'infobox'})
 		.css({
 			'border': '1px solid black',
 			'margin-top': '8px',
 			'background': '#FFFFFF',
 			'padding': '5px' 
-		});
+		});*/
 	var resultado = [];
 		
 	for (var i = 0, len_i = territorios.length; i < len_i; i++) {
@@ -98,7 +98,7 @@ Mapa.prototype.dibujar_poligonos = function(territorios, proveedor) {
 			remitente.poligono.setOptions({fillColor: "#FF0000"});
 			//infobox.html('<span>' + remitente.nombre + '</span>');
 			//remitente.mapa.infobox.setContent(infobox.outerHtml());
-			remitente.mapa.infobox.setContent(remitente.nombre);
+			remitente.mapa.infobox.setContent('<p style="font-weight: bold;">' + remitente.nombre + '</p>');
 			if (!remitente.mapa.infobox_abierto) {
 				remitente.mapa.infobox_abierto = true;
 				remitente.mapa.infobox.setPosition(remitente.mapa.malla.getProjection().fromContainerPixelToLatLng(infobox_posicion));

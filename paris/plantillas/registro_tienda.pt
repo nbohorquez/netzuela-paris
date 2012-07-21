@@ -98,9 +98,8 @@
 	</div>
 	<div metal:fill-slot="scripts_extra">
 		<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
-		<script type="text/javascript" src="/estatico/js/bootstrap-datepicker.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-alert.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-modal.js"></script>
-		<script type="text/javascript" src="/estatico/js/registro.js"></script>
+		<script type="text/javascript" src="/estatico/js/registro_tienda.js"></script>
 	</div>
 </div>

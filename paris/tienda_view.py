@@ -185,24 +185,24 @@ class TiendaView(Diagramas, Comunes):
         var_comentarios = DBSession.query(calificacion_resena).\
         join(calificable_seguible).join(tienda).\
         filter(tienda.tienda_id == self.tienda_id).all()
-        return [{""}] if var_comentarios is None else self.formatear_comentarios(var_comentarios)
+        return [{""}] if (var_comentarios is None) else self.formatear_comentarios(var_comentarios)
     
     @reify
     def fotos_grandes(self):
         var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'grandes')
-        resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
+        resultado = [] if (var_fotos is None) else var_fotos
         return resultado
     
     @reify
     def fotos_medianas(self):
         var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'medianas')
-        resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
+        resultado = [] if (var_fotos is None) else var_fotos
         return resultado
     
     @reify
     def fotos_pequenas(self):
         var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'pequenas')
-        resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
+        resultado = [] if (var_fotos is None) else var_fotos
         return resultado
     
     @reify

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .models import DBSession, cargar_tablas
+from .models import DBSession, Spuria
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.config import Configurator
@@ -11,7 +11,7 @@ def main(global_config, **settings):
 	"""
 	# Cargamos de forma dinamica todas las tablas desde la base de datos
 	engine = engine_from_config(settings, 'sqlalchemy.')
-	cargar_tablas(engine)
+	Spuria.cargar_tablas(engine)
 	DBSession.configure(bind=engine)
 	
 	"""
@@ -30,9 +30,13 @@ def main(global_config, **settings):
 	authz_policy = ACLAuthorizationPolicy()
 	
 	# Configuramos la aplicacion WSGI
-	config = Configurator(settings=settings, root_factory='paris.models.root_factory')
-	config.set_authentication_policy(authn_policy)
-	config.set_authorization_policy(authz_policy)
+	config = Configurator(
+		settings=settings, 
+		root_factory='paris.models.RootFactory',
+		authentication_policy=authn_policy,
+        authorization_policy=authz_policy
+    )
+	
 	config.add_static_view('estatico', 'estatico', cache_max_age=3600)
 	config.add_route('inicio', '/')
 	config.add_route('producto', '/producto/{producto_id}')
@@ -47,5 +51,6 @@ def main(global_config, **settings):
 	config.add_route('registro', '/registro')
 	config.add_route('registro_consumidor', '/registro_consumidor')
 	config.add_route('registro_tienda', '/registro_tienda')
+	config.add_route('usuario', '/usuario/{usuario_id}')
 	config.scan()
 	return config.make_wsgi_app()

@@ -9,5 +9,4 @@ from .models import acceso, DBSession
 
 def obtener_grupos(usuario, peticion):
     tmp = DBSession.query(acceso).filter_by(correo_electronico = usuario).first()
-    if tmp is not None:
-        return []
+    return [] if (tmp is not None) else None

@@ -88,9 +88,9 @@
 	<!-- Fotos
 	================================================== -->	
 	<metal:fotos_medianas define-macro="fotos_medianas">
-		<div id="carrusel" class="carousel slide">
+		<div id="carrusel" class="carousel slide" tal:define="fotos view.fotos_medianas">
             <div class="carousel-inner">
-            	<tal:block tal:repeat="foto view.fotos_medianas">
+            	<tal:block tal:repeat="foto fotos" tal:condition="len(fotos) > 0">
            			<div tal:condition="repeat.foto.start" class="item active">
         				<div class="thumbnail">
         					<img src="/estatico/${foto.ruta_de_foto}" alt="Foto" />
@@ -102,8 +102,13 @@
         				</div>
         			</div>
             	</tal:block>
+            	<div tal:condition="len(fotos) == 0" class="item active">
+    				<div class="thumbnail">
+    					<img src="http://placehold.it/300x300" alt="Foto" />
+    				</div>
+    			</div>
 			</div>
-			<tal:block tal:condition="python:len(view.fotos_medianas) > 1">
+			<tal:block tal:condition="python:len(fotos) > 1">
 	        	<a class="left carousel-control" href="#carrusel" data-slide="prev">&lsaquo;</a>
 	        	<a class="right carousel-control" href="#carrusel" data-slide="next">&rsaquo;</a>
         	</tal:block>

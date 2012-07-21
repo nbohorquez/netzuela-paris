@@ -6,7 +6,7 @@ Created on 07/06/2012
 '''
 
 from .diagramas import Diagramas
-from .models import (acceso, DBSession)
+from .models import acceso, DBSession
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import remember, forget

@@ -5,7 +5,6 @@ Created on 08/04/2012
 @author: nestor
 '''
 
-from .constantes import ACCION
 from .models import (
     busqueda,
     calificacion_resena,
@@ -28,7 +27,8 @@ from .models import (
     seguidor,
     territorio,
     tienda,
-    usuario
+    usuario,
+    Spuria
 )
 from sqlalchemy import and_, or_, case, func
 from datetime import datetime
@@ -45,14 +45,14 @@ class Comunes(object):
             tmp['resena'] = comentario.resena
             
             fecha_decimal = DBSession.query(rastreable).\
-            filter_by(rastreable_id = comentario.rastreable_p).one().fecha_de_creacion
+            filter_by(rastreable_id = comentario.rastreable_p).first().fecha_de_creacion
             
             fecha = str(fecha_decimal)
             tmp['fecha'] = "{0}/{1}/{2} {3}:{4}".format(fecha[6:8], fecha[4:6], fecha[0:4], fecha[8:10], fecha[10:12])
             
             tmp['consumidor'] = DBSession.query(usuario).\
             join(consumidor).\
-            filter_by(consumidor_id = comentario.consumidor_id).one()
+            filter_by(consumidor_id = comentario.consumidor_id).first()
             
             resultado.append(tmp)
         return resultado
@@ -78,7 +78,7 @@ class Comunes(object):
         def reg_cliente(_id):
             valor = {}
             valor['nombre'], valor['titulo'] = DBSession.query(cliente.nombre_comun, cliente.nombre_legal).\
-            filter_by(rastreable_p = _id).one()
+            filter_by(rastreable_p = _id).first()
             
             valor['foto'] = DBSession.query(foto.ruta_de_foto).\
             join(describible).\
@@ -109,19 +109,19 @@ class Comunes(object):
             return valor
         def reg_usuario(_id):
             valor = {}
-            tmp1, tmp2 = DBSession.query(usuario.nombre, usuario.apellido).\
-            filter_by(rastreable_p = _id).one()
+            x, tmp1, tmp2 = DBSession.query(usuario.usuario_id, usuario.nombre, usuario.apellido).\
+            filter_by(rastreable_p = _id).first()
             valor['nombre'] = "{0} {1}".format(tmp1, tmp2)
             valor['foto'] = DBSession.query(foto.ruta_de_foto).\
             join(describible).\
             join(usuario).\
             filter(usuario.rastreable_p == _id)
-            valor['href'] = '#'
+            valor['href'] = peticion.route_url('usuario', usuario_id = x)
             return valor
         def reg_inventario(_id):
             valor = {}
             tmp = DBSession.query(inventario.descripcion).\
-            filter_by(rastreable_p = _id).one()
+            filter_by(rastreable_p = _id).first()
             valor['titulo'] = valor['nombre'] = tmp[0] if (tmp is not None) else None
             valor['foto'] = DBSession.query(foto.ruta_de_foto).\
             join(describible).\
@@ -138,13 +138,13 @@ class Comunes(object):
         def reg_producto(_id):
             valor = {}
             tmp1, tmp2 = DBSession.query(producto.fabricante, producto.nombre).\
-            filter_by(rastreable_p = _id).one()
+            filter_by(rastreable_p = _id).first()
             valor['foto'] = DBSession.query(foto.ruta_de_foto).\
             join(describible).\
             join(producto).\
             filter(producto.rastreable_p == _id)
             valor['nombre'] = valor['titulo'] = "{0} {1}".format(tmp1, tmp2)
-            tmp3 = DBSession.query(producto.producto_id).filter_by(rastreable_p = _id).one()
+            tmp3 = DBSession.query(producto.producto_id).filter_by(rastreable_p = _id).first()
             tmp4 = tmp3[0] if (tmp3 is not None) else None
             valor['href'] = peticion.route_url('producto', producto_id = tmp4)
             return valor
@@ -193,7 +193,7 @@ class Comunes(object):
             valor = {}
             valor['nombre'] = 'publicidad'
             tmp = DBSession.query(publicidad.nombre).\
-            filter_by(rastreable_p = _id).one()
+            filter_by(rastreable_p = _id).first()
             valor['titulo'] = tmp[0] if (tmp is not None) else ""
             valor['href'] = '#'
             return valor
@@ -231,7 +231,7 @@ class Comunes(object):
         entrada = {}
         entrada['actor_activo'] = activo
         entrada['actor_pasivo'] = pasivo
-        entrada['accion'] = ACCION[reg.accion]
+        entrada['accion'] = Spuria.accion[reg.accion]
         
         entrada['columnas'] = reg.columna.split(',') if (reg.columna is not None) else '' 
         entrada['contenido'] = reg.valor.split(',') if (reg.valor is not None) else ''
@@ -261,6 +261,73 @@ class Comunes(object):
         return entrada
     
     def tipo_de_rastreable(self, rastreable_id):
+        tmp = DBSession.query(case([(rastreable_id == cliente.rastreable_p, 'cliente')])).\
+        filter(rastreable_id == cliente.rastreable_p).first()
+        if (tmp is not None):
+            return tmp[0]
+        
+        tmp = DBSession.query(case([(rastreable_id == inventario.rastreable_p, 'inventario')])).\
+        filter(rastreable_id == inventario.rastreable_p).first()
+        if (tmp is not None):
+            return tmp[0]
+        
+        tmp = DBSession.query(case([(rastreable_id == producto.rastreable_p, 'producto')])).\
+        filter(rastreable_id == producto.rastreable_p).first()
+        if (tmp is not None):
+            return tmp[0]
+        
+        tmp = DBSession.query(case([(rastreable_id == mensaje.rastreable_p, 'mensaje')])).\
+        filter(rastreable_id == mensaje.rastreable_p).first()
+        if (tmp is not None):
+            return tmp[0]
+        
+        tmp = DBSession.query(case([(rastreable_id == usuario.rastreable_p, 'usuario')])).\
+        filter(rastreable_id == usuario.rastreable_p).first()
+        if (tmp is not None):
+            return tmp[0]
+        
+        tmp = DBSession.query(case([(rastreable_id == busqueda.rastreable_p, 'busqueda')])).\
+        filter(rastreable_id == busqueda.rastreable_p).first()
+        if (tmp is not None):
+            return tmp[0]
+        
+        tmp = DBSession.query(case([(rastreable_id == calificacion_resena.rastreable_p, 'calificacion_resena')])).\
+        filter(rastreable_id == calificacion_resena.rastreable_p).first()
+        if (tmp is not None):
+            return tmp[0]
+        
+        tmp = DBSession.query(case([(rastreable_id == seguidor.rastreable_p, 'seguidor')])).\
+        filter(rastreable_id == seguidor.rastreable_p).first()
+        if (tmp is not None):
+            return tmp[0]
+        
+        tmp = DBSession.query(case([(rastreable_id == descripcion.rastreable_p, 'descripcion')])).\
+        filter(rastreable_id == descripcion.rastreable_p).first()
+        if (tmp is not None):
+            return tmp[0]
+        
+        tmp = DBSession.query(case([(rastreable_id == publicidad.rastreable_p, 'publicidad')])).\
+        filter(rastreable_id == publicidad.rastreable_p).first()
+        if (tmp is not None):
+            return tmp[0]
+        
+        tmp = DBSession.query(case([(rastreable_id == estadisticas.rastreable_p, 'estadisticas')])).\
+        filter(rastreable_id == estadisticas.rastreable_p).first()
+        if (tmp is not None):
+            return tmp[0]
+        
+        tmp = DBSession.query(case([(rastreable_id == croquis.rastreable_p, 'croquis')])).\
+        filter(rastreable_id == croquis.rastreable_p).first()
+        if (tmp is not None):
+            return tmp[0]
+        
+        tmp = DBSession.query(case([(rastreable_id == factura.rastreable_p, 'factura')])).\
+        filter(rastreable_id == factura.rastreable_p).first()
+        if (tmp is not None):
+            return tmp[0]
+        
+        return None
+        """
         tmp = DBSession.query(case([
             (rastreable_id == cliente.rastreable_p, 'cliente'),
             (rastreable_id == inventario.rastreable_p, 'inventario'),
@@ -291,9 +358,10 @@ class Comunes(object):
             rastreable_id == croquis.rastreable_p,
             rastreable_id == factura.rastreable_p
         )).first()
-        
+
         return tmp[0] if (tmp is not None) else None
-            
+        """
+    
     def obtener_ruta_territorio(self, terr_id):
         ruta = []
         
@@ -326,23 +394,23 @@ class Comunes(object):
         return ruta
         
     def obtener_territorio(self, terr_id):
-        return DBSession.query(territorio).filter_by(territorio_id = terr_id).one()
+        return DBSession.query(territorio).filter_by(territorio_id = terr_id).first()
     
     def obtener_categoria(self, cat_id):
-        return DBSession.query(categoria).filter_by(categoria_id = cat_id).one()
+        return DBSession.query(categoria).filter_by(categoria_id = cat_id).first()
             
     def obtener_cliente(self, cli_id):
-        return DBSession.query(cliente).filter_by(rif = cli_id).one()
+        return DBSession.query(cliente).filter_by(rif = cli_id).first()
     
     def obtener_cliente_padre(self, objeto, objeto_id):
         def cli_tienda():
             return DBSession.query(cliente).\
             join(tienda).\
-            filter(tienda.tienda_id == objeto_id).one()
+            filter(tienda.tienda_id == objeto_id).first()
         def cli_patrocinante():
             return DBSession.query(cliente).\
             join(patrocinante).\
-            filter(patrocinante.patrocinante_id == objeto_id).one()
+            filter(patrocinante.patrocinante_id == objeto_id).first()
         
         resultado = {
             'tienda': lambda: cli_tienda(), 
@@ -359,9 +427,18 @@ class Comunes(object):
         tmp = DBSession.query(producto).filter_by(producto_id = pro_id).first()
         return tmp if (tmp is not None) \
         else { 
-        'codigo': 'no registrado', 
-        'nombre': '', 
-        'categoria': '0.0A.00.00.00.00' 
+            'codigo': 'no registrado', 
+            'nombre': '', 
+            'categoria': '0.0A.00.00.00.00' 
+        }
+    
+    def obtener_usuario(self, usu_id):
+        tmp = DBSession.query(usuario).filter_by(usuario_id = usu_id).first()
+        return tmp if (tmp is not None) \
+        else { 
+            'codigo': 'no registrado', 
+            'nombre': '', 
+            'categoria': '0.0A.00.00.00.00' 
         }
         
     def sql_foto(self, objeto, objeto_id, tamano):
