@@ -73,10 +73,12 @@
 	<!-- Comentarios (calificaciones y reseñas)
 	================================================== -->	
 	<metal:comentarios define-macro="comentarios">
-		<blockquote tal:repeat="comentario view.calificaciones_resenas">
+		<blockquote tal:repeat="comentario comentarios">
 			<p>${comentario.resena}</p>
 			<small>
-				${comentario.consumidor.nombre} ${comentario.consumidor.apellido} el ${comentario.fecha}
+				<a tal:attributes="href view.peticion.route_url('usuario', usuario_id = comentario.consumidor.usuario_id)">
+					${comentario.consumidor.nombre} ${comentario.consumidor.apellido}
+				</a> el ${comentario.fecha}
 				<tal:block tal:switch="comentario.calificacion">
 					<span tal:case="'Bien'"><i class="icon-thumbs-up"></i></span>
 					<span tal:case="'Mal'"><i class="icon-thumbs-down"></i></span>									
@@ -148,7 +150,7 @@
 	<metal:noticias define-macro="noticias">
 		<table class="table">
   			<tbody>
-	    		<tr tal:repeat="registro view.registro">
+	    		<tr tal:repeat="registro registros">
 	    			<td>
 	    				<div class="row-fluid">
 	    					<div class="span1.5">
@@ -183,10 +185,10 @@
 												<img src="/estatico/${registro.actor_pasivo.foto}" alt="foto actor pasivo" tal:condition="registro.actor_pasivo.foto != ''" />
 											</td>
 											<td>
-							    				<p><span tal:repeat="columna registro.columnas">${columna}<br /></span></p>
+							    				<p><span tal:repeat="columna registro.diccionario.keys()">${columna}<br /></span></p>
 											</td>
 											<td>
-										  		<p><span tal:repeat="valor registro.contenido">${valor}<br /></span></p>
+										  		<p><span tal:repeat="valor registro.diccionario.values()">${valor}<br /></span></p>
 										  	</td>
 										</tr>
 									</tbody>
@@ -278,7 +280,7 @@
           	<a href="#" class="btn" data-dismiss="modal">Cerrar</a>
         </div>
 	</metal:condiciones>
-	<metal:condiciones define-macro="registro_usuario">
+	<metal:registro define-macro="registro_usuario">
 		<div class="control-group">
         	<label class="control-label" for="correo_electronico">Correo electrónico</label>
         	<div class="controls">
@@ -309,6 +311,57 @@
           		<input type="text" class="input-large" id="apellido" name="apellido" />
         	</div>
       	</div>
-	</metal:condiciones>
+	</metal:registro>
+	<metal:listado_tiendas define-macro="listado_tiendas">
+		<ul class="thumbnails">
+        	<li class="span2" tal:repeat="tienda lista">
+        		<div tal:define="enlace view.peticion.route_url('tienda', tienda_id = tienda.tienda_id)">
+        			<a href="${enlace}">
+        				<div class="thumbnail" tal:define="foto view.obtener_foto('tienda', tienda.tienda_id, 'pequenas')">
+        					<img src="http://placehold.it/160x160" alt="cliente.nombre_comun" tal:condition="foto.ruta_de_foto == ''" />
+        					<img src="/estatico/${foto.ruta_de_foto}" alt="cliente.nombre_comun" tal:condition="foto.ruta_de_foto != ''" />
+        				</div>
+        			</a>
+        			<div class="caption" tal:define="cliente view.obtener_cliente_padre('tienda', tienda.tienda_id)">
+						<a href="${enlace}">
+							<h5>${cliente.nombre_comun}</h5>
+						</a>
+						<p>
+							${cliente.nombre_legal}
+							<span class="label label-success" tal:condition="tienda.abierto">Abierta</span>
+							<span class="label label-important" tal:condition="not tienda.abierto">Cerrada</span>
+							<br />
+							<em>${cliente.rif}</em><br />
+							<strong>Categoria</strong> <span tal:define="categoria_item view.obtener_categoria(cliente.categoria)">${categoria_item.nombre}</span><br />					
+							<input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
+						</p>
+					</div>
+	           	</div>
+	        </li>
+        </ul>
+	</metal:listado_tiendas>
+	<metal:listado_productos define-macro="listado_productos">
+		<ul class="thumbnails">
+        	<li class="span2" tal:repeat="item lista">
+        		<div tal:define="enlace view.peticion.route_url('producto', producto_id = item.producto_id)">
+        			<a href="${enlace}">
+        				<div class="thumbnail" tal:define="foto view.obtener_foto('producto', item.producto_id, 'pequenas')">
+        					<img src="http://placehold.it/160x160" alt="producto.nombre" tal:condition="foto.ruta_de_foto == ''"/>
+        					<img src="/estatico/${foto.ruta_de_foto}" alt="producto.nombre" tal:condition="foto.ruta_de_foto != ''"/>
+        				</div>
+        			</a>
+        			<div class="caption" tal:define="producto view.obtener_producto(item.producto_id)">
+						<a href="${enlace}">
+							<h5>${item.nombre}</h5>
+						</a>
+						<p>
+							<em>${item.codigo}</em><br />
+							<strong>Categoria</strong> <span tal:define="categoria_item view.obtener_categoria(producto.categoria)">${categoria_item.nombre}</span><br />
+						</p>
+					</div>
+	           	</div>
+	        </li>
+        </ul>
+	</metal:listado_productos>
 </body>
 </html>

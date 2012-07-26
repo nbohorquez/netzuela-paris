@@ -1,3 +1,44 @@
 <!DOCTYPE HTML>
 <div metal:use-macro="view.diagrama_global">
+	<div metal:fill-slot="contenido">
+		
+		<!-- Encabezado
+		================================================== -->	
+		<div class="page-header">
+			<div class="row-fluid">
+				<h1>${usuario.nombre} ${usuario.apellido}</h1>
+			</div>
+		</div>
+		<div id="meta_datos">
+			<input type="hidden" name="usuario_id" value="${usuario.usuario_id}" />
+		</div>
+		
+		<!-- Contenido
+		================================================== -->	
+		<div id="contenido_pestanas" class="tab-content">
+			
+			<!-- Noticias
+			================================================== -->	
+        	<div class="tab-pane active" id="noticias" tal:define="registros view.registro">
+        		<div metal:use-macro="view.macros['noticias']"></div>
+        	</div>
+        	
+        	<!-- Informacion
+			================================================== -->	
+        	<div class="tab-pane" id="informacion"></div>
+        	
+        	<!-- Tiendas
+			================================================== -->	
+            <div class="tab-pane" id="tiendas" tal:define="lista view.tiendas">
+            	<div metal:use-macro="view.macros['listado_tiendas']"></div>
+            </div>
+            
+            <!-- Comentarios (calificaciones y reseñas)
+			================================================== -->	
+            <div class="tab-pane" id="comentarios" tal:define="comentarios view.calificaciones_resenas">
+            	<div metal:use-macro="view.macros['comentarios']"></div>
+            </div>
+      	</div>
+	</div>
+	<div metal:fill-slot="scripts_extra"></div>
 </div>

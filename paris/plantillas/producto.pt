@@ -7,6 +7,9 @@
 		<div class="page-header">
   			<h1>${producto.fabricante} ${producto.nombre}</h1>
 		</div>
+		<div id="meta_datos">
+			<input type="hidden" name="producto_id" value="${producto.producto_id}" />
+		</div>
 		
 		<!-- Contenido
 		================================================== -->	
@@ -14,7 +17,7 @@
 			
 			<!-- Noticias
 			================================================== -->	
-	       	<div class="tab-pane active" id="noticias">
+	       	<div class="tab-pane active" id="noticias" tal:define="registros view.registro">
 	      		<div metal:use-macro="view.macros['noticias']"></div>
 	    	</div>	
 	    	
@@ -81,7 +84,7 @@
 	        
 	        <!-- Comentarios
 			================================================== -->
-	        <div class="tab-pane" id="comentarios">
+	        <div class="tab-pane" id="comentarios" tal:define="comentarios view.calificaciones_resenas">
             	<div metal:use-macro="view.macros['comentarios']"></div>
             </div>
 		</div>

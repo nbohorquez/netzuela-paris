@@ -6,6 +6,7 @@ Created on 08/04/2012
 '''
 
 from .models import (
+    acceso,
     busqueda,
     calificacion_resena,
     categoria,
@@ -44,8 +45,8 @@ class Comunes(object):
             tmp['calificacion'] = comentario.calificacion
             tmp['resena'] = comentario.resena
             
-            fecha_decimal = DBSession.query(rastreable).\
-            filter_by(rastreable_id = comentario.rastreable_p).first().fecha_de_creacion
+            fecha_decimal = DBSession.query(rastreable.fecha_de_creacion).\
+            filter_by(rastreable_id = comentario.rastreable_p).first()[0]
             
             fecha = str(fecha_decimal)
             tmp['fecha'] = "{0}/{1}/{2} {3}:{4}".format(fecha[6:8], fecha[4:6], fecha[0:4], fecha[8:10], fecha[10:12])
@@ -111,7 +112,7 @@ class Comunes(object):
             valor = {}
             x, tmp1, tmp2 = DBSession.query(usuario.usuario_id, usuario.nombre, usuario.apellido).\
             filter_by(rastreable_p = _id).first()
-            valor['nombre'] = "{0} {1}".format(tmp1, tmp2)
+            valor['nombre'] = valor['titulo'] = "{0} {1}".format(tmp1, tmp2)
             valor['foto'] = DBSession.query(foto.ruta_de_foto).\
             join(describible).\
             join(usuario).\
@@ -150,22 +151,22 @@ class Comunes(object):
             return valor
         def reg_mensaje(_id):
             valor = {}
-            valor['nombre'] = 'mensaje'
+            valor['nombre'] = valor['titulo'] = 'mensaje'
             valor['href'] = '#'
             return valor
         def reg_busqueda(_id):
             valor = {}
-            valor['nombre'] = 'busqueda'
+            valor['nombre'] = valor['titulo'] = 'busqueda'
             valor['href'] = '#'
             return valor
         def reg_calificacion_resena(_id):
             valor = {}
-            valor['nombre'] = 'comentario'
+            valor['nombre'] = valor['titulo'] = 'comentario'
             valor['href'] = '#'
             return valor
         def reg_seguidor(_id):
             valor = {}
-            valor['nombre'] = 'seguidor'
+            valor['nombre'] = valor['titulo'] = 'seguidor'
             valor['href'] = '#'
             return valor
         def reg_descripcion(_id):
@@ -199,12 +200,12 @@ class Comunes(object):
             return valor
         def reg_estadisticas(_id):
             valor = {}
-            valor['nombre'] = 'estadisticas'
+            valor['nombre'] = valor['titulo'] = 'estadisticas'
             valor['href'] = '#'
             return valor
         def reg_factura(_id):
             valor = {}
-            valor['nombre'] = 'factura'
+            valor['nombre'] = valor['titulo'] = 'factura'
             valor['href'] = '#'
             return valor
         
@@ -233,8 +234,9 @@ class Comunes(object):
         entrada['actor_pasivo'] = pasivo
         entrada['accion'] = Spuria.accion[reg.accion]
         
-        entrada['columnas'] = reg.columna.split(',') if (reg.columna is not None) else '' 
-        entrada['contenido'] = reg.valor.split(',') if (reg.valor is not None) else ''
+        columnas = reg.columna.split(',') if (reg.columna is not None) else '' 
+        valores = reg.valor.split(',') if (reg.valor is not None) else ''        
+        entrada['diccionario'] = dict(zip(columnas, valores)) if (len(columnas) == len(valores)) else {'tais': 'vergueao'}
         
         fecha = str(reg.fecha_hora)
         ano = int(fecha[0:4])
@@ -403,19 +405,19 @@ class Comunes(object):
         return DBSession.query(cliente).filter_by(rif = cli_id).first()
     
     def obtener_cliente_padre(self, objeto, objeto_id):
-        def cli_tienda():
+        def cli_tienda(_id):
             return DBSession.query(cliente).\
             join(tienda).\
-            filter(tienda.tienda_id == objeto_id).first()
-        def cli_patrocinante():
+            filter(tienda.tienda_id == _id).first()
+        def cli_patrocinante(_id):
             return DBSession.query(cliente).\
             join(patrocinante).\
-            filter(patrocinante.patrocinante_id == objeto_id).first()
+            filter(patrocinante.patrocinante_id == _id).first()
         
         resultado = {
-            'tienda': lambda: cli_tienda(), 
-            'patrocinante': lambda: cli_patrocinante()
-        }[objeto]()
+            'tienda': lambda x: cli_tienda(x), 
+            'patrocinante': lambda x: cli_patrocinante(x)
+        }[objeto](objeto_id)
         
         return resultado
     
@@ -427,20 +429,35 @@ class Comunes(object):
         tmp = DBSession.query(producto).filter_by(producto_id = pro_id).first()
         return tmp if (tmp is not None) \
         else { 
-            'codigo': 'no registrado', 
+            'codigo': '-1', 
             'nombre': '', 
-            'categoria': '0.0A.00.00.00.00' 
+            'categoria': '-1' 
         }
-    
-    def obtener_usuario(self, usu_id):
-        tmp = DBSession.query(usuario).filter_by(usuario_id = usu_id).first()
-        return tmp if (tmp is not None) \
-        else { 
-            'codigo': 'no registrado', 
-            'nombre': '', 
-            'categoria': '0.0A.00.00.00.00' 
-        }
+
+    def obtener_usuario(self, objeto, objeto_id):
+        def usu_id(_id):
+            return DBSession.query(usuario).filter_by(usuario_id = _id).first()
+        def usu_correo(correo):
+            return DBSession.query(usuario).\
+            join(acceso).\
+            filter(acceso.correo_electronico == correo).first()
+
+        tmp = {
+            'id': lambda x: usu_id(x), 
+            'correo_electronico': lambda x: usu_correo(x)
+        }[objeto](objeto_id)
         
+        return tmp if (tmp is not None) \
+        else {
+            'rastreable_p': -1,
+            'describible_p': -1,
+            'usuario_id': usu_id,
+            'nombre': '',
+            'apellido': '',
+            'estatus': 'Eliminado',
+            'ubicacion': '-1'
+        }
+
     def sql_foto(self, objeto, objeto_id, tamano):
         def foto_tienda():
             return DBSession.query(foto).\

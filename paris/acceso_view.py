@@ -6,7 +6,7 @@ Created on 07/06/2012
 '''
 
 from .diagramas import Diagramas
-from .models import acceso, DBSession
+from .models import acceso, DBSession, usuario
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import remember, forget
@@ -32,9 +32,9 @@ class AccesoView(Diagramas):
     def pagina_anterior(self):
         return self.peticion.params.get('pagina_anterior', self.referido_por)
     
-    def autentificar(self, usuario, contrasena):
+    def autentificar(self, correo, contrasena):
         resultado = False
-        tmp = DBSession.query(acceso.contrasena).filter_by(correo_electronico = usuario).first()
+        tmp = DBSession.query(acceso.contrasena).filter_by(correo_electronico = correo).first()
         if tmp is not None:
             if bcrypt.hashpw(contrasena, tmp[0]) == tmp[0]:
                 resultado = True

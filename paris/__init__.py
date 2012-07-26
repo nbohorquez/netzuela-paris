@@ -36,7 +36,6 @@ def main(global_config, **settings):
 		authentication_policy=authn_policy,
         authorization_policy=authz_policy
     )
-	
 	config.add_static_view('estatico', 'estatico', cache_max_age=3600)
 	config.add_route('inicio', '/')
 	config.add_route('producto', '/producto/{producto_id}')
@@ -51,6 +50,7 @@ def main(global_config, **settings):
 	config.add_route('registro', '/registro')
 	config.add_route('registro_consumidor', '/registro_consumidor')
 	config.add_route('registro_tienda', '/registro_tienda')
+	config.add_route('configuracion', '/')
 	config.add_route('usuario', '/usuario/{usuario_id}')
 	config.scan()
 	return config.make_wsgi_app()

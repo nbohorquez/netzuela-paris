@@ -30,7 +30,7 @@
           			<span class="icon-bar"></span>
           			<span class="icon-bar"></span>
         		</a>
-        		<a class='brand' href='/' title='Tu mundo en tiempo real'>
+        		<a class='brand' tal:attributes="href view.peticion.route_url('inicio')" title='Tu mundo en tiempo real'>
             		<img alt='Logo de Netzuela' height='16' src='/estatico/img/Netzuela-w-.png' width='83' />
           		</a>
         		<div class="nav-collapse">
@@ -50,7 +50,7 @@
 								<b class="caret"></b>
 							</a>							
 							<div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
-								<form action="/ingresar" method="post" accept-charset="UTF-8">
+								<form tal:attributes="action view.peticion.route_url('ingresar')" method="post" accept-charset="UTF-8">
 									<input type="hidden" name="pagina_anterior" value="${view.pagina_actual}" />
 								  	<input type="text" name="usuario" class="input-large" placeholder="Correo electrónico" />
 									<input type="password" name="contrasena" class="input-large" placeholder="Contraseña" />
@@ -63,17 +63,17 @@
 								</form>
 							</div>
 						</li>
-						<li class="dropdown" tal:condition="autentificado">
+						<li class="dropdown" tal:condition="autentificado" tal:define="usuario view.obtener_usuario('correo_electronico', autentificado)">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-target="#">
 								<i class="icon-user icon-white"></i>
-								${autentificado}
+								<span tal:content="'{0} {1}'.format(usuario.nombre, usuario.apellido)"></span>
 								<b class="caret"></b>
 							</a>
 							<ul class="dropdown-menu">
-								<li><a href="/usuario/1">Ver perfil</a></li>
+								<li><a tal:attributes="href view.peticion.route_url('usuario', usuario_id = usuario.usuario_id)">Ver perfil</a></li>
 								<li class="divider"></li>
-								<li><a href="/configuracion">Configuración</a></li>
-								<li><a href="/salir">Cerrar sesión</a></li>
+								<li><a tal:attributes="href view.peticion.route_url('configuracion')">Configuración</a></li>
+								<li><a tal:attributes="href view.peticion.route_url('salir')">Cerrar sesión</a></li>
 							</ul>
 						</li>
 					</ul>
@@ -142,6 +142,33 @@
 					  		<a href="#inventario" data-toggle="tab">
 						  		<i class="icon-shopping-cart"></i>
 						  		Inventario
+					  		</a>
+					  	</li>
+					  	<li>
+					  		<a href="#comentarios" data-toggle="tab">
+						  		<i class="icon-comment"></i>
+						  		Comentarios
+					  		</a>
+					  	</li>
+					</ul>
+					<ul id="menu" class="nav nav-list" tal:condition="pagina == 'Usuario'">
+					  	<li class="nav-header">Menú</li>
+					  	<li class="active">
+					  		<a href="#noticias" data-toggle="tab">
+					  			<i class="icon-time"></i>
+					  			Noticias
+					  		</a>
+					  	</li>
+					  	<li>
+					  		<a href="#informacion" data-toggle="tab">
+					  			<i class="icon-list-alt"></i>
+					  			Información					  			
+					  		</a>
+					  	</li>
+					  	<li>
+					  		<a href="#tiendas" data-toggle="tab">
+						  		<i class="icon-shopping-cart"></i>
+						  		Tiendas
 					  		</a>
 					  	</li>
 					  	<li>

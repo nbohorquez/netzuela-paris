@@ -29,7 +29,7 @@
 			
 			<!-- Noticias
 			================================================== -->	
-        	<div class="tab-pane active" id="noticias">
+        	<div class="tab-pane active" id="noticias" tal:define="registros view.registro">
           		<div metal:use-macro="view.macros['noticias']"></div>
         	</div>
         	
@@ -109,7 +109,7 @@
             
             <!-- Comentarios (calificaciones y reseñas)
 			================================================== -->	
-            <div class="tab-pane" id="comentarios">
+            <div class="tab-pane" id="comentarios" tal:define="comentarios view.calificaciones_resenas">
             	<div metal:use-macro="view.macros['comentarios']"></div>
             </div>
       	</div>

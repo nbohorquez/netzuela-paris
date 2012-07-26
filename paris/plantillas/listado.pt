@@ -16,55 +16,10 @@
 		<!-- Listado
 		================================================== -->
 		<div tal:condition="pagina == 'Productos'">
-			<ul class="thumbnails">
-	        	<li class="span2" tal:repeat="item lista">
-	        		<div tal:define="enlace view.peticion.route_url('producto', producto_id = item.producto_id)">
-	        			<a href="${enlace}">
-	        				<div class="thumbnail" tal:define="foto view.obtener_foto('producto', item.producto_id, 'pequenas')">
-	        					<img src="http://placehold.it/160x160" alt="producto.nombre" tal:condition="foto.ruta_de_foto == ''"/>
-	        					<img src="/estatico/${foto.ruta_de_foto}" alt="producto.nombre" tal:condition="foto.ruta_de_foto != ''"/>
-	        				</div>
-	        			</a>
-	        			<div class="caption" tal:define="producto view.obtener_producto(item.producto_id)">
-							<a href="${enlace}">
-								<h5>${item.nombre}</h5>
-							</a>
-							<p>
-								<em>${item.codigo}</em><br />
-								<strong>Categoria</strong> <span tal:define="categoria_item view.obtener_categoria(producto.categoria)">${categoria_item.nombre}</span><br />
-							</p>
-						</div>
-		           	</div>
-		        </li>
-	        </ul>
+			<div metal:use-macro="view.macros['listado_productos']"></div>
 		</div>
 		<div tal:condition="pagina == 'Tiendas'">
-			<ul class="thumbnails">
-	        	<li class="span2" tal:repeat="tienda lista">
-	        		<div tal:define="enlace view.peticion.route_url('tienda', tienda_id = tienda.tienda_id)">
-	        			<a href="${enlace}">
-	        				<div class="thumbnail" tal:define="foto view.obtener_foto('tienda', tienda.tienda_id, 'pequenas')">
-	        					<img src="http://placehold.it/160x160" alt="cliente.nombre_comun" tal:condition="foto.ruta_de_foto == ''" />
-	        					<img src="/estatico/${foto.ruta_de_foto}" alt="cliente.nombre_comun" tal:condition="foto.ruta_de_foto != ''" />
-	        				</div>
-	        			</a>
-	        			<div class="caption" tal:define="cliente view.obtener_cliente_padre('tienda', tienda.tienda_id)">
-							<a href="${enlace}">
-								<h5>${cliente.nombre_comun}</h5>
-							</a>
-							<p>
-								${cliente.nombre_legal}
-								<span class="label label-success" tal:condition="tienda.abierto">Abierta</span>
-								<span class="label label-important" tal:condition="not tienda.abierto">Cerrada</span>
-								<br />
-								<em>${cliente.rif}</em><br />
-								<strong>Categoria</strong> <span tal:define="categoria_item view.obtener_categoria(cliente.categoria)">${categoria_item.nombre}</span><br />					
-								<input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
-							</p>
-						</div>
-		           	</div>
-		        </li>
-	        </ul>
+			<div metal:use-macro="view.macros['listado_tiendas']"></div>
 		</div>
 	</div>
 	<div metal:fill-slot="scripts_extra">
