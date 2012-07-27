@@ -90,7 +90,7 @@
 	<!-- Fotos
 	================================================== -->	
 	<metal:fotos_medianas define-macro="fotos_medianas">
-		<div id="carrusel" class="carousel slide" tal:define="fotos view.fotos_medianas">
+		<div id="carrusel" class="carousel slide">
             <div class="carousel-inner">
             	<tal:block tal:repeat="foto fotos" tal:condition="len(fotos) > 0">
            			<div tal:condition="repeat.foto.start" class="item active">
@@ -121,7 +121,7 @@
 	================================================== -->	
 	<metal:ruta_de_categoria define-macro="ruta_de_categoria">
 		<ul id="ruta_de_categoria" class="breadcrumb">
-			<li tal:repeat="nodo view.ruta_categoria_actual">
+			<li tal:repeat="nodo ruta">
 		    	<a tal:condition="pagina == 'Producto'" tal:attributes="href view.peticion.route_url('productos', categoria_id = nodo.categoria_id, territorio_id = '0.02.00.00.00.00')">${nodo.nombre}</a> 
 		    	<a tal:condition="pagina == 'Tienda'" tal:attributes="href view.peticion.route_url('tiendas', categoria_id = nodo.categoria_id, territorio_id = '0.02.00.00.00.00')">${nodo.nombre}</a>
 		    	<span class="divider">/</span>
@@ -152,8 +152,8 @@
   			<tbody>
 	    		<tr tal:repeat="registro registros">
 	    			<td>
-	    				<div class="row-fluid">
-	    					<div class="span1.5">
+	    				<div class="row-fluid titular-noticia">
+	    					<div class="span1">
 	    						<a href="${registro.actor_activo.href}">
 		    						<div class="thumbnail">
 		    							<img src="http://placehold.it/70x70" alt="foto actor pasivo" tal:condition="registro.actor_activo.foto == ''" />
@@ -161,10 +161,10 @@
 	        						</div>
 	        					</a>
 	    					</div>
-	    					<div class="span10.5">
+	    					<div class="span7">
 		    					<p>
 			    					<tal:block tal:switch="registro.accion">
-										<i tal:case="'inserto'" class="icon-plus"></i>
+										<i tal:case="'creo'" class="icon-plus"></i>
 										<i tal:case="'abrio'" class="icon-eye-open"></i>
 										<i tal:case="'actualizo'" class="icon-pencil"></i>
 										<i tal:case="'elimino'" class="icon-trash"></i>
@@ -174,26 +174,30 @@
 									</tal:block>
 									<a tal:attributes="href registro.actor_activo.href">${registro.actor_activo.nombre}</a> 
 									${registro.accion}
-									<a tal:attributes="href registro.actor_pasivo.href">${registro.actor_pasivo.nombre}</a>
+									<a class="popover-aqui" title="${registro.actor_pasivo.titulo}" tal:attributes="href registro.actor_pasivo.href">${registro.actor_pasivo.nombre}</a>
 								</p>
-								<h5>${registro.actor_pasivo.titulo}</h5>
-								<table class="table">
-									<tbody>
-										<tr>
-											<td>
-												<img src="http://placehold.it/160x160" alt="foto actor pasivo" tal:condition="registro.actor_pasivo.foto == ''" />
-												<img src="/estatico/${registro.actor_pasivo.foto}" alt="foto actor pasivo" tal:condition="registro.actor_pasivo.foto != ''" />
-											</td>
-											<td>
-							    				<p><span tal:repeat="columna registro.diccionario.keys()">${columna}<br /></span></p>
-											</td>
-											<td>
-										  		<p><span tal:repeat="valor registro.diccionario.values()">${valor}<br /></span></p>
-										  	</td>
-										</tr>
-									</tbody>
-								</table>
 								<p><small>hace ${registro.tiempo}</small></p>
+							</div>
+	    				</div>
+	    				<div class="cuerpo-noticia">
+	    					<div class="row-fluid">
+								<div class="span4">
+									<img src="/estatico/${registro.actor_pasivo.foto}" alt="foto actor pasivo" tal:condition="registro.actor_pasivo.foto != ''"/>	
+								</div>
+								<div class="span8">
+									<table class="table">
+										<tbody>
+											<tr>
+												<td>
+													<p><span tal:repeat="columna registro.diccionario.keys()">${columna}<br /></span></p>
+												</td>
+												<td>
+													<p><span tal:repeat="valor registro.diccionario.values()">${valor}<br /></span></p>
+											  	</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
 							</div>
 	    				</div>
 	    			</td>
@@ -201,6 +205,9 @@
   			</tbody>
 		</table>
 	</metal:noticias>
+	
+	<!-- Condiciones
+	================================================== -->	
 	<metal:condiciones define-macro="condiciones">
 		<div class="modal-header">
         	<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -280,6 +287,9 @@
           	<a href="#" class="btn" data-dismiss="modal">Cerrar</a>
         </div>
 	</metal:condiciones>
+	
+	<!-- Registro de usuario
+	================================================== -->
 	<metal:registro define-macro="registro_usuario">
 		<div class="control-group">
         	<label class="control-label" for="correo_electronico">Correo electrónico</label>
@@ -312,6 +322,9 @@
         	</div>
       	</div>
 	</metal:registro>
+	
+	<!-- Listado de tiendas
+	================================================== -->
 	<metal:listado_tiendas define-macro="listado_tiendas">
 		<ul class="thumbnails">
         	<li class="span2" tal:repeat="tienda lista">
@@ -340,6 +353,9 @@
 	        </li>
         </ul>
 	</metal:listado_tiendas>
+	
+	<!-- Listado de productos
+	================================================== -->
 	<metal:listado_productos define-macro="listado_productos">
 		<ul class="thumbnails">
         	<li class="span2" tal:repeat="item lista">

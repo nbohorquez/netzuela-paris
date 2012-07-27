@@ -42,6 +42,10 @@ class UsuarioView(Diagramas, Comunes):
         return self.pagina_actual
     
     @reify
+    def tipo_de_peticion(self):
+        return 'usuario'
+    
+    @reify
     def peticion_id(self):
         return self.usuario_id
     
@@ -80,6 +84,30 @@ class UsuarioView(Diagramas, Comunes):
         
         return [{""}] if var_comentarios is None else self.formatear_comentarios(var_comentarios) 
        
+    @reify
+    def fotos_grandes(self):
+        var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'grandes')
+        resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
+        return resultado
+    
+    @reify
+    def fotos_medianas(self):
+        var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'medianas')
+        resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
+        return resultado
+    
+    @reify
+    def fotos_pequenas(self):
+        var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'pequenas')
+        resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
+        return resultado
+    
+    @reify
+    def fotos_miniaturas(self):
+        var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'miniaturas')
+        resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
+        return resultado
+
     @view_config(route_name='usuario', renderer='plantillas/usuario.pt')
     def usuario_view(self):
         var_usuario = self.obtener_usuario('id', self.usuario_id)

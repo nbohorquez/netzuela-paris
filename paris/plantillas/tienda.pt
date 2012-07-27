@@ -38,8 +38,8 @@
         	<div class="tab-pane" id="informacion">
           		<div class="row-fluid">
           			<div class="span4">
-          				<div metal:use-macro="view.macros['fotos_medianas']"></div>
-          				<div metal:use-macro="view.macros['ruta_de_categoria']"></div>
+          				<div metal:use-macro="view.macros['fotos_medianas']" tal:define="fotos view.fotos_medianas"></div>
+          				<div metal:use-macro="view.macros['ruta_de_categoria']" tal:define="ruta view.ruta_categoria_actual"></div>
 						<table id="horarios" class="table pull-left" tal:define="horarios view.horarios">
 				  			<thead>
 				    			<tr>

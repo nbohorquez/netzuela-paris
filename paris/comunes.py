@@ -58,6 +58,15 @@ class Comunes(object):
             resultado.append(tmp)
         return resultado
     
+    def depurar_columnas_registro(self, diccionario):
+        resultado = {}
+        for entrada in diccionario.items():
+            if entrada[0] not in Spuria.columnas_no_visibles:
+                clave = entrada[0].replace('_', ' ').capitalize()
+                resultado[clave] = entrada[1]
+            
+        return resultado
+
     def formatear_entrada_registro(self, reg, peticion):
         def obtener_objeto(tipo, tipo_id):
             return {
@@ -224,7 +233,7 @@ class Comunes(object):
         tipo_pasivo = self.tipo_de_rastreable(reg.actor_pasivo)
         pasivo = obtener_objeto(tipo_pasivo, reg.actor_pasivo) if (tipo_pasivo is not None) else por_defecto
         if 'foto' in pasivo:
-            tmp = pasivo['foto'].filter(foto.ruta_de_foto.like('%pequenas%')).first()
+            tmp = pasivo['foto'].filter(foto.ruta_de_foto.like('%miniaturas%')).first()
             pasivo['foto'] = tmp[0] if (tmp is not None) else ''
         else:
             pasivo['foto'] = ''
@@ -234,9 +243,10 @@ class Comunes(object):
         entrada['actor_pasivo'] = pasivo
         entrada['accion'] = Spuria.accion[reg.accion]
         
-        columnas = reg.columna.split(',') if (reg.columna is not None) else '' 
-        valores = reg.valor.split(',') if (reg.valor is not None) else ''        
-        entrada['diccionario'] = dict(zip(columnas, valores)) if (len(columnas) == len(valores)) else {'tais': 'vergueao'}
+        columnas = reg.columna.split('<|>') if (reg.columna is not None) else '' 
+        valores = reg.valor.split('<|>') if (reg.valor is not None) else ''        
+        diccionario = dict(zip(columnas, valores)) if (len(columnas) == len(valores)) else {'tais': 'vergueao'}
+        entrada['diccionario'] = self.depurar_columnas_registro(diccionario)
         
         fecha = str(reg.fecha_hora)
         ano = int(fecha[0:4])
@@ -487,12 +497,21 @@ class Comunes(object):
                 publicidad.publicidad_id == objeto_id, 
                 foto.ruta_de_foto.like('%' + tamano + '%'))
             )
+        def foto_usuario():
+            return DBSession.query(foto).\
+            join(describible).\
+            join(usuario).\
+            filter(and_(
+                usuario.usuario_id == objeto_id, 
+                foto.ruta_de_foto.like('%' + tamano + '%'))
+            )
         
         sql = {
             'tienda': lambda: foto_tienda(), 
             'producto': lambda: foto_producto(), 
             'patrocinante': lambda: foto_patrocinante(), 
-            'publicidad': lambda: foto_publicidad()
+            'publicidad': lambda: foto_publicidad(),
+            'usuario': lambda: foto_usuario()
         }[objeto]()
         
         return sql

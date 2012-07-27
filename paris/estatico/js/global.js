@@ -33,6 +33,13 @@ $(document).ready(function() {
 		e.stopPropagation();
 	});
 	
+	$('.popover-aqui').popover({ 
+	    html: true,
+	    content: function() {
+	    	return $(this).parents('.titular-noticia').siblings('.cuerpo-noticia').html();
+	    }
+	});
+	
 	// No escribais nada despues de estas lineas porque el javascript no lo va a ejecutar
 	// No se por que...
 	$(".collapse").collapse();

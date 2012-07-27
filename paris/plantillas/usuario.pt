@@ -25,7 +25,38 @@
         	
         	<!-- Informacion
 			================================================== -->	
-        	<div class="tab-pane" id="informacion"></div>
+        	<div class="tab-pane" id="informacion">
+        		<div class="row-fluid">
+	      			<div class="span4">
+        				<div metal:use-macro="view.macros['fotos_medianas']" tal:define="fotos view.fotos_medianas"></div>
+        				<table class="table">
+					  			<thead>
+					    			<tr>
+					      				<th>Datos</th>
+					    			</tr>
+					  			</thead>
+					  			<tbody>
+						    		<tr>
+						    			<td>
+						    				<p>
+						    					Nombre<br />
+						    					Apellido<br />
+						    					Ubicación<br />
+						    				</p>
+						    			</td>
+					  					<td>
+					  						<p>
+					  							${usuario.nombre}<br />
+					  							${usuario.apellido}<br />
+					  							${usuario.ubicacion}<br />
+					  						</p>
+					  					</td>
+					  				</tr>
+					  			</tbody>
+							</table>
+        			</div>
+        		</div>
+        	</div>
         	
         	<!-- Tiendas
 			================================================== -->	
@@ -40,5 +71,9 @@
             </div>
       	</div>
 	</div>
-	<div metal:fill-slot="scripts_extra"></div>
+	<div metal:fill-slot="scripts_extra">
+		<script type="text/javascript" src="/estatico/js/bootstrap-tooltip.js"></script>
+		<script type="text/javascript" src="/estatico/js/bootstrap-carousel.js"></script>
+		<script type="text/javascript" src="/estatico/js/bootstrap-popover.js"></script>
+	</div>
 </div>
