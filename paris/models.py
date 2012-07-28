@@ -30,7 +30,7 @@ def mixIn(classname, parentclasses):
 class Spuria(object):
     creador = 1    
     accion = { 
-        'Insertar': 'creo',
+        'Insertar': 'agrego',
         'Abrir': 'abrio',
         'Actualizar': 'actualizo',
         'Eliminar': 'elimino',
@@ -157,6 +157,7 @@ class Spuria(object):
         'usuario',
         'cliente',
         'propietario',
+        'fecha_inicio'
     ]
     
     # Asocia las tablas de la base de datos con clases en python

@@ -6,7 +6,20 @@
 		================================================== -->	
 		<div class="page-header">
 			<div class="row-fluid">
-				<h1>${usuario.nombre} ${usuario.apellido}</h1>
+				<div class="span1">
+					<a data-toggle="modal" href="#fotos_usuario">
+						<div class="thumbnail" tal:define="foto view.obtener_foto('usuario', usuario.usuario_id, 'pequenas')">
+							<img src="/estatico/${foto.ruta_de_foto}" alt="Foto" tal:condition="foto.ruta_de_foto != ''" />
+							<img src="http://placehold.it/70x70" alt="Foto" tal:condition="foto.ruta_de_foto == ''" />
+						</div>
+					</a>
+					<div id="fotos_usuario" class="modal hide fade">
+			            <div metal:use-macro="view.macros['carrusel_fotos']" tal:define="fotos view.fotos_grandes"></div>
+					</div>
+				</div>
+				<div class="span11">
+					<h1>${usuario.nombre} ${usuario.apellido}</h1>
+				</div>
 			</div>
 		</div>
 		<div id="meta_datos">
@@ -16,54 +29,49 @@
 		<!-- Contenido
 		================================================== -->	
 		<div id="contenido_pestanas" class="tab-content">
-			
-			<!-- Noticias
-			================================================== -->	
-        	<div class="tab-pane active" id="noticias" tal:define="registros view.registro">
-        		<div metal:use-macro="view.macros['noticias']"></div>
-        	</div>
         	
         	<!-- Informacion
 			================================================== -->	
-        	<div class="tab-pane" id="informacion">
+        	<div class="tab-pane active" id="informacion">
         		<div class="row-fluid">
 	      			<div class="span4">
-        				<div metal:use-macro="view.macros['fotos_medianas']" tal:define="fotos view.fotos_medianas"></div>
         				<table class="table">
-					  			<thead>
-					    			<tr>
-					      				<th>Datos</th>
-					    			</tr>
-					  			</thead>
-					  			<tbody>
-						    		<tr>
-						    			<td>
-						    				<p>
-						    					Nombre<br />
-						    					Apellido<br />
-						    					Ubicación<br />
-						    				</p>
-						    			</td>
-					  					<td>
-					  						<p>
-					  							${usuario.nombre}<br />
-					  							${usuario.apellido}<br />
-					  							${usuario.ubicacion}<br />
-					  						</p>
-					  					</td>
-					  				</tr>
-					  			</tbody>
-							</table>
+				  			<thead>
+				    			<tr>
+				      				<th>Datos</th>
+				    			</tr>
+				  			</thead>
+				  			<tbody>
+					    		<tr>
+					    			<td>
+					    				<p>
+					    					Nombre<br />
+					    					Apellido<br />
+					    					Ubicación<br />
+					    				</p>
+					    			</td>
+				  					<td>
+				  						<p>
+				  							${usuario.nombre}<br />
+				  							${usuario.apellido}<br />
+				  							${usuario.ubicacion}<br />
+				  						</p>
+				  					</td>
+				  				</tr>
+				  			</tbody>
+						</table>
         			</div>
+        		</div>
+        		<div class="row-fluid">
+        			<div class="span6">
+		        		<div metal:use-macro="view.macros['noticias']" tal:define="registros view.registro"></div>
+		        	</div>
+		        	<div class="span6">
+		        		<div metal:use-macro="view.macros['listado_tiendas']" tal:define="lista view.tiendas"></div>
+		        	</div>
         		</div>
         	</div>
         	
-        	<!-- Tiendas
-			================================================== -->	
-            <div class="tab-pane" id="tiendas" tal:define="lista view.tiendas">
-            	<div metal:use-macro="view.macros['listado_tiendas']"></div>
-            </div>
-            
             <!-- Comentarios (calificaciones y reseñas)
 			================================================== -->	
             <div class="tab-pane" id="comentarios" tal:define="comentarios view.calificaciones_resenas">
@@ -75,5 +83,7 @@
 		<script type="text/javascript" src="/estatico/js/bootstrap-tooltip.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-carousel.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-popover.js"></script>
+		<script type="text/javascript" src="/estatico/js/bootstrap-modal.js"></script>
+		<script type="text/javascript" src="/estatico/js/noticias.js"></script>
 	</div>
 </div>

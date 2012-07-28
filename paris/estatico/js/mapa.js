@@ -2,7 +2,7 @@
  * @author Nestor Bohorquez
  */
 
-function Mapa(opciones) {
+function Mapa (opciones) {
 	var territorios_crudos = this.parsear_json(opciones.json);
 	switch(opciones.tipo) {
 		case 'poligonos':
@@ -16,7 +16,7 @@ function Mapa(opciones) {
 	}
 }
 
-Mapa.prototype.parsear_json = function(data) {
+Mapa.prototype.parsear_json = function (data) {
 	var resultado = [];
 	
 	// Este lazo recorre cada territorio
@@ -48,7 +48,7 @@ Mapa.prototype.parsear_json = function(data) {
 	return resultado;
 }
 
-Mapa.prototype.dibujar_limites = function(territorios, proveedor) {
+Mapa.prototype.dibujar_limites = function (territorios, proveedor) {
 	var resultado = [];
 	
 	// Este lazo recorre cada territorio
@@ -70,7 +70,7 @@ Mapa.prototype.dibujar_limites = function(territorios, proveedor) {
 	return resultado;
 }
 
-Mapa.prototype.dibujar_poligonos = function(territorios, proveedor) {
+Mapa.prototype.dibujar_poligonos = function (territorios, proveedor) {
 	// Colores provistos por http://colorbrewer2.org/index.php?type=diverging&scheme=RdBu&n=10
 	var colores = ["#67001F", "#B2182B", "#D6604D", "#F4A582", "#FDDBC7", "#D1E5F0", "#92C5DE", "#4393C3", "#2166AC", "#053061"];
 	var infobox_posicion = new google.maps.Point(80, 230);
@@ -94,7 +94,7 @@ Mapa.prototype.dibujar_poligonos = function(territorios, proveedor) {
 		
 		terr.crear_poligono(territorios[i].contornos);
 			
-		terr.attachEvent('mouseover', function(remitente, args) {
+		terr.attachEvent('mouseover', function (remitente, args) {
 			remitente.poligono.setOptions({fillColor: "#FF0000"});
 			//infobox.html('<span>' + remitente.nombre + '</span>');
 			//remitente.mapa.infobox.setContent(infobox.outerHtml());
@@ -106,12 +106,12 @@ Mapa.prototype.dibujar_poligonos = function(territorios, proveedor) {
 			}
 		});
 		
-		terr.attachEvent('mouseout', function(remitente, args) {
+		terr.attachEvent('mouseout', function (remitente, args) {
 			remitente.poligono.setOptions({fillColor: remitente.color});
 			remitente.mapa.infobox.setContent('');				
 		});		
 		
-		terr.attachEvent('click', function(remitente, args) {
+		terr.attachEvent('click', function (remitente, args) {
 			$("#ubicacion_visible").text(remitente.nombre);
 			$("#ubicacion").val(remitente.id);
 		});

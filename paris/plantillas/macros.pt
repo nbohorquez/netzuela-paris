@@ -10,64 +10,95 @@
 	<!-- Inventario de productos
 	================================================== -->	
 	<metal:inventario_de_productos define-macro="inventario_de_productos">
-	    <ul class="thumbnails">
-        	<li class="span2" tal:repeat="item lista">
-        		<div tal:define="enlace view.peticion.route_url('producto', producto_id = item.producto_id)">
-        			<a href="${enlace}">
-        				<div class="thumbnail" tal:define="foto view.obtener_foto('producto', item.producto_id, 'pequenas')">
-        					<img src="http://placehold.it/70x70" alt="producto.nombre" tal:condition="foto == ''"/>
-        					<img src="/estatico/${foto.ruta_de_foto}" alt="producto.nombre" tal:condition="foto != ''"/>
-        				</div>
-        			</a>
-        			<div class="caption" tal:define="producto view.obtener_producto(item.producto_id)">
-						<a href="${enlace}">
-							<h5>${producto.nombre}</h5>
-						</a>
-						<p>
-							<em>${producto.codigo}</em><br />
-							${item.descripcion}<br />
-							<strong>Categoria</strong> <span tal:define="categoria_item view.obtener_categoria(producto.categoria)">${categoria_item.nombre}</span><br />
-							<strong>SKU</strong> ${item.codigo}<br />
-							<strong>Precio</strong> ${item.precio}<br />
-							<strong>Cantidad</strong> ${item.cantidad}
-						</p>
-					</div>
-	           	</div>
-	        </li>
-        </ul>
+		<table class="table">
+  			<thead>
+    			<tr>
+      				<th>Productos</th>
+    			</tr>
+  			</thead>
+  			<tbody>
+  				<tr tal:repeat="item lista">
+	    			<td tal:define="tienda view.obtener_tienda(item.tienda_id); enlace view.peticion.route_url('producto', producto_id = item.producto_id)">
+	    				<div class="row-fluid">
+	    					<div class="span2">
+	    						<a href="${enlace}">
+			        				<div class="thumbnail" tal:define="foto view.obtener_foto('producto', item.producto_id, 'pequenas')">
+			        					<img src="http://placehold.it/70x70" alt="producto.nombre" tal:condition="foto == ''"/>
+			        					<img src="/estatico/${foto.ruta_de_foto}" alt="producto.nombre" tal:condition="foto != ''"/>
+			        				</div>
+			        			</a>
+	    					</div>
+	    					<div class="span10">
+	    						<div tal:define="producto view.obtener_producto(item.producto_id)">
+									<a href="${enlace}">${producto.nombre}</a>
+									<p>
+										<em>${producto.codigo}</em><br />
+										${item.descripcion}<br />
+										<strong>Categoria</strong> <span tal:define="categoria_item view.obtener_categoria(producto.categoria)">${categoria_item.nombre}</span><br />
+										<strong>SKU</strong> ${item.codigo}<br />
+										<strong>Precio</strong> ${item.precio}<br />
+										<strong>Cantidad</strong> ${item.cantidad}
+									</p>
+								</div>
+	    					</div>
+	    				</div>
+	    			</td>
+	    		</tr>
+  			</tbody>
+  		</table>
+  		<p class="pull-right">
+			<abbr title="Numero total de productos">N:</abbr>
+			<span tal:content="tamano.numero_total_de_productos"></span>
+			<abbr title="Cantidad total de productos">C:</abbr>
+			<span tal:content="tamano.cantidad_total_de_productos"></span>
+			<abbr title="Tamano del inventario">T:</abbr>
+			<span tal:content="tamano.valor"></span>
+		</p>
 	</metal:inventario_de_productos>
 	
 	<!-- Inventario de tiendas
 	================================================== -->	
 	<metal:inventario_de_tiendas define-macro="inventario_de_tiendas">
-	   <ul class="thumbnails">
-        	<li class="span2" tal:repeat="item lista">
-        		<div tal:define="enlace view.peticion.route_url('tienda', tienda_id = item.tienda_id)">
-        			<a href="${enlace}">
-        				<div class="thumbnail" tal:define="foto view.obtener_foto('tienda', item.tienda_id, 'pequenas')">
-    						<img src="http://placehold.it/70x70" alt="cliente.nombre_comun" tal:condition="foto == ''" />
-    						<img src="/estatico/${foto.ruta_de_foto}" alt="cliente.nombre_comun" tal:condition="foto != ''" />	
-        				</div>
-        			</a>
-        			<div class="caption" tal:define="cliente view.obtener_cliente_padre('tienda', item.tienda_id)">
-						<a href="${enlace}">
-							<h5>${cliente.nombre_comun}</h5>	
-						</a>
-						<p tal:define="tienda view.obtener_tienda(item.tienda_id)">
-							${cliente.nombre_legal}
-							<span class="label label-success" tal:condition="tienda.abierto">Abierta</span>
-							<span class="label label-important" tal:condition="not tienda.abierto">Cerrada</span>
-							<br />
-							<em>${cliente.rif}</em><br />
-							<strong>Categoria</strong> <span tal:define="categoria_item view.obtener_categoria(cliente.categoria)">${categoria_item.nombre}</span><br />					
-							<strong>Precio</strong> ${item.precio}<br />
-							<strong>Cantidad</strong> ${item.cantidad}
-							<input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
-						</p>
-					</div>
-	           	</div>
-	        </li>
-        </ul>
+		<table class="table">
+  			<thead>
+    			<tr>
+      				<th>Vendedores</th>
+    			</tr>
+  			</thead>
+  			<tbody>
+	    		<tr tal:repeat="item lista">
+	    			<td tal:define="tienda view.obtener_tienda(item.tienda_id); enlace view.peticion.route_url('tienda', tienda_id = item.tienda_id)">
+	    				<div class="row-fluid">
+	    					<div class="span2">
+	    						<a href="${enlace}">
+			        				<div class="thumbnail" tal:define="foto view.obtener_foto('tienda', item.tienda_id, 'pequenas')">
+			    						<img src="http://placehold.it/70x70" alt="cliente.nombre_comun" tal:condition="foto == ''" />
+			    						<img src="/estatico/${foto.ruta_de_foto}" alt="cliente.nombre_comun" tal:condition="foto != ''" />
+			        				</div>
+			        			</a>
+	    					</div>
+	    					<div class="span8">
+	    						<div tal:define="cliente view.obtener_cliente_padre('tienda', item.tienda_id)">
+									<a href="${enlace}">${cliente.nombre_comun}</a>
+									<p>
+										${cliente.nombre_legal}
+										<br />
+										<strong>Ubicación</strong> ${cliente.ubicacion}<br />
+										<strong>Precio</strong> ${item.precio}<br />
+										<strong>Cantidad</strong> ${item.cantidad}
+										<input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
+									</p>
+								</div>	    						
+	    					</div>
+	    					<div class="span2">
+	    						<p class="label label-success" tal:condition="tienda.abierto">Abierto</p>
+								<p class="label label-important" tal:condition="not tienda.abierto">Cerrado</p>
+	    					</div>
+	    				</div>
+  					</td>
+  				</tr>
+  			</tbody>
+		</table>
 	</metal:inventario_de_tiendas>
 	
 	<!-- Comentarios (calificaciones y reseñas)
@@ -87,9 +118,9 @@
 		</blockquote>
 	</metal:comentarios>
 	
-	<!-- Fotos
+	<!-- Carrusel de fotos
 	================================================== -->	
-	<metal:fotos_medianas define-macro="fotos_medianas">
+	<metal:carrusel_fotos define-macro="carrusel_fotos">
 		<div id="carrusel" class="carousel slide">
             <div class="carousel-inner">
             	<tal:block tal:repeat="foto fotos" tal:condition="len(fotos) > 0">
@@ -115,7 +146,7 @@
 	        	<a class="right carousel-control" href="#carrusel" data-slide="next">&rsaquo;</a>
         	</tal:block>
         </div>
-	</metal:fotos_medianas>
+	</metal:carrusel_fotos>
 	
 	<!-- Ruta de categoria
 	================================================== -->	
@@ -149,11 +180,16 @@
 	================================================== -->
 	<metal:noticias define-macro="noticias">
 		<table class="table">
+			<thead>
+				<tr>
+					<th>Actividad reciente</th>
+				</tr>
+			</thead>
   			<tbody>
 	    		<tr tal:repeat="registro registros">
 	    			<td>
 	    				<div class="row-fluid titular-noticia">
-	    					<div class="span1">
+	    					<div class="span2">
 	    						<a href="${registro.actor_activo.href}">
 		    						<div class="thumbnail">
 		    							<img src="http://placehold.it/70x70" alt="foto actor pasivo" tal:condition="registro.actor_activo.foto == ''" />
@@ -161,10 +197,10 @@
 	        						</div>
 	        					</a>
 	    					</div>
-	    					<div class="span7">
+	    					<div class="span10">
 		    					<p>
 			    					<tal:block tal:switch="registro.accion">
-										<i tal:case="'creo'" class="icon-plus"></i>
+										<i tal:case="'agrego'" class="icon-plus"></i>
 										<i tal:case="'abrio'" class="icon-eye-open"></i>
 										<i tal:case="'actualizo'" class="icon-pencil"></i>
 										<i tal:case="'elimino'" class="icon-trash"></i>
@@ -172,14 +208,40 @@
 										<i tal:case="'abrio sesion'" class="icon-user"></i>
 										<i tal:case="'cerro sesion'" class="icon-off"></i>
 									</tal:block>
-									<a tal:attributes="href registro.actor_activo.href">${registro.actor_activo.nombre}</a> 
+									<a class="popover-actor-activo" title="${registro.actor_activo.titulo}" tal:attributes="href registro.actor_activo.href">${registro.actor_activo.nombre}</a> 
 									${registro.accion}
-									<a class="popover-aqui" title="${registro.actor_pasivo.titulo}" tal:attributes="href registro.actor_pasivo.href">${registro.actor_pasivo.nombre}</a>
+									<span tal:repeat="item registro.parametros.items()">
+										${item[0]} = ${item[1]}  
+										<tal:block tal:condition="not repeat.item.end">,</tal:block>
+										<tal:block tal:condition="repeat.item.end">de</tal:block>
+									</span>
+									<a class="popover-actor-pasivo" title="${registro.actor_pasivo.titulo}" tal:attributes="href registro.actor_pasivo.href">${registro.actor_pasivo.nombre}</a>
 								</p>
 								<p><small>hace ${registro.tiempo}</small></p>
 							</div>
 	    				</div>
-	    				<div class="cuerpo-noticia">
+	    				<div class="popover-inner-actor-activo">
+	    					<div class="row-fluid">
+								<div class="span4">
+									<img src="/estatico/${registro.actor_activo.foto}" alt="foto actor pasivo" tal:condition="registro.actor_activo.foto != ''"/>	
+								</div>
+								<div class="span8">
+									<table class="table">
+										<tbody>
+											<tr>
+												<td>
+													<p><span tal:repeat="columna registro.actor_activo.diccionario.keys()">${columna}<br /></span></p>
+												</td>
+												<td>
+													<p><span tal:repeat="valor registro.actor_activo.diccionario.values()">${valor}<br /></span></p>
+											  	</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+	    				</div>
+	    				<div class="popover-inner-actor-pasivo">
 	    					<div class="row-fluid">
 								<div class="span4">
 									<img src="/estatico/${registro.actor_pasivo.foto}" alt="foto actor pasivo" tal:condition="registro.actor_pasivo.foto != ''"/>	
@@ -189,10 +251,10 @@
 										<tbody>
 											<tr>
 												<td>
-													<p><span tal:repeat="columna registro.diccionario.keys()">${columna}<br /></span></p>
+													<p><span tal:repeat="columna registro.actor_pasivo.diccionario.keys()">${columna}<br /></span></p>
 												</td>
 												<td>
-													<p><span tal:repeat="valor registro.diccionario.values()">${valor}<br /></span></p>
+													<p><span tal:repeat="valor registro.actor_pasivo.diccionario.values()">${valor}<br /></span></p>
 											  	</td>
 											</tr>
 										</tbody>

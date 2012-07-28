@@ -6,13 +6,29 @@
 		================================================== -->	
 		<div class="page-header">
 			<div class="row-fluid">
+				<div class="span1">
+					<a data-toggle="modal" href="#fotos_tienda">
+						<div class="thumbnail" tal:define="foto view.obtener_foto('tienda', tienda.tienda_id, 'pequenas')">
+							<img src="/estatico/${foto.ruta_de_foto}" alt="Foto" tal:condition="foto.ruta_de_foto != ''" />
+							<img src="http://placehold.it/70x70" alt="Foto" tal:condition="foto.ruta_de_foto == ''" />
+						</div>
+					</a>
+					<div id="fotos_tienda" class="modal hide fade">
+			            <div metal:use-macro="view.macros['carrusel_fotos']" tal:define="fotos view.fotos_grandes"></div>
+					</div>
+				</div>
 				<div class="span8">
 					<h1>${cliente.nombre_comun} 
 		  				<span class="label label-success" tal:condition="tienda.abierto">Abierta</span>
 						<span class="label label-important" tal:condition="not tienda.abierto">Cerrada</span>
 					</h1>
+					<h3>
+						<a href="${cliente.facebook}"><i class="icon-remove"></i></a>
+			  			<a href="${cliente.twitter}"><i class="icon-remove"></i></a>	
+			  			<a href="mailto:${cliente.correo_electronico}"><i class="icon-envelope"></i></a>
+		  			</h3>
 				</div>
-				<div class="span4">
+				<div class="span3">
 					<div class="progress">
 		  				<div id="barra_de_turno" class="bar" style="width: 50%"></div>
 		  			</div>
@@ -27,19 +43,12 @@
 		================================================== -->	
 		<div id="contenido_pestanas" class="tab-content">
 			
-			<!-- Noticias
-			================================================== -->	
-        	<div class="tab-pane active" id="noticias" tal:define="registros view.registro">
-          		<div metal:use-macro="view.macros['noticias']"></div>
-        	</div>
-        	
         	<!-- Informacion
 			================================================== -->	
-        	<div class="tab-pane" id="informacion">
+        	<div class="tab-pane active" id="informacion">
+        		<div metal:use-macro="view.macros['ruta_de_categoria']" tal:define="ruta view.ruta_categoria_actual"></div>
           		<div class="row-fluid">
           			<div class="span4">
-          				<div metal:use-macro="view.macros['fotos_medianas']" tal:define="fotos view.fotos_medianas"></div>
-          				<div metal:use-macro="view.macros['ruta_de_categoria']" tal:define="ruta view.ruta_categoria_actual"></div>
 						<table id="horarios" class="table pull-left" tal:define="horarios view.horarios">
 				  			<thead>
 				    			<tr>
@@ -64,6 +73,9 @@
 				  			</tbody>
 						</table>
 						<address id="direccion" tal:define="region view.direccion">
+							<a class="accordion-toggle" data-toggle="collapse" href="#gadget1_colapsable">
+								<i class="icon-map-marker"></i>
+							</a>
 							<strong>${cliente.nombre_legal}</strong><br />
 							<span tal:content="cliente.edificio_cc" />  
 							<span tal:content="cliente.piso" /> 
@@ -77,36 +89,34 @@
 							<span tal:content="region.estado" /><br />
 							<span tal:content="cliente.telefono"/><br />
 						</address>
-						<h3>
-							<a href="${cliente.facebook}"><i class="icon-facebook-sign"></i></a>
-				  			<a href="${cliente.twitter}"><i class="icon-twitter-sign"></i></a>	
-				  			<a href="mailto:${cliente.correo_electronico}"><i class="icon-envelope"></i></a>
-			  			</h3>
           			</div>
           			<div class="span8">
-          				<div id="descripciones">
-	           				<tal:block tal:repeat="descripcion view.descripciones">
-		          				<p tal:content="descripcion.contenido">Descripcion</p>
-		          			</tal:block>
-	          			</div>
+          				<table class="table">
+				  			<thead>
+				    			<tr>
+				      				<th>Descripción</th>
+				    			</tr>
+				  			</thead>
+				  			<tbody>
+					    		<tr tal:repeat="descripcion view.descripciones">
+					    			<td>
+					    				<p>${descripcion.contenido}</p>
+					    			</td>
+				  				</tr>
+				  			</tbody>
+						</table>
+          			</div>
+				</div>
+				<div class="row-fluid">
+          			<div class="span6">
+          				<div metal:use-macro="view.macros['noticias']" tal:define="registros view.registro"></div>
+          			</div>
+          			<div class="span6">
+          				<div metal:use-macro="view.macros['inventario_de_productos']" tal:define="lista view.inventario_reciente; tamano view.tamano_reciente"></div>
           			</div>
 				</div>
         	</div>
         	
-        	<!-- Inventario
-			================================================== -->	
-            <div class="tab-pane" id="inventario">
-          		<div tal:define="lista view.inventario_reciente" metal:use-macro="view.macros['inventario_de_productos']"></div>
-          		<p class="pull-right" tal:define="tamano view.tamano_reciente">
-          			<abbr title="Numero total de productos">N:</abbr>
-          			<span tal:content="tamano.numero_total_de_productos"></span>
-          			<abbr title="Cantidad total de productos">C:</abbr>
-          			<span tal:content="tamano.cantidad_total_de_productos"></span>
-          			<abbr title="Tamano del inventario">T:</abbr>
-          			<span tal:content="tamano.valor"></span>
-          		</p>
-            </div>
-            
             <!-- Comentarios (calificaciones y reseñas)
 			================================================== -->	
             <div class="tab-pane" id="comentarios" tal:define="comentarios view.calificaciones_resenas">
@@ -118,6 +128,8 @@
 		<script type="text/javascript" src="/estatico/js/bootstrap-tooltip.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-carousel.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-popover.js"></script>
+		<script type="text/javascript" src="/estatico/js/bootstrap-modal.js"></script>
+		<script type="text/javascript" src="/estatico/js/noticias.js"></script>
 		<script type="text/javascript" src="/estatico/js/tienda.js"></script>
 	</div>
 </div>

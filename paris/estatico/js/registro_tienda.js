@@ -2,12 +2,12 @@
  * @author Nestor Bohorquez
  */
 
-$(document).ready(function() {
+$(document).ready(function () {
 	dibujar_venezuela_municipios();
 
 	$.validator.addMethod(
         "regex",
-        function(value, element, param) {
+        function (value, element, param) {
             var re = new RegExp(param);
             return this.optional(element) || re.test(value);
         },
@@ -95,10 +95,10 @@ $(document).ready(function() {
 	      	urbanizacion: "Ingrese el nombre de la urbanización donde se ubica la tienda",
 			condiciones: "Acepte las condiciones del servicio"
 	    },
-	    highlight: function(label) {
+	    highlight: function (label) {
 	    	$(label).closest('.control-group').removeClass('error success').addClass('error');
 	    },
-	    success: function(label) {
+	    success: function (label) {
 	    	$(label).closest('.control-group').removeClass('error success').addClass('success');
 	    }
 	});

@@ -2,7 +2,7 @@
  * @author Nestor Bohorquez
  */
 
-function Territorio(opciones) {
+function Territorio (opciones) {
 	this.id = ('id' in opciones) ? opciones.id : null;
 	this.nombre = ('nombre' in opciones) ? opciones.nombre : null;
 	this.color = ('color' in opciones) ? opciones.color : null;
@@ -13,7 +13,7 @@ function Territorio(opciones) {
 
 Territorio.prototype = new EventObject();
 
-Territorio.prototype.crear_polilinea = function(contorno) {
+Territorio.prototype.crear_polilinea = function (contorno) {
 	var polilinea = new google.maps.Polyline({
 		path: contorno,
 		strokeColor: "#000000",
@@ -38,15 +38,15 @@ Territorio.prototype.crear_poligono = function (contornos) {
 	var contexto = this;
 	this.poligono.setMap(this.mapa.mapa);
 	
-	google.maps.event.addListener(this.poligono, 'mouseover', function(args) {
+	google.maps.event.addListener(this.poligono, 'mouseover', function (args) {
 		contexto.raiseEvent('mouseover', args);
 	});
 	
-	google.maps.event.addListener(this.poligono, 'mouseout', function(args) {
+	google.maps.event.addListener(this.poligono, 'mouseout', function (args) {
 		contexto.raiseEvent('mouseout', args);
 	});
 	
-	google.maps.event.addListener(this.poligono, 'click', function(args) {
+	google.maps.event.addListener(this.poligono, 'click', function (args) {
 		contexto.raiseEvent('click', args);
 	});
 }

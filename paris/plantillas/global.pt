@@ -42,7 +42,6 @@
 					<ul class="nav pull-right" tal:condition="exists:autentificado">
 						<li class="dropdown" tal:condition="not autentificado">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-target="#">
-								<i class="icon-user icon-white"></i>
 								Ingresar
 								<b class="caret"></b>
 							</a>							
@@ -62,15 +61,14 @@
 						</li>
 						<li class="dropdown" tal:condition="autentificado" tal:define="usuario view.obtener_usuario('correo_electronico', autentificado)">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-target="#">
-								<i class="icon-user icon-white"></i>
 								<span tal:content="'{0} {1}'.format(usuario.nombre, usuario.apellido)"></span>
 								<b class="caret"></b>
 							</a>
 							<ul class="dropdown-menu">
-								<li><a tal:attributes="href view.peticion.route_url('usuario', usuario_id = usuario.usuario_id)">Ver perfil</a></li>
+								<li><a tal:attributes="href view.peticion.route_url('usuario', usuario_id = usuario.usuario_id)"><i class="icon-user"></i> Ver perfil</a></li>
 								<li class="divider"></li>
-								<li><a tal:attributes="href view.peticion.route_url('configuracion')">Configuración</a></li>
-								<li><a tal:attributes="href view.peticion.route_url('salir')">Cerrar sesión</a></li>
+								<li><a tal:attributes="href view.peticion.route_url('configuracion')"><i class="icon-cog"></i> Configuración</a></li>
+								<li><a tal:attributes="href view.peticion.route_url('salir')"><i class="icon-off"></i> Cerrar sesión</a></li>
 							</ul>
 						</li>
 					</ul>
@@ -85,9 +83,11 @@
 		================================================== -->		
 		<div class="row-fluid">
 			
-			<!-- Menu lateral
-			================================================== -->
 			<div class="span3">
+				
+				<!-- Menu lateral
+				================================================== -->
+				
 				<div class="well" style="padding: 8px 0;">
 					<ul id="categorias" class="nav nav-list treeview" tal:condition="pagina == 'Productos' or pagina == 'Tiendas'">
 						<li class="nav-header">Categorías</li>
@@ -121,51 +121,12 @@
 							</li>
 						</tal:block>
 					</ul>
-					<ul id="menu" class="nav nav-list" tal:condition="pagina == 'Producto' or pagina == 'Tienda'">
+					<ul id="menu" class="nav nav-list" tal:condition="pagina == 'Producto' or pagina == 'Tienda' or pagina == 'Usuario'">
 					  	<li class="nav-header">Menú</li>
 					  	<li class="active">
-					  		<a href="#noticias" data-toggle="tab">
-					  			<i class="icon-time"></i>
-					  			Noticias
-					  		</a>
-					  	</li>
-					  	<li>
 					  		<a href="#informacion" data-toggle="tab">
 					  			<i class="icon-list-alt"></i>
 					  			Información					  			
-					  		</a>
-					  	</li>
-					  	<li>
-					  		<a href="#inventario" data-toggle="tab">
-						  		<i class="icon-shopping-cart"></i>
-						  		Inventario
-					  		</a>
-					  	</li>
-					  	<li>
-					  		<a href="#comentarios" data-toggle="tab">
-						  		<i class="icon-comment"></i>
-						  		Comentarios
-					  		</a>
-					  	</li>
-					</ul>
-					<ul id="menu" class="nav nav-list" tal:condition="pagina == 'Usuario'">
-					  	<li class="nav-header">Menú</li>
-					  	<li class="active">
-					  		<a href="#noticias" data-toggle="tab">
-					  			<i class="icon-time"></i>
-					  			Noticias
-					  		</a>
-					  	</li>
-					  	<li>
-					  		<a href="#informacion" data-toggle="tab">
-					  			<i class="icon-list-alt"></i>
-					  			Información					  			
-					  		</a>
-					  	</li>
-					  	<li>
-					  		<a href="#tiendas" data-toggle="tab">
-						  		<i class="icon-shopping-cart"></i>
-						  		Tiendas
 					  		</a>
 					  	</li>
 					  	<li>
@@ -180,19 +141,33 @@
           				<li><a href="#">Ayuda</a></li>
           			</ul>
 				</div>
+				
+				<!-- Gadget lateral
+				================================================== -->
+				<div id="gadget2" class="accordion-group">
+              		<div id="gadget2_encabezado" class="accordion-heading">
+                		<a class="accordion-toggle" data-toggle="collapse" href="#gadget2_colapsable">
+		                  	<i></i>
+		                  	Historial
+                		</a>
+					</div>
+              		<div id="gadget2_colapsable" class="accordion-body collapse in">
+              			<div id="historial"></div>
+              		</div>
+            	</div>
 			</div>
-			
+          
 			<!-- Zona central
 			================================================== -->
 			<div class="span9">
-				<div id="gadget" class="accordion-group">
-              		<div id="gadget_encabezado" class="accordion-heading">
-                		<a class="accordion-toggle" data-toggle="collapse" href="#gadget_colapsable">
+				<div id="gadget1" class="accordion-group">
+              		<div id="gadget1_encabezado" class="accordion-heading">
+                		<a class="accordion-toggle" data-toggle="collapse" href="#gadget1_colapsable">
 		                  	<i></i>
 		                  	Mapa
                 		</a>
 					</div>
-              		<div id="gadget_colapsable" class="accordion-body collapse in">
+              		<div id="gadget1_colapsable" class="accordion-body collapse in">
               			<div id="mapa"></div>
               		</div>
             	</div>
@@ -224,6 +199,7 @@
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
 	<script	type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 	<!--<script type="text/javascript" src="/estatico/js/outerHtml.js"></script>-->
+	<script type="text/javascript" src="/estatico/js/jquery.flot.min.js"></script>
 	<script type="text/javascript" src="/estatico/js/bootstrap-tab.js"></script>
     <script type="text/javascript" src="/estatico/js/bootstrap-collapse.js"></script>
     <script type="text/javascript" src="/estatico/js/bootstrap-dropdown.js"></script>
@@ -232,6 +208,7 @@
     <script type="text/javascript" src="/estatico/js/mapa.js"></script>
     <script type="text/javascript" src="/estatico/js/infobox.js"></script>
     <script type="text/javascript" src="/estatico/js/google_map.js"></script>
+    <script type="text/javascript" src="/estatico/js/historial.js"></script>
     <div id="scripts" metal:define-slot="scripts_extra"></div>
     <script type="text/javascript" src="/estatico/js/global.js"></script>
 </body>

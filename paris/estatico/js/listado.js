@@ -2,7 +2,7 @@
  * @author Nestor Bohorquez
  */
 
-$(document).ready(function() {
+$(document).ready(function () {
 	var terr_padre = $('input[name=territorio_padre]').val();
 	var terr_yo = $('input[name=territorio_id]').val();
 

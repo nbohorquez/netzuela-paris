@@ -2,7 +2,7 @@
  * @author Nestor Bohorquez
  */
 
-$(document).ready(function() {
+$(document).ready(function () {
 	/*
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(mostrar_posicion, error_posicion);
@@ -53,10 +53,10 @@ $(document).ready(function() {
 			apellido: "Escriba su apellido",
 			condiciones: "Acepte las condiciones del servicio"
 	    },
-	    highlight: function(label) {
+	    highlight: function (label) {
 	    	$(label).closest('.control-group').removeClass('error success').addClass('error');
 	    },
-	    success: function(label) {
+	    success: function (label) {
 	    	$(label).closest('.control-group').removeClass('error success').addClass('success');
 	    }
 	});

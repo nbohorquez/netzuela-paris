@@ -59,13 +59,10 @@ class Comunes(object):
         return resultado
     
     def depurar_columnas_registro(self, diccionario):
-        resultado = {}
-        for entrada in diccionario.items():
-            if entrada[0] not in Spuria.columnas_no_visibles:
-                clave = entrada[0].replace('_', ' ').capitalize()
-                resultado[clave] = entrada[1]
-            
-        return resultado
+        return dict((entrada[0].replace('_', ' '), entrada[1]) for entrada in diccionario.items() if entrada[0] not in Spuria.columnas_no_visibles)
+    
+    def pulir_columnas_registro(self, diccionario):
+        return dict((entrada[0].capitalize(), entrada[1]) for entrada in diccionario.items())
 
     def formatear_entrada_registro(self, reg, peticion):
         def obtener_objeto(tipo, tipo_id):
@@ -87,8 +84,11 @@ class Comunes(object):
             }[tipo](tipo_id)
         def reg_cliente(_id):
             valor = {}
-            valor['nombre'], valor['titulo'] = DBSession.query(cliente.nombre_comun, cliente.nombre_legal).\
+            diccionario = DBSession.query(cliente).\
             filter_by(rastreable_p = _id).first()
+            
+            valor['nombre'] = diccionario.nombre_comun
+            valor['titulo'] = diccionario.nombre_legal
             
             valor['foto'] = DBSession.query(foto.ruta_de_foto).\
             join(describible).\
@@ -116,34 +116,60 @@ class Comunes(object):
                 'patrocinante': lambda x: peticion.route_url('patrocinante', patrocinante_id = x)
             }[tmp1](tmp2)
             
+            valor['diccionario'] = {
+                'Nombre legal': diccionario.nombre_legal,
+                'Nombre comun': diccionario.nombre_comun,
+                'RIF': diccionario.rif,
+                'Estatus': diccionario.estatus,
+                'Propietario': diccionario.propietario,
+                'Categoria': diccionario.categoria,
+                'Telefono': diccionario.telefono,
+                'Ubicacion': diccionario.ubicacion
+            }
+            
             return valor
         def reg_usuario(_id):
             valor = {}
-            x, tmp1, tmp2 = DBSession.query(usuario.usuario_id, usuario.nombre, usuario.apellido).\
+            diccionario = DBSession.query(usuario).\
             filter_by(rastreable_p = _id).first()
-            valor['nombre'] = valor['titulo'] = "{0} {1}".format(tmp1, tmp2)
+            valor['nombre'] = valor['titulo'] = "{0} {1}".format(diccionario.nombre, diccionario.apellido)
             valor['foto'] = DBSession.query(foto.ruta_de_foto).\
             join(describible).\
             join(usuario).\
             filter(usuario.rastreable_p == _id)
-            valor['href'] = peticion.route_url('usuario', usuario_id = x)
+            valor['href'] = peticion.route_url('usuario', usuario_id = diccionario.usuario_id)
+            valor['diccionario'] = {
+                'Nombre': valor['nombre'],
+                'Estatus': diccionario.estatus,
+                'Ubicacion': diccionario.ubicacion
+            }
             return valor
         def reg_inventario(_id):
             valor = {}
-            tmp = DBSession.query(inventario.descripcion).\
+            diccionario = DBSession.query(inventario).\
             filter_by(rastreable_p = _id).first()
-            valor['titulo'] = valor['nombre'] = tmp[0] if (tmp is not None) else None
+            valor['titulo'] = valor['nombre'] = diccionario.descripcion
             valor['foto'] = DBSession.query(foto.ruta_de_foto).\
             join(describible).\
             join(producto).\
             join(inventario).\
             filter(inventario.rastreable_p == _id)
-            valor['href'] = '#'
+            valor['href'] = peticion.route_url('producto', producto_id = diccionario.producto_id)
+            
+            tipo_codigo, codigo = DBSession.query(producto.tipo_de_codigo, producto.codigo).\
+            filter(producto.producto_id == diccionario.producto_id).first()
+            
+            valor['diccionario'] = {
+                'Descripcion': valor['nombre'],
+                'SKU': diccionario.codigo,
+                tipo_codigo: codigo
+            }
             return valor
         def reg_croquis(_id):
             valor = {}
             valor['titulo'] = valor['nombre'] = 'croquis'
             valor['href'] = '#'
+            valor['diccionario'] = {}
             return valor
         def reg_producto(_id):
             valor = {}
@@ -157,26 +183,31 @@ class Comunes(object):
             tmp3 = DBSession.query(producto.producto_id).filter_by(rastreable_p = _id).first()
             tmp4 = tmp3[0] if (tmp3 is not None) else None
             valor['href'] = peticion.route_url('producto', producto_id = tmp4)
+            valor['diccionario'] = {}
             return valor
         def reg_mensaje(_id):
             valor = {}
             valor['nombre'] = valor['titulo'] = 'mensaje'
             valor['href'] = '#'
+            valor['diccionario'] = {}
             return valor
         def reg_busqueda(_id):
             valor = {}
             valor['nombre'] = valor['titulo'] = 'busqueda'
             valor['href'] = '#'
+            valor['diccionario'] = {}
             return valor
         def reg_calificacion_resena(_id):
             valor = {}
             valor['nombre'] = valor['titulo'] = 'comentario'
             valor['href'] = '#'
+            valor['diccionario'] = {}
             return valor
         def reg_seguidor(_id):
             valor = {}
             valor['nombre'] = valor['titulo'] = 'seguidor'
             valor['href'] = '#'
+            valor['diccionario'] = {}
             return valor
         def reg_descripcion(_id):
             valor = {}
@@ -198,6 +229,7 @@ class Comunes(object):
             )).first()
             valor['titulo'] = tmp[0] if (tmp is not None) else ""
             valor['href'] = '#'
+            valor['diccionario'] = {}
             return valor
         def reg_publicidad(_id):
             valor = {}
@@ -206,16 +238,19 @@ class Comunes(object):
             filter_by(rastreable_p = _id).first()
             valor['titulo'] = tmp[0] if (tmp is not None) else ""
             valor['href'] = '#'
+            valor['diccionario'] = {}
             return valor
         def reg_estadisticas(_id):
             valor = {}
             valor['nombre'] = valor['titulo'] = 'estadisticas'
             valor['href'] = '#'
+            valor['diccionario'] = {}
             return valor
         def reg_factura(_id):
             valor = {}
             valor['nombre'] = valor['titulo'] = 'factura'
             valor['href'] = '#'
+            valor['diccionario'] = {}
             return valor
         
         por_defecto = {}
@@ -243,11 +278,12 @@ class Comunes(object):
         entrada['actor_pasivo'] = pasivo
         entrada['accion'] = Spuria.accion[reg.accion]
         
-        columnas = reg.columna.split('<|>') if (reg.columna is not None) else '' 
-        valores = reg.valor.split('<|>') if (reg.valor is not None) else ''        
-        diccionario = dict(zip(columnas, valores)) if (len(columnas) == len(valores)) else {'tais': 'vergueao'}
-        entrada['diccionario'] = self.depurar_columnas_registro(diccionario)
-        
+        columnas = reg.columna.split('<|>') if (reg.columna is not None) else ''
+        valores = reg.valor.split('<|>') if (reg.valor is not None) else ''
+        diccionario = dict(zip(columnas, valores)) if (len(columnas) == len(valores)) else {'Error': 'Numero de columnas y valores no concuerda'}
+        diccionario_depurado = self.depurar_columnas_registro(diccionario)
+        entrada['parametros'] = diccionario_depurado if (entrada['accion'] == 'actualizo') else {}
+
         fecha = str(reg.fecha_hora)
         ano = int(fecha[0:4])
         mes = int(fecha[4:6])

@@ -10,7 +10,14 @@ padding-top: 60px;
 .titular-noticia
 {
 }
-.cuerpo-noticia
+.popover-inner-actor-activo
 {
-display: none
+display: none;
+}
+.popover-inner-actor-pasivo
+{
+display: none;
+}
+.popover-aqui
+{
 }

@@ -2,7 +2,7 @@
  * @author Nestor Bohorquez
  */
 
-$(document).ready(function() {
+$(document).ready(function () {
 	var latLng = new google.maps.LatLng(10.40, -71.44);
   	google_map.inicializar('#mapa', latLng, 11);
 });
@@ -37,7 +37,7 @@ var google_map = {
 	}]
 };
 
-google_map.inicializar = function(ubicacion, latLng, zoom) {
+google_map.inicializar = function (ubicacion, latLng, zoom) {
 	var infobox_posicion = new google.maps.Point(80, 230);
 	var contexto = this;
 	var opciones = {
@@ -51,7 +51,7 @@ google_map.inicializar = function(ubicacion, latLng, zoom) {
 	this.borde = new google.maps.LatLngBounds();
 
     this.malla = new google.maps.OverlayView();
-	this.malla.draw = function() {};
+	this.malla.draw = function () {};
 	this.malla.setMap(this.mapa);
 	
 	this.infobox = new InfoBox({
@@ -67,16 +67,16 @@ google_map.inicializar = function(ubicacion, latLng, zoom) {
 		enableEventPropagation: false,
 	});
 	
-	google.maps.event.addListener(this.mapa, 'bounds_changed', function(event) {
+	google.maps.event.addListener(this.mapa, 'bounds_changed', function (event) {
 		contexto.infobox.setPosition(contexto.malla.getProjection().fromContainerPixelToLatLng(infobox_posicion));
 	});
 		
-	google.maps.event.addListener(this.mapa, 'mousemove', function(event) {
+	google.maps.event.addListener(this.mapa, 'mousemove', function (event) {
 		contexto.cursor = event.latLng;
 	});
 }
 
-google_map.agregar_marcador = function(latitud, longitud) {
+google_map.agregar_marcador = function (latitud, longitud) {
 	var punto = new google.maps.LatLng(latitud,longitud);
 	var marcador = new google.maps.Marker({
 		position: punto,
@@ -85,11 +85,11 @@ google_map.agregar_marcador = function(latitud, longitud) {
 	this.extender_borde(latitud, longitud);
 }
 
-google_map.extender_borde = function(latitud, longitud) {
+google_map.extender_borde = function (latitud, longitud) {
 	var punto = new google.maps.LatLng(latitud,longitud);
 	this.borde.extend(punto);
 }
 
-google_map.ajustar_borde = function() {
+google_map.ajustar_borde = function () {
 	this.mapa.fitBounds(this.borde);
 }

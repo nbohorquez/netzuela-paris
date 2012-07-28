@@ -2,7 +2,7 @@
  * @author Nestor Bohorquez
  */
 
-$(document).ready(function() {
+$(document).ready(function () {
 	dibujar_venezuela_municipios();	
 	$('#formulario_registro_consumidor').validate({
 		rules: {
@@ -56,10 +56,10 @@ $(document).ready(function() {
 			fecha_de_nacimiento: "Ingrese su fecha de nacimiento",
 			condiciones: "Acepte las condiciones del servicio"
 	    },
-	    highlight: function(label) {
+	    highlight: function (label) {
 	    	$(label).closest('.control-group').removeClass('error success').addClass('error');
 	    },
-	    success: function(label) {
+	    success: function (label) {
 	    	$(label).closest('.control-group').removeClass('error success').addClass('success');
 	    }
 	});
@@ -67,7 +67,7 @@ $(document).ready(function() {
 
 /* Cambio el formato de la fecha a dd/mm/aaaa */
 $.extend($.fn.datepicker.defaults, {
-	parse: function(string) {
+	parse: function (string) {
   		var matches;
   		if ((matches = string.match(/^(\d{2,2})\/(\d{2,2})\/(\d{4,4})$/))) {
         	return new Date(matches[3], matches[2] - 1, matches[1]);
@@ -75,7 +75,7 @@ $.extend($.fn.datepicker.defaults, {
             return null;
       	}
 	},
-	format: function(date) {
+	format: function (date) {
     	var month = (date.getMonth() + 1).toString(), dom = date.getDate().toString();
   		if (month.length === 1) {
           	month = "0" + month;
