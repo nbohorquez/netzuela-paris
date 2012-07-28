@@ -3,8 +3,7 @@
  */
 
 $(document).ready(function () {
-	dibujar_venezuela_municipios();
-
+	$('#mapa').dibujar_municipios();
 	$.validator.addMethod(
         "regex",
         function (value, element, param) {
@@ -13,7 +12,6 @@ $(document).ready(function () {
         },
         "Formato inválido"
 	);
-
 	$('#formulario_registro_tienda').validate({
 		rules: {
 			correo_electronico: {

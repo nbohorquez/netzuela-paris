@@ -2,36 +2,6 @@
  * @author Nestor Bohorquez
  */
 
-$(document).ready(function () {
-	var tienda = new Tienda({
-		id: $('input[name=tienda_id]').val(),
-		temporizador: 60000
-	});
-	tienda.actualizar();
-	
-	$.getJSON('/tienda/' + tienda.id + '/coordenadas.json', function (data) {
-		// Se extienden los bordes para que toda la tienda sea visible en el mapa. 
-		// Las tiendas pueden tener mas de un punto, es decir, pueden ser un poligono
-		for (var i = 0; i < data.puntos.length; i++) {
-			var punto = new Array();
-			punto['latitud'] = data.puntos[i].latitud.replace(",", ".");
-			punto['longitud'] = data.puntos[i].longitud.replace(",", ".");
-			google_map.extender_borde(punto['latitud'], punto['longitud']);
-			tienda.puntos.push(punto);
-		}
-		// Sin embargo colocamos el marcador en el primer punto solamente. Se podria emplear
-		// alguna funcion matematica para calcular el centro del poligono tambien.
-		google_map.agregar_marcador(tienda.puntos[0]['latitud'], tienda.puntos[0]['longitud']);		
-	});
-	
-	// Esto activa los popover sobre los dias de la semana en el horario de la tienda
-	$('a[rel="popover"]').popover();
-});
-
-$(window).unload(function () {
- 	clearInterval(tienda.temporizador);
-});
-	
 function Tienda (opciones) {
 	this.id = ('id' in opciones) ? opciones.id : null;
 	this.puntos = ('puntos' in opciones) ? opciones.puntos : new Array();
@@ -88,3 +58,20 @@ Tienda.prototype.actualizar = function () {
 		return Math.round(numero*uno)/uno;
 	}
 }
+
+$(document).ready(function () {
+	var tienda = new Tienda({
+		id: $('input[name=tienda_id]').val(),
+		temporizador: 60000
+	});
+	
+	tienda.actualizar();
+	$('#mapa').dibujar_poligono_tienda(tienda.id);
+
+	// Esto activa los popover sobre los dias de la semana en el horario de la tienda
+	$('a[rel="popover"]').popover();
+});
+
+$(window).unload(function () {
+ 	clearInterval(tienda.temporizador);
+});

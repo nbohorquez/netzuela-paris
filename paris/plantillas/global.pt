@@ -204,12 +204,19 @@
     <script type="text/javascript" src="/estatico/js/bootstrap-collapse.js"></script>
     <script type="text/javascript" src="/estatico/js/bootstrap-dropdown.js"></script>
     <script type="text/javascript" src="/estatico/js/EventObject.js"></script>
-    <script type="text/javascript" src="/estatico/js/territorio.js"></script>
-    <script type="text/javascript" src="/estatico/js/mapa.js"></script>
     <script type="text/javascript" src="/estatico/js/infobox.js"></script>
     <script type="text/javascript" src="/estatico/js/google_map.js"></script>
-    <script type="text/javascript" src="/estatico/js/historial.js"></script>
+    <script type="text/javascript" src="/estatico/js/global.js"></script>    
+    <script type="text/javascript" src="/estatico/js/territorio.js"></script>
+    <script type="text/javascript" src="/estatico/js/mapa.js"></script>
     <div id="scripts" metal:define-slot="scripts_extra"></div>
-    <script type="text/javascript" src="/estatico/js/global.js"></script>
+    <script type="text/javascript">
+    	$(document).ready(function () {			
+			// No escribais nada despues de estas lineas porque el javascript no lo va a ejecutar
+			// No se por que...
+			$(".collapse").collapse();
+			$('.carousel').carousel();
+    	});
+    </script>
 </body>
 </html>

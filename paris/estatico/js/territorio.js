@@ -37,7 +37,7 @@ Territorio.prototype.crear_poligono = function (contornos) {
 	
 	var contexto = this;
 	this.poligono.setMap(this.mapa.mapa);
-	
+		
 	google.maps.event.addListener(this.poligono, 'mouseover', function (args) {
 		contexto.raiseEvent('mouseover', args);
 	});

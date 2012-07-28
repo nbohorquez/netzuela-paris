@@ -2,6 +2,15 @@
  * @author Nestor Bohorquez
  */
 
+
+function mostrar_posicion (posicion) {
+	google_map.agregar_marcador(posicion.coords.latitude, posicion.coords.longitude);
+}
+
+function error_posicion () {
+	alert('Error al obtener tu posicion');
+}
+
 $(document).ready(function () {
 	/*
 	if (navigator.geolocation) {
@@ -10,7 +19,7 @@ $(document).ready(function () {
 		alert('Tu navegador no soporta Geolocation API');
 	}
 	*/
-	dibujar_venezuela_municipios();
+	$('#mapa').dibujar_municipios();
 	$('#formulario_registro').validate({
 		rules: {
 			correo_electronico: {
@@ -61,13 +70,3 @@ $(document).ready(function () {
 	    }
 	});
 });
-
-/*
-function mostrar_posicion(posicion) {
-	google_map.agregar_marcador(posicion.coords.latitude, posicion.coords.longitude);
-}
-
-function error_posicion() {
-	alert('Error al obtener tu posicion');
-}
-*/

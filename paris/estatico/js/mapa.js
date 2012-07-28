@@ -2,6 +2,103 @@
  * @author Nestor Bohorquez
  */
 
+(function ($) {
+	$.fn.dibujar_marcador_tienda = function (tienda) {
+		return this.each(function () {
+			var contexto = $(this);
+        	$.getJSON('/tienda/' + tienda + '/coordenadas.json', function (data) {
+				var latitud = data.puntos[0].latitud.replace(",", ".");
+				var longitud = data.puntos[0].longitud.replace(",", ".");
+				contexto.data('google_map').agregar_marcador(latitud, longitud);
+			});
+      	});
+   	}
+   	
+   	$.fn.dibujar_poligono_tienda = function (tienda) {
+		return this.each(function () {
+			var contexto = $(this);
+        	$.getJSON('/tienda/' + tienda + '/coordenadas.json', function (data) {
+				for (var i = 0; i < data.puntos.length; i++) {
+					var punto = new Array();
+					punto['latitud'] = data.puntos[i].latitud.replace(",", ".");
+					punto['longitud'] = data.puntos[i].longitud.replace(",", ".");
+					contexto.data('google_map').extender_borde(punto['latitud'], punto['longitud']);
+					tienda.puntos.push(punto);
+				}
+				// Sin embargo colocamos el marcador en el primer punto solamente. Se podria emplear
+				// alguna funcion matematica para calcular el centro del poligono tambien.
+				$(this).data('google_map').agregar_marcador(tienda.puntos[0]['latitud'], tienda.puntos[0]['longitud']);
+			});
+   		});
+   	}
+		
+	$.fn.dibujar_niveles = function (padre, yo) {
+		return this.each(function () {
+        	$(this).data('google_map').extender_borde("7.623887", "-68.730469");
+			$(this).data('google_map').extender_borde("11.22151", "-63.896484");
+			$(this).agregar_capa({
+				territorio: padre,
+				nivel: 1,
+				tipo: 'polilineas'
+			});
+			$(this).agregar_capa({
+				territorio: yo,
+				nivel: 1,
+				tipo: 'poligonos'
+			});
+      	});
+   	}
+   	
+   	$.fn.dibujar_municipios = function () {
+		return this.each(function () {
+        	var Venezuela = '0.02.00.00.00.00';
+			$(this).data('google_map').extender_borde("7.623887", "-68.730469");
+			$(this).data('google_map').extender_borde("11.22151", "-63.896484");
+			$(this).agregar_capa({
+				territorio: Venezuela,
+				nivel: 1,
+				tipo: 'polilineas'
+			});
+			$(this).agregar_capa({
+				territorio: Venezuela,
+				nivel: 2,
+				tipo: 'poligonos'
+			});
+      	});
+   	}
+   	
+   	$.fn.dibujar_parroquias = function () {
+		return this.each(function () {
+        	var Venezuela = '0.02.00.00.00.00';
+			$(this).data('google_map').extender_borde("7.623887", "-68.730469");
+			$(this).data('google_map').extender_borde("11.22151", "-63.896484");
+			$(this).agregar_capa({
+				territorio: Venezuela,
+				nivel: 1,
+				tipo: 'polilineas'
+			});
+			$(this).agregar_capa({
+				territorio: Venezuela,
+				nivel: 3,
+				tipo: 'poligonos'
+			});
+      	});
+   	}
+   	
+   	$.fn.agregar_capa = function (opciones) {
+   		return this.each(function () {
+   			var contexto = $(this);
+			$.getJSON('/territorio/terr' + opciones.territorio + 'niv' + opciones.nivel + '/coordenadas.json', function (data) {
+				var trazos = new Mapa({
+					json: data,
+					tipo: opciones.tipo,
+					proveedor: contexto.data('google_map')
+				});
+			});
+		});
+	}
+})(jQuery);
+
 function Mapa (opciones) {
 	var territorios_crudos = this.parsear_json(opciones.json);
 	switch(opciones.tipo) {
@@ -9,7 +106,7 @@ function Mapa (opciones) {
 			this.territorios = this.dibujar_poligonos(territorios_crudos, opciones.proveedor);
 			break;
 		case 'polilineas':
-			this.territorios = this.dibujar_limites(territorios_crudos, opciones.proveedor);
+			this.territorios = this.dibujar_polilineas(territorios_crudos, opciones.proveedor);
 			break;
 		default:
 			break;
@@ -48,7 +145,7 @@ Mapa.prototype.parsear_json = function (data) {
 	return resultado;
 }
 
-Mapa.prototype.dibujar_limites = function (territorios, proveedor) {
+Mapa.prototype.dibujar_polilineas = function (territorios, proveedor) {
 	var resultado = [];
 	
 	// Este lazo recorre cada territorio
