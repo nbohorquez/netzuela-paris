@@ -206,6 +206,7 @@
     <script type="text/javascript" src="/estatico/js/EventObject.js"></script>
     <script type="text/javascript" src="/estatico/js/infobox.js"></script>
     <script type="text/javascript" src="/estatico/js/google_map.js"></script>
+    <script type="text/javascript" src="/estatico/js/historial.js"></script>
     <script type="text/javascript" src="/estatico/js/global.js"></script>    
     <script type="text/javascript" src="/estatico/js/territorio.js"></script>
     <script type="text/javascript" src="/estatico/js/mapa.js"></script>
