@@ -5,7 +5,7 @@ Created on 28/02/2012
 @author: Nestor
 '''
 
-from .models import (
+from paris.models.spuria import (
     accion,
     calificacion,
     categoria,

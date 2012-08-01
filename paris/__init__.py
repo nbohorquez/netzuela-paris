@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from .models import DBSession, Spuria
+from paris.models.spuria import DBSession, Spuria
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.config import Configurator
@@ -32,18 +32,20 @@ def main(global_config, **settings):
 	# Configuramos la aplicacion WSGI
 	config = Configurator(
 		settings=settings, 
-		root_factory='paris.models.RootFactory',
+		root_factory='paris.models.root.RootFactory',
 		authentication_policy=authn_policy,
         authorization_policy=authz_policy
     )
 	config.add_static_view('estatico', 'estatico', cache_max_age=3600)
 	config.add_route('inicio', '/')
+	config.add_route('usuario', '/usuario/{usuario_id}')
 	config.add_route('producto', '/producto/{producto_id}')
 	config.add_route('tienda', '/tienda/{tienda_id}')
-	config.add_route('productos', '/productos/cat{categoria_id}geo{territorio_id}')
-	config.add_route('tiendas', '/tiendas/cat{categoria_id}geo{territorio_id}')
+	config.add_route('patrocinante', '/patrocinante/{patrocinante_id}')
 	config.add_route('tienda_turno', '/tienda/{tienda_id}/turno.json')
 	config.add_route('tienda_coordenadas', '/tienda/{tienda_id}/coordenadas.json')
+	config.add_route('productos', '/productos/cat{categoria_id}geo{territorio_id}')
+	config.add_route('tiendas', '/tiendas/cat{categoria_id}geo{territorio_id}')
 	config.add_route('territorio_coordenadas', '/territorio/terr{territorio_id}niv{nivel}/coordenadas.json')
 	config.add_route('ingresar', '/ingresar')
 	config.add_route('salir', '/salir')
@@ -51,6 +53,5 @@ def main(global_config, **settings):
 	config.add_route('registro_consumidor', '/registro_consumidor')
 	config.add_route('registro_tienda', '/registro_tienda')
 	config.add_route('configuracion', '/')
-	config.add_route('usuario', '/usuario/{usuario_id}')
 	config.scan()
 	return config.make_wsgi_app()

@@ -7,7 +7,14 @@ Created on 19/06/2012
 
 import formencode, re
 from .constantes import EDAD_MINIMA
-from .models import acceso, categoria, DBSession, grado_de_instruccion, sexo, territorio
+from paris.models.spuria import (
+    acceso, 
+    categoria, 
+    DBSession, 
+    grado_de_instruccion, 
+    sexo, 
+    territorio
+)
 from datetime import date, timedelta
 from formencode import validators
 from formencode.api import Invalid

@@ -5,9 +5,10 @@ Created on 08/04/2012
 @author: nestor
 '''
 
-from .comunes import Comunes
-from .constantes import MENSAJE_DE_ERROR
-from .models import (
+from paris.comunes import Comunes
+from paris.constantes import MENSAJE_DE_ERROR
+from paris.diagramas import Diagramas
+from paris.models.spuria import (
     calificable_seguible,
     calificacion_resena,
     categoria,
@@ -34,7 +35,6 @@ from .models import (
     turno,
     usuario
 )
-from .diagramas import Diagramas
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.security import authenticated_userid
@@ -70,6 +70,10 @@ class ProductoView(Diagramas, Comunes):
         return 'producto'
     
     @reify
+    def tipo_de_rastreable(self):
+        return 'producto'
+    
+    @reify
     def inventario_reciente(self):
         var_inventario = DBSession.query(inventario_reciente).\
         filter_by(producto_id = self.producto_id).all()
@@ -86,8 +90,8 @@ class ProductoView(Diagramas, Comunes):
         for reg in DBSession.query(registro).\
         join(r, or_(registro.actor_activo == r.rastreable_id, registro.actor_pasivo == r.rastreable_id)).\
         join(p, r.rastreable_id == p.rastreable_p).\
-        filter(p.producto_id == self.producto_id).all():
-            resultado.append(self.formatear_entrada_registro(reg, self.peticion))
+        filter(p.producto_id == self.producto_id).order_by(registro.fecha_hora.desc()).all():
+            resultado.append(self.formatear_entrada_registro(reg, self.peticion, self.tipo_de_rastreable))
 
         return resultado
     
@@ -140,7 +144,7 @@ class ProductoView(Diagramas, Comunes):
         filter_by(producto_id = self.peticion_id).first()[0]        
         return self.obtener_ruta_categoria(cat_padre)
         
-    @view_config(route_name='producto', renderer='plantillas/producto.pt')
+    @view_config(route_name='producto', renderer='../plantillas/producto.pt')
     def producto_view(self):
         var_producto = self.obtener_producto(self.producto_id)
         resultado = HTTPNotFound(MENSAJE_DE_ERROR) \

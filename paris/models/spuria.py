@@ -7,7 +7,6 @@ Created on 20/07/2012
 
 #from .formularios import FormularioConsumidor, FormularioUsuario, FormularioTienda
 from formencode.api import Invalid
-from pyramid.security import Allow, Everyone
 from sqlalchemy import MetaData, Table, Column, Integer, String
 from sqlalchemy.orm import scoped_session, sessionmaker, mapper
 from sqlalchemy.sql import select, func, bindparam
@@ -392,11 +391,3 @@ class Spuria(object):
             resultado['consumidor'] = consumidor
             
         return resultado
-    
-class RootFactory(object):
-    __acl__ = [ (Allow, Everyone, 'ver'),
-                (Allow, 'group:tiendas', 'editar_tienda'),
-                (Allow, 'group:consumidores', 'editar_consumidor') ]
-    
-    def __init__(self, request):
-        pass

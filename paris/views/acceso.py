@@ -5,8 +5,8 @@ Created on 07/06/2012
 @author: nestor
 '''
 
-from .diagramas import Diagramas
-from .models import acceso, DBSession, usuario
+from paris.diagramas import Diagramas
+from paris.models.spuria import acceso, DBSession, usuario
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import remember, forget
@@ -41,8 +41,8 @@ class AccesoView(Diagramas):
         
         return resultado
         
-    @view_config(route_name='ingresar', renderer='plantillas/ingresar.pt')
-    @forbidden_view_config(renderer='plantillas/ingresar.pt')
+    @view_config(route_name='ingresar', renderer='../plantillas/ingresar.pt')
+    @forbidden_view_config(renderer='../plantillas/ingresar.pt')
     def ingresar_view(self):
         mensaje = ''
         

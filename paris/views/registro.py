@@ -5,9 +5,9 @@ Created on 07/06/2012
 @author: nestor
 '''
 
-from .comunes import Comunes
-from .diagramas import Diagramas
-from .models import Spuria
+from paris.comunes import Comunes
+from paris.diagramas import Diagramas
+from paris.models.spuria import Spuria
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
@@ -31,7 +31,7 @@ class RegistroView(Diagramas, Comunes):
     def pagina_anterior(self):
         return self.peticion.params.get('pagina_anterior', self.referido_por)
     
-    @view_config(route_name='registro', renderer='plantillas/registro.pt')
+    @view_config(route_name='registro', renderer='../plantillas/registro.pt')
     def registro_view(self):
         resultado = {'pagina': 'Registro', 'mensaje': ''}
         if 'enviar' in self.peticion.params:      
@@ -42,7 +42,7 @@ class RegistroView(Diagramas, Comunes):
         
         return resultado
     
-    @view_config(route_name='registro_consumidor', renderer='plantillas/registro_consumidor.pt')
+    @view_config(route_name='registro_consumidor', renderer='../plantillas/registro_consumidor.pt')
     def registro_consumidor_view(self):
         resultado = {'pagina': 'Registro de consumidor', 'mensaje': ''}
         if 'enviar' in self.peticion.params:      
@@ -53,7 +53,7 @@ class RegistroView(Diagramas, Comunes):
         
         return resultado   
     
-    @view_config(route_name='registro_tienda', renderer='plantillas/registro_tienda.pt')
+    @view_config(route_name='registro_tienda', renderer='../plantillas/registro_tienda.pt')
     def registro_tienda_view(self):        
         resultado = {'pagina': 'Registro de tienda', 'mensaje': ''}
         if 'enviar' in self.peticion.params:

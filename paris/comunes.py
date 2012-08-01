@@ -5,7 +5,7 @@ Created on 08/04/2012
 @author: nestor
 '''
 
-from .models import (
+from paris.models.spuria import (
     acceso,
     busqueda,
     calificacion_resena,
@@ -64,25 +64,25 @@ class Comunes(object):
     def pulir_columnas_registro(self, diccionario):
         return dict((entrada[0].capitalize(), entrada[1]) for entrada in diccionario.items())
 
-    def formatear_entrada_registro(self, reg, peticion):
-        def obtener_objeto(tipo, tipo_id):
+    def formatear_entrada_registro(self, reg, peticion, demandante):
+        def obtener_objeto(tipo, tipo_id, muestro_href):
             return {
-                'cliente': lambda x: reg_cliente(x),
-                'usuario': lambda x: reg_usuario(x),
-                'inventario': lambda x: reg_inventario(x),
-                'croquis': lambda x: reg_croquis(x),
-                'producto': lambda x: reg_producto(x),
-                'mensaje': lambda x: reg_mensaje(x),
-                'busqueda': lambda x: reg_busqueda(x),
-                'calificacion_resena': lambda x: reg_calificacion_resena(x),
-                'seguidor': lambda x: reg_seguidor(x),
-                'descripcion': lambda x: reg_descripcion(x),
-                'publicidad': lambda x: reg_publicidad(x),
-                'estadisticas': lambda x: reg_estadisticas(x),
-                'croquis': lambda x: reg_croquis(x),
-                'factura': lambda x: reg_factura(x)
-            }[tipo](tipo_id)
-        def reg_cliente(_id):
+                'cliente': lambda x, y: reg_cliente(x, y),
+                'usuario': lambda x, y: reg_usuario(x, y),
+                'inventario': lambda x, y: reg_inventario(x, y),
+                'croquis': lambda x, y: reg_croquis(x, y),
+                'producto': lambda x, y: reg_producto(x, y),
+                'mensaje': lambda x, y: reg_mensaje(x, y),
+                'busqueda': lambda x, y: reg_busqueda(x, y),
+                'calificacion_resena': lambda x, y: reg_calificacion_resena(x, y),
+                'seguidor': lambda x, y: reg_seguidor(x, y),
+                'descripcion': lambda x, y: reg_descripcion(x, y),
+                'publicidad': lambda x, y: reg_publicidad(x, y),
+                'estadisticas': lambda x, y: reg_estadisticas(x, y),
+                'croquis': lambda x, y: reg_croquis(x, y),
+                'factura': lambda x, y: reg_factura(x, y)
+            }[tipo](tipo_id, muestro_href)
+        def reg_cliente(_id, muestro_href):
             valor = {}
             diccionario = DBSession.query(cliente).\
             filter_by(rastreable_p = _id).first()
@@ -114,8 +114,8 @@ class Comunes(object):
             valor['href'] = {
                 'tienda': lambda x: peticion.route_url('tienda', tienda_id = x),
                 'patrocinante': lambda x: peticion.route_url('patrocinante', patrocinante_id = x)
-            }[tmp1](tmp2)
-            
+            }[tmp1](tmp2) if muestro_href else None
+        
             valor['diccionario'] = {
                 'Nombre legal': diccionario.nombre_legal,
                 'Nombre comun': diccionario.nombre_comun,
@@ -128,7 +128,7 @@ class Comunes(object):
             }
             
             return valor
-        def reg_usuario(_id):
+        def reg_usuario(_id, muestro_href):
             valor = {}
             diccionario = DBSession.query(usuario).\
             filter_by(rastreable_p = _id).first()
@@ -137,14 +137,16 @@ class Comunes(object):
             join(describible).\
             join(usuario).\
             filter(usuario.rastreable_p == _id)
-            valor['href'] = peticion.route_url('usuario', usuario_id = diccionario.usuario_id)
+            
+            valor['href'] = peticion.route_url('usuario', usuario_id = diccionario.usuario_id) if muestro_href else None
+            
             valor['diccionario'] = {
                 'Nombre': valor['nombre'],
                 'Estatus': diccionario.estatus,
                 'Ubicacion': diccionario.ubicacion
             }
             return valor
-        def reg_inventario(_id):
+        def reg_inventario(_id, muestro_href):
             valor = {}
             diccionario = DBSession.query(inventario).\
             filter_by(rastreable_p = _id).first()
@@ -154,7 +156,8 @@ class Comunes(object):
             join(producto).\
             join(inventario).\
             filter(inventario.rastreable_p == _id)
-            valor['href'] = peticion.route_url('producto', producto_id = diccionario.producto_id)
+            
+            valor['href'] = peticion.route_url('producto', producto_id = diccionario.producto_id) if muestro_href else None
             
             tipo_codigo, codigo = DBSession.query(producto.tipo_de_codigo, producto.codigo).\
             filter(producto.producto_id == diccionario.producto_id).first()
@@ -165,13 +168,13 @@ class Comunes(object):
                 tipo_codigo: codigo
             }
             return valor
-        def reg_croquis(_id):
+        def reg_croquis(_id, muestro_href):
             valor = {}
             valor['titulo'] = valor['nombre'] = 'croquis'
-            valor['href'] = '#'
+            valor['href'] = '#' if muestro_href else None
             valor['diccionario'] = {}
             return valor
-        def reg_producto(_id):
+        def reg_producto(_id, muestro_href):
             valor = {}
             tmp1, tmp2 = DBSession.query(producto.fabricante, producto.nombre).\
             filter_by(rastreable_p = _id).first()
@@ -180,36 +183,41 @@ class Comunes(object):
             join(producto).\
             filter(producto.rastreable_p == _id)
             valor['nombre'] = valor['titulo'] = "{0} {1}".format(tmp1, tmp2)
-            tmp3 = DBSession.query(producto.producto_id).filter_by(rastreable_p = _id).first()
-            tmp4 = tmp3[0] if (tmp3 is not None) else None
-            valor['href'] = peticion.route_url('producto', producto_id = tmp4)
+            
+            if muestro_href:
+                tmp3 = DBSession.query(producto.producto_id).filter_by(rastreable_p = _id).first()
+                tmp4 = tmp3[0] if (tmp3 is not None) else None
+                valor['href'] = peticion.route_url('producto', producto_id = tmp4)
+            else:
+                valor['href'] = None
+                
             valor['diccionario'] = {}
             return valor
-        def reg_mensaje(_id):
+        def reg_mensaje(_id, muestro_href):
             valor = {}
             valor['nombre'] = valor['titulo'] = 'mensaje'
-            valor['href'] = '#'
+            valor['href'] = '#' if muestro_href else None
             valor['diccionario'] = {}
             return valor
-        def reg_busqueda(_id):
+        def reg_busqueda(_id, muestro_href):
             valor = {}
             valor['nombre'] = valor['titulo'] = 'busqueda'
-            valor['href'] = '#'
+            valor['href'] = '#' if muestro_href else None
             valor['diccionario'] = {}
             return valor
-        def reg_calificacion_resena(_id):
+        def reg_calificacion_resena(_id, muestro_href):
             valor = {}
             valor['nombre'] = valor['titulo'] = 'comentario'
-            valor['href'] = '#'
+            valor['href'] = '#' if muestro_href else None
             valor['diccionario'] = {}
             return valor
-        def reg_seguidor(_id):
+        def reg_seguidor(_id, muestro_href):
             valor = {}
             valor['nombre'] = valor['titulo'] = 'seguidor'
-            valor['href'] = '#'
+            valor['href'] = '#' if muestro_href else None
             valor['diccionario'] = {}
             return valor
-        def reg_descripcion(_id):
+        def reg_descripcion(_id, muestro_href):
             valor = {}
             valor['nombre'] = 'descripcion'
             tmp = DBSession.query(case([
@@ -228,45 +236,45 @@ class Comunes(object):
                 descripcion.rastreable_p == _id
             )).first()
             valor['titulo'] = tmp[0] if (tmp is not None) else ""
-            valor['href'] = '#'
+            valor['href'] = '#' if muestro_href else None
             valor['diccionario'] = {}
             return valor
-        def reg_publicidad(_id):
+        def reg_publicidad(_id, muestro_href):
             valor = {}
             valor['nombre'] = 'publicidad'
             tmp = DBSession.query(publicidad.nombre).\
             filter_by(rastreable_p = _id).first()
             valor['titulo'] = tmp[0] if (tmp is not None) else ""
-            valor['href'] = '#'
+            valor['href'] = '#' if muestro_href else None
             valor['diccionario'] = {}
             return valor
-        def reg_estadisticas(_id):
+        def reg_estadisticas(_id, muestro_href):
             valor = {}
             valor['nombre'] = valor['titulo'] = 'estadisticas'
-            valor['href'] = '#'
+            valor['href'] = '#' if muestro_href else None
             valor['diccionario'] = {}
             return valor
-        def reg_factura(_id):
+        def reg_factura(_id, muestro_href):
             valor = {}
             valor['nombre'] = valor['titulo'] = 'factura'
-            valor['href'] = '#'
+            valor['href'] = '#' if muestro_href else None
             valor['diccionario'] = {}
             return valor
         
         por_defecto = {}
         por_defecto['nombre'] = por_defecto['titulo'] = ''
-        por_defecto['href'] = '#'
+        por_defecto['href'] = None
         
-        tipo_activo = self.tipo_de_rastreable(reg.actor_activo)
-        activo = obtener_objeto(tipo_activo, reg.actor_activo) if (tipo_activo is not None) else por_defecto
+        tipo_activo = self.rastreable_a_tipo(reg.actor_activo)
+        activo = obtener_objeto(tipo_activo, reg.actor_activo, demandante != tipo_activo) if (tipo_activo is not None) else por_defecto
         if 'foto' in activo:
             tmp = activo['foto'].filter(foto.ruta_de_foto.like('%miniaturas%')).first()
             activo['foto'] = tmp[0] if (tmp is not None) else ''
         else:
             activo['foto'] = ''
         
-        tipo_pasivo = self.tipo_de_rastreable(reg.actor_pasivo)
-        pasivo = obtener_objeto(tipo_pasivo, reg.actor_pasivo) if (tipo_pasivo is not None) else por_defecto
+        tipo_pasivo = self.rastreable_a_tipo(reg.actor_pasivo)
+        pasivo = obtener_objeto(tipo_pasivo, reg.actor_pasivo, demandante != tipo_pasivo) if (tipo_pasivo is not None) else por_defecto
         if 'foto' in pasivo:
             tmp = pasivo['foto'].filter(foto.ruta_de_foto.like('%miniaturas%')).first()
             pasivo['foto'] = tmp[0] if (tmp is not None) else ''
@@ -277,7 +285,8 @@ class Comunes(object):
         entrada['actor_activo'] = activo
         entrada['actor_pasivo'] = pasivo
         entrada['accion'] = Spuria.accion[reg.accion]
-        
+        entrada['info'] = activo if demandante != tipo_activo else pasivo
+                        
         columnas = reg.columna.split('<|>') if (reg.columna is not None) else ''
         valores = reg.valor.split('<|>') if (reg.valor is not None) else ''
         diccionario = dict(zip(columnas, valores)) if (len(columnas) == len(valores)) else {'Error': 'Numero de columnas y valores no concuerda'}
@@ -308,7 +317,7 @@ class Comunes(object):
         
         return entrada
     
-    def tipo_de_rastreable(self, rastreable_id):
+    def rastreable_a_tipo(self, rastreable_id):
         tmp = DBSession.query(case([(rastreable_id == cliente.rastreable_p, 'cliente')])).\
         filter(rastreable_id == cliente.rastreable_p).first()
         if (tmp is not None):
@@ -469,6 +478,10 @@ class Comunes(object):
     
     def obtener_tienda(self, tie_id):
         tmp = DBSession.query(tienda).filter_by(tienda_id = tie_id).first()
+        return tmp if (tmp is not None) else {}
+    
+    def obtener_patrocinante(self, pat_id):
+        tmp = DBSession.query(patrocinante).filter_by(patrocinante_id = pat_id).first()
         return tmp if (tmp is not None) else {}
     
     def obtener_producto(self, pro_id):

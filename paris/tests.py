@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
 import transaction
-
+from paris.models.spuria import DBSession
 from pyramid import testing
-
-from .models import DBSession
 
 class TestMyView(unittest.TestCase):
     def setUp(self):

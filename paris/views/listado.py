@@ -5,9 +5,10 @@ Created on 09/04/2012
 @author: nestor
 '''
 
-from .comunes import Comunes
-from .constantes import MENSAJE_DE_ERROR
-from .models import (
+from paris.comunes import Comunes
+from paris.constantes import MENSAJE_DE_ERROR
+from paris.diagramas import Diagramas
+from paris.models.spuria import (
     calificable_seguible,
     calificacion_resena,
     categoria,
@@ -33,7 +34,6 @@ from .models import (
     turno,
     usuario
 )
-from .diagramas import Diagramas
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.security import authenticated_userid
@@ -167,7 +167,7 @@ class ListadoView(Diagramas, Comunes):
     def ruta_categoria_actual(self):
         return self.obtener_ruta_categoria(self.categoria_id)
     
-    @view_config(route_name='productos', renderer='plantillas/listado.pt')
+    @view_config(route_name='productos', renderer='../plantillas/listado.pt')
     def listado_productos_view(self):
         # Este metodo me permite saber rapidamente si una
         # categoria o territorio es hijo de otro(a).        
@@ -183,7 +183,7 @@ class ListadoView(Diagramas, Comunes):
         self.subtipo_de_peticion = 'Productos'
         return {'pagina': self.subtipo_de_peticion, 'lista': productos, 'autentificado': authenticated_userid(self.peticion)}
     
-    @view_config(route_name='tiendas', renderer='plantillas/listado.pt')
+    @view_config(route_name='tiendas', renderer='../plantillas/listado.pt')
     def listado_tiendas_view(self):
         t_sub = DBSession.query(t).\
         join(c, t.cliente_p == c.rif).\

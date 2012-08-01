@@ -6,9 +6,9 @@
 		================================================== -->	
 		<div class="page-header">
 			<div class="row-fluid">
-				<div class="span1">
+				<div class="span3">
 					<a data-toggle="modal" href="#fotos_tienda">
-						<div class="thumbnail" tal:define="foto view.obtener_foto('tienda', tienda.tienda_id, 'pequenas')">
+						<div class="thumbnail" tal:define="foto view.obtener_foto('tienda', tienda.tienda_id, 'medianas')">
 							<img src="/estatico/${foto.ruta_de_foto}" alt="Foto" tal:condition="foto.ruta_de_foto != ''" />
 							<img src="http://placehold.it/70x70" alt="Foto" tal:condition="foto.ruta_de_foto == ''" />
 						</div>
@@ -17,7 +17,7 @@
 			            <div metal:use-macro="view.macros['carrusel_fotos']" tal:define="fotos view.fotos_grandes"></div>
 					</div>
 				</div>
-				<div class="span8">
+				<div class="span9">
 					<h1>${cliente.nombre_comun} 
 		  				<span class="label label-success" tal:condition="tienda.abierto">Abierta</span>
 						<span class="label label-important" tal:condition="not tienda.abierto">Cerrada</span>
@@ -27,12 +27,56 @@
 			  			<a href="${cliente.twitter}"><i class="icon-remove"></i></a>	
 			  			<a href="mailto:${cliente.correo_electronico}"><i class="icon-envelope"></i></a>
 		  			</h3>
-				</div>
-				<div class="span3">
-					<div class="progress">
-		  				<div id="barra_de_turno" class="bar" style="width: 50%"></div>
+		  			<div class="row-fluid">
+		  				<div class="span6">
+		  					<address id="direccion" tal:define="region view.direccion">
+								<a class="accordion-toggle" data-toggle="collapse" href="#gadget1_colapsable">
+									<i class="icon-map-marker"></i>
+								</a>
+								<strong>${cliente.nombre_legal}</strong><br />
+								<span tal:content="cliente.edificio_cc" />  
+								<span tal:content="cliente.piso" /> 
+								<span tal:content="cliente.apartamento" /> 
+								<span tal:content="cliente.local_no" /> 
+								<span tal:content="cliente.casa" /><br />
+								<span tal:content="cliente.calle" />, 
+								<span tal:content="cliente.sector_urb_barrio" /><br />
+								<span tal:content="region.parroquia" /><br />
+								<span tal:content="region.municipio" />,
+								<span tal:content="region.estado" /><br />
+								<span tal:content="cliente.telefono"/><br />
+							</address>
+		  				</div>
+		  				<div class="span6">
+		  					<div class="progress">
+				  				<div id="barra_de_turno" class="bar" style="width: 50%"></div>
+				  			</div>
+				  			<table id="horarios" class="table pull-left" tal:define="horarios view.horarios">
+					  			<thead>
+					    			<tr>
+					    				<tal:block tal:repeat="horario horarios">
+					    					<th tal:content="horario.dia[0]">dia</th>	
+					    				</tal:block>
+					    			</tr>
+					  			</thead>
+					  			<tbody>
+						    		<tr>
+						    			<tal:block tal:repeat="horario horarios">
+						    				<td>
+						    					<a href="#" tal:condition="horario.laborable" rel="popover" title="${horario.dia}" data-content="${horario.turnos}">
+						    						<i class="icon-ok"></i>
+						    					</a>
+						    					<a href="#" tal:condition="not horario.laborable" rel="popover" title="${horario.dia}" data-content="No laborable">
+						    						<i class="icon-remove"></i>
+						    					</a>
+											</td>
+						    			</tal:block>
+					  				</tr>
+					  			</tbody>
+							</table>
+		  				</div>
 		  			</div>
-		  		</div>
+				</div>
 			</div>
 		</div>
 		<div id="meta_datos">
@@ -48,49 +92,7 @@
         	<div class="tab-pane active" id="informacion">
         		<div metal:use-macro="view.macros['ruta_de_categoria']" tal:define="ruta view.ruta_categoria_actual"></div>
           		<div class="row-fluid">
-          			<div class="span4">
-						<table id="horarios" class="table pull-left" tal:define="horarios view.horarios">
-				  			<thead>
-				    			<tr>
-				    				<tal:block tal:repeat="horario horarios">
-				    					<th tal:content="horario.dia[0]">dia</th>	
-				    				</tal:block>
-				    			</tr>
-				  			</thead>
-				  			<tbody>
-					    		<tr>
-					    			<tal:block tal:repeat="horario horarios">
-					    				<td>
-					    					<a href="#" tal:condition="horario.laborable" rel="popover" title="${horario.dia}" data-content="${horario.turnos}">
-					    						<i class="icon-ok"></i>
-					    					</a>
-					    					<a href="#" tal:condition="not horario.laborable" rel="popover" title="${horario.dia}" data-content="No laborable">
-					    						<i class="icon-remove"></i>
-					    					</a>
-										</td>
-					    			</tal:block>
-				  				</tr>
-				  			</tbody>
-						</table>
-						<address id="direccion" tal:define="region view.direccion">
-							<a class="accordion-toggle" data-toggle="collapse" href="#gadget1_colapsable">
-								<i class="icon-map-marker"></i>
-							</a>
-							<strong>${cliente.nombre_legal}</strong><br />
-							<span tal:content="cliente.edificio_cc" />  
-							<span tal:content="cliente.piso" /> 
-							<span tal:content="cliente.apartamento" /> 
-							<span tal:content="cliente.local_no" /> 
-							<span tal:content="cliente.casa" /><br />
-							<span tal:content="cliente.calle" />, 
-							<span tal:content="cliente.sector_urb_barrio" /><br />
-							<span tal:content="region.parroquia" /><br />
-							<span tal:content="region.municipio" />,
-							<span tal:content="region.estado" /><br />
-							<span tal:content="cliente.telefono"/><br />
-						</address>
-          			</div>
-          			<div class="span8">
+          			<div class="span12">
           				<table class="table">
 				  			<thead>
 				    			<tr>
@@ -108,7 +110,7 @@
           			</div>
 				</div>
 				<div class="row-fluid">
-          			<div class="span6">
+					<div class="span6">
           				<div metal:use-macro="view.macros['noticias']" tal:define="registros view.registro"></div>
           			</div>
           			<div class="span6">
@@ -119,8 +121,8 @@
         	
             <!-- Comentarios (calificaciones y reseñas)
 			================================================== -->	
-            <div class="tab-pane" id="comentarios" tal:define="comentarios view.calificaciones_resenas">
-            	<div metal:use-macro="view.macros['comentarios']"></div>
+            <div class="tab-pane" id="comentarios">
+            	<div metal:use-macro="view.macros['comentarios']" tal:define="comentarios view.calificaciones_resenas"></div>
             </div>
       	</div>
 	</div>

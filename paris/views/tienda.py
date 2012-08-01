@@ -5,9 +5,10 @@ Created on 08/04/2012
 @author: nestor
 '''
 
-from .comunes import Comunes
-from .constantes import MENSAJE_DE_ERROR
-from .models import (
+from paris.comunes import Comunes
+from paris.constantes import MENSAJE_DE_ERROR
+from paris.diagramas import Diagramas
+from paris.models.spuria import (
     busqueda,
     calificable_seguible,
     calificacion_resena,
@@ -41,7 +42,6 @@ from .models import (
     turno,
     usuario
 )
-from .diagramas import Diagramas
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.security import authenticated_userid
@@ -79,6 +79,10 @@ class TiendaView(Diagramas, Comunes):
         return 'tienda'
     
     @reify
+    def tipo_de_rastreable(self):
+        return 'cliente'
+    
+    @reify
     def inventario_reciente(self):
         var_inventario = DBSession.query(inventario_reciente).\
         filter_by(tienda_id = self.tienda_id).all()
@@ -102,8 +106,8 @@ class TiendaView(Diagramas, Comunes):
         join(r, or_(registro.actor_activo == r.rastreable_id, registro.actor_pasivo == r.rastreable_id)).\
         join(c, r.rastreable_id == c.rastreable_p).\
         join(t, c.rif == t.cliente_p).\
-        filter(t.tienda_id == self.tienda_id).order_by(registro.fecha_hora.desc()):
-            resultado.append(self.formatear_entrada_registro(reg, self.peticion))
+        filter(t.tienda_id == self.tienda_id).order_by(registro.fecha_hora.desc()).all():
+            resultado.append(self.formatear_entrada_registro(reg, self.peticion, self.tipo_de_rastreable))
         return resultado
         
     @reify
@@ -218,7 +222,7 @@ class TiendaView(Diagramas, Comunes):
         filter(tienda.tienda_id == self.peticion_id).first()[0]        
         return self.obtener_ruta_categoria(cat_padre)
     
-    @view_config(route_name='tienda', renderer='plantillas/tienda.pt')
+    @view_config(route_name='tienda', renderer='../plantillas/tienda.pt')
     def tienda_view(self):
         var_tienda = self.obtener_tienda(self.tienda_id)
         resultado = HTTPNotFound(MENSAJE_DE_ERROR) \

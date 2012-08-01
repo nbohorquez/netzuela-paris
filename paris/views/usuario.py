@@ -5,10 +5,10 @@ Created on 20/07/2012
 @author: nestor
 '''
 
-from .comunes import Comunes
-from .constantes import MENSAJE_DE_ERROR
-from .diagramas import Diagramas
-from .models import (
+from paris.comunes import Comunes
+from paris.constantes import MENSAJE_DE_ERROR
+from paris.diagramas import Diagramas
+from paris.models.spuria import (
     calificacion_resena,
     cliente, 
     consumidor,
@@ -23,7 +23,7 @@ from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.security import authenticated_userid
 from pyramid.view import view_config
-from sqlalchemy import or_
+from sqlalchemy import or_, and_, case
 from sqlalchemy.orm import aliased
 
 class UsuarioView(Diagramas, Comunes):
@@ -46,6 +46,10 @@ class UsuarioView(Diagramas, Comunes):
         return 'usuario'
     
     @reify
+    def tipo_de_rastreable(self):
+        return 'usuario'
+    
+    @reify
     def peticion_id(self):
         return self.usuario_id
     
@@ -58,19 +62,54 @@ class UsuarioView(Diagramas, Comunes):
         for reg in DBSession.query(registro).\
         join(r, or_(registro.actor_activo == r.rastreable_id, registro.actor_pasivo == r.rastreable_id)).\
         join(u, r.rastreable_id == u.rastreable_p).\
-        filter(u.usuario_id == self.usuario_id).all():
-            resultado.append(self.formatear_entrada_registro(reg, self.peticion))
+        filter(u.usuario_id == self.usuario_id).order_by(registro.fecha_hora.desc()).all():
+            resultado.append(self.formatear_entrada_registro(reg, self.peticion, self.tipo_de_rastreable))
 
         return resultado
     
     @reify
-    def tiendas(self):
+    def consumidor_asociado(self):
+        return DBSession.query(consumidor).filter_by(usuario_p = self.usuario_id).first()
+    
+    @reify
+    def clientes_asociados(self):
+        resultado = []
+        for cli, tipo, _id in DBSession.query(cliente, case([
+                (cliente.rif == tienda.cliente_p, 'tienda'),
+                (cliente.rif == patrocinante.cliente_p, 'patrocinante'),
+            ]),
+            case([
+                (cliente.rif == tienda.cliente_p, tienda.tienda_id),
+                (cliente.rif == patrocinante.cliente_p, patrocinante.patrocinante_id),
+            ])).\
+            filter(and_(
+                or_(
+                    cliente.rif == tienda.cliente_p, 
+                    cliente.rif == patrocinante.cliente_p
+                ),
+                cliente.propietario == self.usuario_id, 
+            )).all():
+            
+            enlace = {
+                'tienda': lambda x: self.peticion.route_url('tienda', tienda_id = x),
+                'patrocinante': lambda x: self.peticion.route_url('patrocinante', patrocinante_id = x)
+            }[tipo](_id)
+            dato = {
+                'tipo': tipo,
+                'tipo_id': _id,
+                'enlace': enlace
+            }
+            resultado.append(dict(dato.items() + cli.__dict__.items()))
+        return resultado
+
+    @reify
+    def tiendas_asociadas(self):
         return DBSession.query(tienda).\
         join(cliente).\
         filter(cliente.propietario == self.usuario_id).all()
         
     @reify
-    def patrocinantes(self):
+    def patrocinantes_asociados(self):
         return DBSession.query(patrocinante).\
         join(cliente).\
         filter(cliente.propietario == self.usuario_id).all()
@@ -108,7 +147,7 @@ class UsuarioView(Diagramas, Comunes):
         resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
         return resultado
 
-    @view_config(route_name='usuario', renderer='plantillas/usuario.pt')
+    @view_config(route_name='usuario', renderer='../plantillas/usuario.pt')
     def usuario_view(self):
         var_usuario = self.obtener_usuario('id', self.usuario_id)
         resultado = HTTPNotFound(MENSAJE_DE_ERROR) \
