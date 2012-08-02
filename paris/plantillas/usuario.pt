@@ -9,8 +9,8 @@
 				<div class="span3">
 					<a data-toggle="modal" href="#fotos_usuario">
 						<div class="thumbnail" tal:define="foto view.obtener_foto('usuario', usuario.usuario_id, 'medianas')">
-							<img src="/estatico/${foto.ruta_de_foto}" alt="Foto" tal:condition="foto.ruta_de_foto != ''" />
-							<img src="http://placehold.it/70x70" alt="Foto" tal:condition="foto.ruta_de_foto == ''" />
+							<img src="/estatico/${foto.ruta_de_foto}" alt="Foto" tal:condition="foto" />
+							<img src="http://placehold.it/220x220" alt="Foto" tal:condition="not foto" />
 						</div>
 					</a>
 					<div id="fotos_usuario" class="modal hide fade">

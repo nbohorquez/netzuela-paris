@@ -5,38 +5,104 @@ Created on 08/04/2012
 @author: nestor
 '''
 
+from datetime import datetime
 from paris.models.spuria import (
     acceso,
+    accion,
     busqueda,
+    calificacion,
     calificacion_resena,
     categoria,
     cliente,
+    codigo_de_error,
     consumidor,
     croquis,
     DBSession,
     describible,
     descripcion,
+    dia,
     estadisticas,
+    estatus,
     factura,
     foto,
+    grado_de_instruccion,
+    grupo_de_edad,
+    idioma,
     inventario,
     mensaje,
     patrocinante,
+    privilegios,
     producto,
     publicidad,
     rastreable,
     seguidor,
     territorio,
     tienda,
+    tipo_de_codigo,
     usuario,
-    Spuria
+    sexo,
+    Spuria,
+    visibilidad
 )
+from pyramid.decorator import reify
 from sqlalchemy import and_, or_, case, func
-from datetime import datetime
+from sqlalchemy.sql import asc
 
 class Comunes(object):
     def __init__(self):
         pass
+    
+    @reify
+    def categorias(self):
+        return DBSession.query(categoria).filter_by(nivel = 1).all()
+    
+    @reify
+    def grados_de_instruccion(self):
+        return DBSession.query(grado_de_instruccion).order_by(asc(grado_de_instruccion.orden)).all()
+    
+    @reify
+    def sexos(self):
+        return DBSession.query(sexo).all()
+    
+    @reify
+    def codigos_de_error(self):
+        return DBSession.query(codigo_de_error).all()
+    
+    @reify
+    def privilegios(self):
+        return DBSession.query(privilegios).all()
+    
+    @reify
+    def idiomas(self):
+        return DBSession.query(idioma).all()
+    
+    @reify
+    def tipos_de_codigo(self):
+        return DBSession.query(tipo_de_codigo).all()
+    
+    @reify
+    def visibilidades(self):
+        return DBSession.query(visibilidad).all()
+    
+    @reify
+    def acciones(self):
+        return DBSession.query(accion).all()
+    
+    @reify
+    def calificaciones(self):
+        return DBSession.query(calificacion).all()
+    
+    @reify
+    def grupos_de_edades(self):
+        return DBSession.query(grupo_de_edad).all()
+
+    @reify
+    def estatus(self):
+        return DBSession.query(estatus).all()
+    
+    @reify
+    def dias(self):
+        return DBSession.query(dia).order_by(asc(dia.orden)).all()
     
     def formatear_comentarios(self, comentarios):
         resultado = []
@@ -477,14 +543,22 @@ class Comunes(object):
         return resultado
     
     def obtener_tienda(self, tie_id):
+        return DBSession.query(tienda).filter_by(tienda_id = tie_id).first()
+        """
         tmp = DBSession.query(tienda).filter_by(tienda_id = tie_id).first()
         return tmp if (tmp is not None) else {}
+        """
     
     def obtener_patrocinante(self, pat_id):
+        return DBSession.query(patrocinante).filter_by(patrocinante_id = pat_id).first()
+        """
         tmp = DBSession.query(patrocinante).filter_by(patrocinante_id = pat_id).first()
         return tmp if (tmp is not None) else {}
+        """
     
     def obtener_producto(self, pro_id):
+        return DBSession.query(producto).filter_by(producto_id = pro_id).first()
+        """
         tmp = DBSession.query(producto).filter_by(producto_id = pro_id).first()
         return tmp if (tmp is not None) \
         else { 
@@ -492,6 +566,7 @@ class Comunes(object):
             'nombre': '', 
             'categoria': '-1' 
         }
+        """
 
     def obtener_usuario(self, objeto, objeto_id):
         def usu_id(_id):
@@ -506,6 +581,8 @@ class Comunes(object):
             'correo_electronico': lambda x: usu_correo(x)
         }[objeto](objeto_id)
         
+        return tmp
+        """        
         return tmp if (tmp is not None) \
         else {
             'rastreable_p': -1,
@@ -516,6 +593,7 @@ class Comunes(object):
             'estatus': 'Eliminado',
             'ubicacion': '-1'
         }
+        """
 
     def sql_foto(self, objeto, objeto_id, tamano):
         def foto_tienda():
@@ -554,7 +632,7 @@ class Comunes(object):
                 usuario.usuario_id == objeto_id, 
                 foto.ruta_de_foto.like('%' + tamano + '%'))
             )
-        
+
         sql = {
             'tienda': lambda: foto_tienda(), 
             'producto': lambda: foto_producto(), 
@@ -566,12 +644,14 @@ class Comunes(object):
         return sql
             
     def obtener_foto(self, objeto, objeto_id, tamano):
+        return self.sql_foto(objeto, objeto_id, tamano).first()
+        """
         por_defecto = {}
         por_defecto['ruta_de_foto'] = ''
         por_defecto['foto_id'] = por_defecto['describible'] = 0
         tmp = self.sql_foto(objeto, objeto_id, tamano).first()
         return tmp if (tmp is not None) else por_defecto
+        """
     
     def obtener_fotos(self, objeto, objeto_id, tamano):
-        resultado = self.sql_foto(objeto, objeto_id, tamano)
-        return resultado.all()
+        return self.sql_foto(objeto, objeto_id, tamano).all()

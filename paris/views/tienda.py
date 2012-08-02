@@ -84,16 +84,23 @@ class TiendaView(Diagramas, Comunes):
     
     @reify
     def inventario_reciente(self):
+        return DBSession.query(inventario_reciente).\
+        filter_by(tienda_id = self.tienda_id).all()
+        """
         var_inventario = DBSession.query(inventario_reciente).\
         filter_by(tienda_id = self.tienda_id).all()
         
         resultado = [{""}] if (var_inventario is None) else var_inventario
         return resultado
+        """
 
     @reify
     def cliente_padre(self):
+        return self.obtener_cliente_padre(self.tipo_de_peticion, self.tienda_id)
+        """
         resultado = self.obtener_cliente_padre(self.tipo_de_peticion, self.tienda_id)
-        return {""} if (resultado is None) else resultado     
+        return {""} if (resultado is None) else resultado
+        """     
 
     @reify
     def registro(self):
@@ -135,12 +142,19 @@ class TiendaView(Diagramas, Comunes):
                 'estado': e.nombre 
             }
         except Exception, e:
-            resultado = {'parroquia': 'N/D', 'municipio': 'N/D', 'estado': 'N/D' }
+            resultado = None
+            #resultado = {'parroquia': 'N/D', 'municipio': 'N/D', 'estado': 'N/D' }
             
         return resultado
         
     @reify
     def descripciones(self):
+        return DBSession.query(descripcion).\
+        join(describible).\
+        join(cliente).\
+        join(tienda).\
+        filter(tienda.tienda_id == self.tienda_id).all()
+        """
         var_descripciones = DBSession.query(descripcion).\
         join(describible).\
         join(cliente).\
@@ -149,6 +163,7 @@ class TiendaView(Diagramas, Comunes):
         
         resultado = [ {'contenido': ""} ] if var_descripciones is None else var_descripciones
         return resultado
+        """
     
     @reify
     def horarios(self):
@@ -167,12 +182,16 @@ class TiendaView(Diagramas, Comunes):
                 horario['turnos'] = string.join(["{0.hora_de_apertura} - {0.hora_de_cierre} ".format(t) for t in turnos])
                 resultado.append(horario)
         else:
-            resultado = [{'dia': 'N/A', 'laborable': 0, 'turnos': ''}]
+            resultado = None
+            #resultado = [{'dia': 'N/A', 'laborable': 0, 'turnos': ''}]
 
         return resultado
     
     @reify
     def tamano_reciente(self):
+        return DBSession.query(tamano_reciente).\
+        filter(tamano_reciente.tienda_id == self.tienda_id).first()
+        """
         var_tamano = DBSession.query(tamano_reciente).\
         filter(tamano_reciente.tienda_id == self.tienda_id).first()
         
@@ -183,38 +202,52 @@ class TiendaView(Diagramas, Comunes):
         } if (var_tamano is None) else var_tamano
         
         return resultado
+        """
     
     @reify
     def calificaciones_resenas(self):
         var_comentarios = DBSession.query(calificacion_resena).\
         join(calificable_seguible).join(tienda).\
         filter(tienda.tienda_id == self.tienda_id).all()
-        return [{""}] if (var_comentarios is None) else self.formatear_comentarios(var_comentarios)
+        return self.formatear_comentarios(var_comentarios)
     
     @reify
     def fotos_grandes(self):
+        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'grandes')
+        
+        """
         var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'grandes')
-        resultado = [] if (var_fotos is None) else var_fotos
+        resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
         return resultado
+        """
     
     @reify
     def fotos_medianas(self):
+        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'medianas')
+        """
         var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'medianas')
-        resultado = [] if (var_fotos is None) else var_fotos
+        resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
         return resultado
+        """
     
     @reify
     def fotos_pequenas(self):
+        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'pequenas')
+        """
         var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'pequenas')
-        resultado = [] if (var_fotos is None) else var_fotos
+        resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
         return resultado
+        """
     
     @reify
     def fotos_miniaturas(self):
+        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'miniaturas')
+        """
         var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'miniaturas')
         resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
         return resultado
-    
+        """
+
     @reify
     def ruta_categoria_actual(self):
         cat_padre = DBSession.query(cliente.categoria).\

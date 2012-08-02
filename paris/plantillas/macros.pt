@@ -18,41 +18,46 @@
   			</thead>
   			<tbody>
   				<tr tal:repeat="item lista">
-	    			<td tal:define="tienda view.obtener_tienda(item.tienda_id); enlace view.peticion.route_url('producto', producto_id = item.producto_id)">
+	    			<td tal:define="enlace view.peticion.route_url('producto', producto_id = item.producto_id)">
 	    				<div class="row-fluid">
 	    					<div class="span4">
-	    						<a href="${enlace}">
+	    						<a href="${enlace}" tal:omit-tag="not enlace">
 			        				<div class="thumbnail" tal:define="foto view.obtener_foto('producto', item.producto_id, 'pequenas')">
-			        					<img src="http://placehold.it/70x70" alt="producto.nombre" tal:condition="foto == ''"/>
-			        					<img src="/estatico/${foto.ruta_de_foto}" alt="producto.nombre" tal:condition="foto != ''"/>
+			        					<img src="http://placehold.it/70x70" tal:condition="not foto" />
+			        					<img src="/estatico/${foto.ruta_de_foto}" tal:condition="foto" />
 			        				</div>
 			        			</a>
 	    					</div>
 	    					<div class="span8">
-	    						<div tal:define="producto view.obtener_producto(item.producto_id)">
-									<a href="${enlace}">${producto.nombre}</a>
+	    						<tal:block tal:define="producto view.obtener_producto(item.producto_id)">
+									<a href="${enlace}" tal:omit-tag="not enlace" tal:condition="producto">${producto.nombre}</a>
 									<p>
-										<em>${producto.codigo}</em><br />
+										<em tal:condition="producto">${producto.codigo}</em><br />
 										${item.descripcion}<br />
-										<strong>Categoria</strong> <span tal:define="categoria_item view.obtener_categoria(producto.categoria)">${categoria_item.nombre}</span><br />
+										<strong>Categoria</strong>
+										<tal:block tal:condition="producto">
+											<span tal:define="categoria_item view.obtener_categoria(producto.categoria)" tal:condition="categoria_item">
+												${categoria_item.nombre}
+											</span><br />	
+										</tal:block>
 										<strong>SKU</strong> ${item.codigo}<br />
 										<strong>Precio</strong> ${item.precio}<br />
 										<strong>Cantidad</strong> ${item.cantidad}
 									</p>
-								</div>
+								</tal:block>
 	    					</div>
 	    				</div>
 	    			</td>
 	    		</tr>
   			</tbody>
   		</table>
-  		<p class="pull-right">
+  		<p class="pull-right" tal:condition="tamano">
 			<abbr title="Numero total de productos">N:</abbr>
-			<span tal:content="tamano.numero_total_de_productos"></span>
+			<span>${tamano.numero_total_de_productos}</span>
 			<abbr title="Cantidad total de productos">C:</abbr>
-			<span tal:content="tamano.cantidad_total_de_productos"></span>
+			<span>${tamano.cantidad_total_de_productos}</span>
 			<abbr title="Tamano del inventario">T:</abbr>
-			<span tal:content="tamano.valor"></span>
+			<span>${tamano.valor}</span>
 		</p>
 	</metal:inventario_de_productos>
 	
@@ -67,32 +72,33 @@
   			</thead>
   			<tbody>
 	    		<tr tal:repeat="item lista">
-	    			<td tal:define="tienda view.obtener_tienda(item.tienda_id); enlace view.peticion.route_url('tienda', tienda_id = item.tienda_id)">
+	    			<td tal:define="enlace view.peticion.route_url('tienda', tienda_id = item.tienda_id)">
 	    				<div class="row-fluid">
 	    					<div class="span4">
-	    						<a href="${enlace}">
+	    						<a href="${enlace}" tal:omit-tag="not enlace">
 			        				<div class="thumbnail" tal:define="foto view.obtener_foto('tienda', item.tienda_id, 'pequenas')">
-			    						<img src="http://placehold.it/70x70" alt="cliente.nombre_comun" tal:condition="foto == ''" />
-			    						<img src="/estatico/${foto.ruta_de_foto}" alt="cliente.nombre_comun" tal:condition="foto != ''" />
+			    						<img src="http://placehold.it/70x70" alt="cliente.nombre_comun" tal:condition="not foto" />
+			    						<img src="/estatico/${foto.ruta_de_foto}" alt="cliente.nombre_comun" tal:condition="foto" />
 			        				</div>
 			        			</a>
 	    					</div>
 	    					<div class="span6">
-	    						<div tal:define="cliente view.obtener_cliente_padre('tienda', item.tienda_id)">
-									<a href="${enlace}">${cliente.nombre_comun}</a>
+	    						<tal:block tal:define="cliente view.obtener_cliente_padre('tienda', item.tienda_id)">
+									<a href="${enlace}" tal:omit-tag="not enlace" tal:condition="cliente">${cliente.nombre_comun}</a>
 									<p>
-										${cliente.nombre_legal}
-										<br />
-										<strong>Ubicación</strong> ${cliente.ubicacion}<br />
+										<span tal:condition="cliente">${cliente.nombre_legal}</span><br />
+										<strong>Ubicación</strong> <span tal:condition="cliente">${cliente.ubicacion}</span><br />
 										<strong>Precio</strong> ${item.precio}<br />
-										<strong>Cantidad</strong> ${item.cantidad}
-										<input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
+										<strong>Cantidad</strong> ${item.cantidad}<br />
+										<input type="hidden" name="tienda_id" value="${item.tienda_id}" />
 									</p>
-								</div>	    						
+								</tal:block>
 	    					</div>
 	    					<div class="span2">
-	    						<p class="label label-success" tal:condition="tienda.abierto">Abierto</p>
-								<p class="label label-important" tal:condition="not tienda.abierto">Cerrado</p>
+	    						<tal:block tal:define="tienda view.obtener_tienda(item.tienda_id)" tal:condition="tienda">
+	    							<p class="label label-success" tal:condition="tienda.abierto">Abierto</p>
+									<p class="label label-important" tal:condition="not tienda.abierto">Cerrado</p>
+	    						</tal:block>	    						
 	    					</div>
 	    				</div>
   					</td>
@@ -107,7 +113,7 @@
 		<blockquote tal:repeat="comentario comentarios">
 			<p>${comentario.resena}</p>
 			<small>
-				<a tal:attributes="href view.peticion.route_url('usuario', usuario_id = comentario.consumidor.usuario_id)">
+				<a tal:condition="comentario.consumidor" tal:attributes="href view.peticion.route_url('usuario', usuario_id = comentario.consumidor.usuario_id)">
 					${comentario.consumidor.nombre} ${comentario.consumidor.apellido}
 				</a> el ${comentario.fecha}
 				<tal:block tal:switch="comentario.calificacion">
@@ -190,16 +196,12 @@
 	    			<td>
 	    				<div class="row-fluid titular-noticia">
 	    					<div class="span2">
-	    						<a tal:condition="registro.actor_activo.href" href="${registro.actor_activo.href}">
+	    						<a tal:omit-tag="not registro.actor_activo.href" href="${registro.actor_activo.href}">
 		    						<div class="thumbnail">
 		    							<img src="http://placehold.it/70x70" alt="foto actor pasivo" tal:condition="registro.actor_activo.foto == ''" />
 	        							<img src="/estatico/${registro.actor_activo.foto}" alt="foto actor activo" tal:condition="registro.actor_activo.foto != ''" />
 	        						</div>
 	        					</a>
-	        					<div tal:condition="not registro.actor_activo.href" class="thumbnail">
-	    							<img src="http://placehold.it/70x70" alt="foto actor pasivo" tal:condition="registro.actor_activo.foto == ''" />
-        							<img src="/estatico/${registro.actor_activo.foto}" alt="foto actor activo" tal:condition="registro.actor_activo.foto != ''" />
-        						</div>
 	    					</div>
 	    					<div class="span10">
 		    					<p>
@@ -213,8 +215,7 @@
 										<i tal:case="'cerro sesion'" class="icon-off"></i>
 									</tal:block>
 									
-									<a tal:condition="registro.actor_activo.href" class="popover-aqui" title="${registro.actor_activo.titulo}" tal:attributes="href registro.actor_activo.href">${registro.actor_activo.nombre}</a>
-									<span tal:condition="not registro.actor_activo.href">${registro.actor_activo.nombre}</span>
+									<a tal:omit-tag="not registro.actor_activo.href" class="popover-aqui" title="${registro.actor_activo.titulo}" tal:attributes="href registro.actor_activo.href">${registro.actor_activo.nombre}</a>
 									
 									${registro.accion}
 									<span tal:repeat="item registro.parametros.items()">
@@ -223,13 +224,12 @@
 										<tal:block tal:condition="repeat.item.end">de</tal:block>
 									</span>
 									
-									<a tal:condition="registro.actor_pasivo.href" class="popover-aqui" title="${registro.actor_pasivo.titulo}" tal:attributes="href registro.actor_pasivo.href">${registro.actor_pasivo.nombre}</a>
-									<span tal:condition="not registro.actor_pasivo.href">${registro.actor_pasivo.nombre}</span>
+									<a tal:omit-tag="not registro.actor_pasivo.href" class="popover-aqui" title="${registro.actor_pasivo.titulo}" tal:attributes="href registro.actor_pasivo.href">${registro.actor_pasivo.nombre}</a>
 								</p>
 								<p><small>hace ${registro.tiempo}</small></p>
 							</div>
 	    				</div>
-	    				<div class="popover-inner-contenido">
+	    				<div class="popover-contenido">
 	    					<div class="row-fluid">
 								<div class="span4">
 									<img src="/estatico/${registro.info.foto}" alt="foto actor" tal:condition="registro.info.foto != ''"/>	
@@ -379,25 +379,32 @@
 		<ul class="thumbnails">
         	<li class="span2" tal:repeat="tienda lista">
         		<div tal:define="enlace view.peticion.route_url('tienda', tienda_id = tienda.tienda_id)">
-        			<a href="${enlace}">
+        			<a href="${enlace}" tal:omit-tag="not enlace">
         				<div class="thumbnail" tal:define="foto view.obtener_foto('tienda', tienda.tienda_id, 'pequenas')">
-        					<img src="http://placehold.it/160x160" alt="cliente.nombre_comun" tal:condition="foto.ruta_de_foto == ''" />
-        					<img src="/estatico/${foto.ruta_de_foto}" alt="cliente.nombre_comun" tal:condition="foto.ruta_de_foto != ''" />
+        					<img src="http://placehold.it/160x160" tal:condition="not foto" />
+        					<img src="/estatico/${foto.ruta_de_foto}" tal:condition="foto" />
         				</div>
         			</a>
-        			<div class="caption" tal:define="cliente view.obtener_cliente_padre('tienda', tienda.tienda_id)">
-						<a href="${enlace}">
-							<h5>${cliente.nombre_comun}</h5>
-						</a>
-						${cliente.nombre_legal}
-						<p>
-							<span class="label label-success" tal:condition="tienda.abierto">Abierta</span>
-							<span class="label label-important" tal:condition="not tienda.abierto">Cerrada</span>
-							<br />
-							<em>${cliente.rif}</em><br />
-							<strong>Categoria</strong> <span tal:define="categoria_item view.obtener_categoria(cliente.categoria)">${categoria_item.nombre}</span><br />					
-							<input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
-						</p>
+        			<div class="caption">
+        				<tal:block tal:define="cliente view.obtener_cliente_padre('tienda', tienda.tienda_id)">
+							<a href="${enlace}" tal:omit-tag="not enlace" tal:condition="cliente">
+								${cliente.nombre_comun}
+							</a><br />
+							<span tal:condition="cliente">${cliente.nombre_legal}</span>
+							<p>
+								<span class="label label-success" tal:condition="tienda.abierto">Abierta</span>
+								<span class="label label-important" tal:condition="not tienda.abierto">Cerrada</span>
+								<br />
+								<em tal:condition="cliente">${cliente.rif}</em><br />
+								<strong>Categoria</strong>
+								<tal:block tal:condition="cliente">
+									<span tal:define="categoria_item view.obtener_categoria(cliente.categoria)" tal:condition="categoria_item">
+										${categoria_item.nombre}
+									</span><br />	
+								</tal:block>
+								<input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
+							</p>
+						</tal:block>
 					</div>
 	           	</div>
 	        </li>
@@ -410,20 +417,25 @@
 		<ul class="thumbnails">
         	<li class="span2" tal:repeat="item lista">
         		<div tal:define="enlace view.peticion.route_url('producto', producto_id = item.producto_id)">
-        			<a href="${enlace}">
+        			<a href="${enlace}" tal:omit-tag="not enlace">
         				<div class="thumbnail" tal:define="foto view.obtener_foto('producto', item.producto_id, 'pequenas')">
-        					<img src="http://placehold.it/160x160" alt="producto.nombre" tal:condition="foto.ruta_de_foto == ''"/>
-        					<img src="/estatico/${foto.ruta_de_foto}" alt="producto.nombre" tal:condition="foto.ruta_de_foto != ''"/>
+        					<img src="http://placehold.it/160x160" tal:condition="not foto"/>
+        					<img src="/estatico/${foto.ruta_de_foto}" tal:condition="foto"/>
         				</div>
         			</a>
-        			<div class="caption" tal:define="producto view.obtener_producto(item.producto_id)">
-						<a href="${enlace}">
-							<h5>${item.nombre}</h5>
-						</a>
-						<p>
-							<em>${item.codigo}</em><br />
-							<strong>Categoria</strong> <span tal:define="categoria_item view.obtener_categoria(producto.categoria)">${categoria_item.nombre}</span><br />
-						</p>
+        			<div class="caption">
+        				<tal:block tal:define="producto view.obtener_producto(item.producto_id)">
+							<a href="${enlace}" tal:omit-tag="not enlace" tal:condition="producto">${producto.nombre}</a><br />
+							<p>
+								<em>${item.codigo}</em><br />
+								<strong>Categoria</strong>
+								<tal:block tal:condition="producto">
+									<span tal:define="categoria_item view.obtener_categoria(producto.categoria)" tal:condition="categoria_item">
+										${categoria_item.nombre}
+									</span><br />	
+								</tal:block> 
+							</p>
+						</tal:block>
 					</div>
 	           	</div>
 	        </li>
@@ -446,13 +458,13 @@
 	    					<div class="span4">
 	    						<a href="${item.enlace}">
 			        				<div class="thumbnail" tal:define="foto view.obtener_foto(item.tipo, item.tipo_id, 'pequenas')">
-			    						<img src="http://placehold.it/70x70" alt="${item.nombre_comun}" tal:condition="foto == ''" />
-			    						<img src="/estatico/${foto.ruta_de_foto}" alt="${item.nombre_comun}" tal:condition="foto != ''" />
+			    						<img src="http://placehold.it/150x150" alt="${item.nombre_comun}" tal:condition="not foto" />
+			    						<img src="/estatico/${foto.ruta_de_foto}" alt="${item.nombre_comun}" tal:condition="foto" />
 			        				</div>
 			        			</a>
 	    					</div>
 	    					<div class="span8">
-								<a href="${item.enlace}">${item.nombre_comun}</a>
+								<a href="${item.enlace}">${item.nombre_comun}</a><br />
 								<p>
 									${item.nombre_legal}
 									<br />
@@ -465,5 +477,229 @@
   			</tbody>
 		</table>
 	</metal:listado_clientes>
+	
+	<!-- Editar descripcion
+	================================================== -->
+	<metal:editar_descripcion define-macro="editar_descripcion">
+		<div class="boton-editar-contenido">
+			<a data-toggle="modal" href="#editar_descripcion">
+				<i class="icon-edit"></i>
+				Editar
+			</a>
+		</div>
+		<div id="editar_descripcion" class="modal hide fade">
+			<div class="modal-header">
+	        	<button type="button" class="close" data-dismiss="modal">&times;</button>
+	          	<h3>Edición</h3>
+	        </div>
+	        <div class="modal-body">
+	        	<form class="form-horizontal" method="post" accept-charset="UTF-8">
+					<fieldset>
+	        			<div class="control-group">
+							<label class="control-label" for="descripcion">Descripción</label>
+			            	<div class="controls">
+			              		<textarea class="input-xlarge" id="descripcion" rows="10"></textarea>
+			            	</div>
+			          	</div>
+			          	<div class="form-actions">
+			          		<button class="btn btn-primary" type="submit" name="guardar" id="guardar">Guardar cambios</button>
+			            	<a class="btn" href="#" data-dismiss="modal">Cancelar</a>
+			          	</div>
+			        </fieldset>
+				</form>
+	        </div>
+		</div>
+	</metal:editar_descripcion>
+	
+	<!-- Editar direccion
+	================================================== -->
+	<metal:editar_direccion define-macro="editar_direccion">
+		<div class="boton-editar-contenido">
+			<a data-toggle="modal" href="#editar_direccion">
+				<i class="icon-edit"></i>
+				Editar
+			</a>
+		</div>
+		<div id="editar_direccion" class="modal hide fade">
+			<div class="modal-header">
+	        	<button type="button" class="close" data-dismiss="modal">&times;</button>
+	          	<h3>Edición</h3>
+	        </div>
+	        <div class="modal-body">
+	        	<form class="form-horizontal" id="formulario_direccion" method="post" accept-charset="UTF-8">
+					<fieldset>
+	        			<div class="control-group">
+				        	<label class="control-label" for="edificio">Edificio/C.C.</label>
+				        	<div class="controls">
+				          		<input type="text" class="input-large" id="edificio" name="edificio" />
+				        	</div>
+				      	</div>
+				      	<div class="control-group">
+				        	<label class="control-label" for="piso">Piso</label>
+				        	<div class="controls">
+				          		<input type="text" class="input-large" id="piso" name="piso" />
+				        	</div>
+				      	</div>
+				      	<div class="control-group">
+				        	<label class="control-label" for="apartamento">Apartamento</label>
+				        	<div class="controls">
+				          		<input type="text" class="input-large" id="apartamento" name="apartamento" />
+				        	</div>
+				      	</div>
+				      	<div class="control-group">
+				        	<label class="control-label" for="local">Local</label>
+				        	<div class="controls">
+				          		<input type="text" class="input-large" id="local" name="local" />
+				        	</div>
+				      	</div>
+				      	<div class="control-group">
+				        	<label class="control-label" for="casa">Casa</label>
+				        	<div class="controls">
+				          		<input type="text" class="input-large" id="casa" name="casa" />
+				        	</div>
+				      	</div>
+				      	<div class="control-group">
+				        	<label class="control-label" for="calle">Calle</label>
+				        	<div class="controls">
+				          		<input type="text" class="input-large" id="calle" name="calle" />
+				        	</div>
+				      	</div>
+				      	<div class="control-group">
+				        	<label class="control-label" for="sector">Sector/Urb/Barrio</label>
+				        	<div class="controls">
+				          		<input type="text" class="input-large" id="sector" name="sector" />
+				        	</div>
+				      	</div>
+			          	<div class="form-actions">
+			          		<button class="btn btn-primary" type="submit" name="guardar" id="guardar">Guardar cambios</button>
+			            	<a class="btn" href="#" data-dismiss="modal">Cancelar</a>
+			          	</div>
+			        </fieldset>
+				</form>
+	        </div>
+		</div>
+	</metal:editar_direccion>
+	
+	<!-- Editar horario
+	================================================== -->
+	<metal:editar_horario define-macro="editar_horario">
+		<div class="boton-editar-contenido">
+			<a data-toggle="modal" href="#editar_horario">
+				<i class="icon-edit"></i>
+				Editar
+			</a>
+		</div>
+		<div id="editar_horario" class="modal hide fade">
+			<div class="modal-header">
+	        	<button type="button" class="close" data-dismiss="modal">&times;</button>
+	          	<h3>Edición</h3>
+	        </div>
+	        <div class="modal-body">
+	        	<form class="form-horizontal" id="formulario_direccion" method="post" accept-charset="UTF-8">
+					<fieldset>
+			          	<div class="form-actions">
+			          		<button class="btn btn-primary" type="submit" name="guardar" id="guardar">Guardar cambios</button>
+			            	<a class="btn" href="#" data-dismiss="modal">Cancelar</a>
+			          	</div>
+			        </fieldset>
+				</form>
+	        </div>
+		</div>
+	</metal:editar_horario>
+	
+	<!-- Editar producto
+	================================================== -->
+	<metal:editar_producto define-macro="editar_producto">
+		<div class="boton-editar-contenido">
+			<a data-toggle="modal" href="#editar_producto">
+				<i class="icon-edit"></i>
+				Editar
+			</a>
+		</div>
+		<div id="editar_producto" class="modal hide fade">
+			<div class="modal-header">
+	        	<button type="button" class="close" data-dismiss="modal">&times;</button>
+	          	<h3>Edición</h3>
+	        </div>
+	        <div class="modal-body">
+	        	<form class="form-horizontal" id="formulario_direccion" method="post" accept-charset="UTF-8">
+	        		<fieldset>
+						<div class="control-group">
+				        	<label class="control-label" for="fabricante">Fabricante</label>
+				        	<div class="controls">
+				          		<input type="text" class="input-large" id="fabricante" name="fabricante" />
+				        	</div>
+				      	</div>
+				      	<div class="control-group">
+				        	<label class="control-label" for="modelo">Modelo</label>
+				        	<div class="controls">
+				          		<input type="text" class="input-large" id="modelo" name="modelo" />
+				        	</div>
+				      	</div>
+				      	<div class="control-group">
+				        	<label class="control-label" for="nombre">Nombre</label>
+				        	<div class="controls">
+				          		<input type="text" class="input-large" id="nombre" name="nombre" />
+				        	</div>
+				      	</div>
+				      	<div class="control-group">
+				        	<label class="control-label" for="categoria">Categoría</label>
+				        	<div class="controls">
+				          		<input type="text" class="input-large" id="categoria" name="categoria" />
+				        	</div>
+				      	</div>
+				      	<div class="control-group">
+				        	<label class="control-label" for="debut">Debut en el mercado</label>
+				        	<div class="controls">
+				          		<input type="text" class="input-large" id="debut" name="debut" />
+				        	</div>
+				      	</div>
+				      	<div class="control-group">
+				        	<label class="control-label" for="largo">Largo</label>
+				        	<div class="controls">
+				        		<div class="input-append">
+					          		<input type="text" class="input-small" id="largo" name="largo" /><span class="add-on">m</span>
+				          		</div>
+				        	</div>
+				      	</div>
+				      	<div class="control-group">
+				        	<label class="control-label" for="ancho">Ancho</label>
+				        	<div class="controls">
+				        		<div class="input-append">
+					          		<input type="text" class="input-small" id="ancho" name="ancho" /><span class="add-on">m</span>
+				          		</div>
+				        	</div>
+				      	</div>
+				      	<div class="control-group">
+				        	<label class="control-label" for="alto">Alto</label>
+				        	<div class="controls">
+				        		<div class="input-append">
+					          		<input type="text" class="input-small" id="alto" name="alto" /><span class="add-on">m</span>
+				          		</div>
+				        	</div>
+				      	</div>
+				      	<div class="control-group">
+				        	<label class="control-label" for="peso">Peso</label>
+				        	<div class="controls">
+				        		<div class="input-append">
+					          		<input type="text" class="input-small" id="peso" name="peso" /><span class="add-on">kg</span>
+					          	</div>
+				        	</div>
+				      	</div>
+				      	<div class="control-group">
+				        	<label class="control-label" for="pais">Pais de orígen</label>
+				        	<div class="controls">
+				          		<input type="text" class="input-large" id="pais" name="pais" />
+				        	</div>
+				      	</div>
+			          	<div class="form-actions">
+			          		<button class="btn btn-primary" type="submit" name="guardar" id="guardar">Guardar cambios</button>
+			            	<a class="btn" href="#" data-dismiss="modal">Cancelar</a>
+			          	</div>
+			        </fieldset>
+				</form>
+	        </div>
+		</div>
+	</metal:editar_producto>
 </body>
 </html>

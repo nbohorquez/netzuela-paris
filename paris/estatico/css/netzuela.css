@@ -1,19 +1,30 @@
 html 
 { 
-height: 100%; 
+	height: 100%; 
 }
 body 
 { 
-height: 100%; 
-padding-top: 60px; 
+	height: 100%;
+	padding-top: 60px;
 }
 .titular-noticia
 {
 }
-.popover-inner-contenido
+a.popover-aqui
 {
-display: none;
 }
-.popover-aqui
+div.popover-contenido
 {
+	display: none;
+}
+div.editable
+{
+	position: relative;
+}
+div.boton-editar-contenido
+{
+	display: none;
+	position: absolute; 
+	right: 0; 
+	bottom: 0;
 }

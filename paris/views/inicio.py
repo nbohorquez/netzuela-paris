@@ -18,4 +18,4 @@ class InicioView(Diagramas):
     
     @view_config(route_name='inicio', renderer='../plantillas/inicio.pt')
     def inicio_view(self):
-        return {'nombre_pagina': 'Inicio'}
+        return {'pagina': 'Inicio'}

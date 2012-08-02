@@ -29,7 +29,7 @@ $(document).ready(function () {
 			}
 		});
 	});
-	
+    
 	// Este codigo evita que se cierre el dropdown al hacer clic sobre el formulario de ingreso
 	$('.dropdown-menu').find('form').click(function (e) {
 		e.stopPropagation();
@@ -64,4 +64,12 @@ $(document).ready(function () {
 		$("#gadget2_encabezado a i").removeClass("icon-chevron-down").addClass("icon-chevron-up");
 		$('#historial').mostrar_historial();
 	});
+	
+	$('.editable').hover(function () {
+		//$(this).css('background-color', '#f5f5f5');
+        $(this).find('.boton-editar-contenido').show();
+    }, function () {
+    	//$(this).css('background-color', 'transparent');
+        $(this).find('.boton-editar-contenido').hide();
+    });
 });

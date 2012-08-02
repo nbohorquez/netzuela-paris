@@ -75,11 +75,15 @@ class ProductoView(Diagramas, Comunes):
     
     @reify
     def inventario_reciente(self):
+        return DBSession.query(inventario_reciente).\
+        filter_by(producto_id = self.producto_id).all()
+        """
         var_inventario = DBSession.query(inventario_reciente).\
         filter_by(producto_id = self.producto_id).all()
         
         resultado = [{""}] if (var_inventario is None) else var_inventario
         return resultado
+        """
 
     @reify
     def registro(self):
@@ -97,6 +101,11 @@ class ProductoView(Diagramas, Comunes):
     
     @reify
     def descripciones(self):
+        return DBSession.query(descripcion).\
+        join(describible).\
+        join(producto).\
+        filter(producto.producto_id == self.producto_id).all()
+        """
         var_descripciones = DBSession.query(descripcion).\
         join(describible).\
         join(producto).\
@@ -104,6 +113,7 @@ class ProductoView(Diagramas, Comunes):
         
         resultado = [ {'contenido': ""} ] if var_descripciones is None else var_descripciones
         return resultado
+        """
     
     @reify
     def calificaciones_resenas(self):
@@ -112,36 +122,49 @@ class ProductoView(Diagramas, Comunes):
         join(producto).\
         filter(producto.producto_id == self.producto_id).all()
         
-        return [{""}] if var_comentarios is None else self.formatear_comentarios(var_comentarios) 
+        return self.formatear_comentarios(var_comentarios)
     
     @reify
     def fotos_grandes(self):
+        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'grandes')
+        
+        """
         var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'grandes')
         resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
         return resultado
+        """
     
     @reify
     def fotos_medianas(self):
+        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'medianas')
+        """
         var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'medianas')
         resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
         return resultado
+        """
     
     @reify
     def fotos_pequenas(self):
+        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'pequenas')
+        """
         var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'pequenas')
         resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
         return resultado
+        """
     
     @reify
     def fotos_miniaturas(self):
+        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'miniaturas')
+        """
         var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'miniaturas')
         resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
         return resultado
+        """
     
     @reify
     def ruta_categoria_actual(self):
         cat_padre = DBSession.query(producto.categoria).\
-        filter_by(producto_id = self.peticion_id).first()[0]        
+        filter_by(producto_id = self.peticion_id).first()[0]
         return self.obtener_ruta_categoria(cat_padre)
         
     @view_config(route_name='producto', renderer='../plantillas/producto.pt')
