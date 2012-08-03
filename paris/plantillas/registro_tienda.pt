@@ -18,73 +18,18 @@
 			<form class="form-horizontal" id="formulario_registro_tienda" method="post" accept-charset="UTF-8">
 		        <fieldset>
 		        	<input type="hidden" name="pagina_anterior" value="${view.pagina_anterior}" />
-		        	<div metal:use-macro="view.macros['registro_usuario']"></div>
+		        	<div metal:use-macro="view.formularios['registro_usuario']"></div>
 		          	<hr />
-			        <div class="control-group">
-		            	<label class="control-label" for="rif">RIF</label>
-		            	<div class="controls">
-		              		<input type="text" class="input-large" id="rif" name="rif" placeholder="J-12345678-9" />
-		            	</div>
-		          	</div>
-		          	<div class="control-group">
-		            	<label class="control-label" for="nombre_legal">Nombre legal</label>
-		            	<div class="controls">
-		              		<input type="text" class="input-large" id="nombre_legal" name="nombre_legal" placeholder="Inversiones Cabimas 2048 C.A." />
-		            	</div>
-		          	</div>
-		          	<div class="control-group">
-		            	<label class="control-label" for="nombre_comun">Nombre común</label>
-		            	<div class="controls">
-		              		<input type="text" class="input-large" id="nombre_comun" name="nombre_comun" placeholder="Papelería La Remolacha" />
-		            	</div>
-		          	</div>
-		          	<div class="control-group">
-			        	<label class="control-label" for="categoria">Rubro/categoría</label>
-			            <div class="controls">
-			            	<select id="grado_de_instruccion" name="categoria">
-			            		<option tal:repeat="item view.categorias" tal:attributes="value item.categoria_id">${item.nombre}</option>
-			              	</select>
-			            </div>
-			        </div>
-			        <div class="control-group">
-			        	<label class="control-label" for="telefono">Teléfono</label>
-			            <div class="controls">
-			            	<div class="input-prepend">
-			            		<span class="add-on">+58</span><input type="text" class="input-small" id="telefono" name="telefono" placeholder="555-5555555"/>
-			            	</div>
-			            </div>
-			        </div>
-			        <div class="control-group">
-		            	<label class="control-label" for="calle">Calle</label>
-		            	<div class="controls">
-		              		<input type="text" class="input-large" id="calle" name="calle" />
-		            	</div>
-		          	</div>
-		          	<div class="control-group">
-		            	<label class="control-label" for="urbanizacion">Urbanización</label>
-		            	<div class="controls">
-		              		<input type="text" class="input-large" id="urbanizacion" name="urbanizacion" />
-		            	</div>
-		          	</div>
-		          	<div class="control-group">
-			            <label class="control-label">Ubicación</label>
-			            <div class="controls">
-			            	<span id="ubicacion_visible" class="input-large uneditable-input">Seleccione en el mapa de arriba</span>
-		              		<input type="hidden" class="input-large" id="ubicacion" name="ubicacion" />
-		            	</div>
-		            </div>
+			        <div metal:use-macro="view.formularios['campo_rif']"></div>
+		          	<div metal:use-macro="view.formularios['campo_nombre_legal']"></div>
+		          	<div metal:use-macro="view.formularios['campo_nombre_comun']"></div>
+		          	<div metal:use-macro="view.formularios['campo_categoria']"></div>
+		          	<div metal:use-macro="view.formularios['campo_telefono']"></div>
+			        <div metal:use-macro="view.formularios['campo_calle']"></div>
+			        <div metal:use-macro="view.formularios['campo_urbanizacion']"></div>
+					<div metal:use-macro="view.formularios['campo_ubicacion']"></div>
 					<hr />
-					<div class="control-group">
-			            <label class="control-label" for="condiciones">
-			            	<a data-toggle="modal" href="#condiciones_servicio">Condiciones del servicio</a>
-			            </label>
-			            <div class="controls">
-			            	<label class="checkbox">
-			                	<input type="checkbox" id="condiciones" name="condiciones" value="Acepto" />
-			                	Acepto
-			              	</label>
-		            	</div>
-		            </div>
+					<div metal:use-macro="view.formularios['campo_condiciones']"></div>
 		          	<div class="form-actions">
 		          		<button class="btn btn-primary" type="submit" name="enviar" id="enviar">Enviar</button>
 		            	<button class="btn" type="submit" name="cancelar" id="cancelar">Cancelar</button>

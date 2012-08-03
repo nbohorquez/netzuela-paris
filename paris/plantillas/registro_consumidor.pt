@@ -18,51 +18,14 @@
 			<form class="form-horizontal" id="formulario_registro_consumidor" method="post" accept-charset="UTF-8">
 		        <fieldset>
 		        	<input type="hidden" name="pagina_anterior" value="${view.pagina_anterior}" />
-		        	<div metal:use-macro="view.macros['registro_usuario']"></div>
+		        	<div metal:use-macro="view.formularios['registro_usuario']"></div>
 		          	<hr />
-			        <div class="control-group">
-			            <label class="control-label">Sexo</label>
-			            <div class="controls">
-			            	<label class="radio inline" tal:repeat="item view.sexos">
-			                	<input type="radio" name="sexo" tal:condition="repeat.item.index == 0" value="${item.valor}" checked />
-			                	<input type="radio" name="sexo" tal:condition="repeat.item.index != 0" value="${item.valor}" />
-			                	<span class="help-inline">${item.valor}</span>
-			              	</label>
-		            	</div>
-		            </div>
-		            <div class="control-group">
-			        	<label class="control-label" for="grado_de_instruccion">Grado de instrucción</label>
-			            <div class="controls">
-			            	<select id="grado_de_instruccion" name="grado_de_instruccion">
-			            		<option tal:repeat="item view.grados_de_instruccion" tal:content="item.valor"></option>
-			              	</select>
-			            </div>
-			        </div>
-			        <div class="control-group">
-			            <label class="control-label">Ubicación</label>
-			            <div class="controls">
-			            	<span id="ubicacion_visible" class="input-large uneditable-input">Seleccione en el mapa de arriba</span>
-		              		<input type="hidden" class="input-large" id="ubicacion" name="ubicacion" />
-		            	</div>
-		            </div>
-			        <div class="control-group">
-			            <label class="control-label" for="fecha_de_nacimiento">Fecha de nacimiento</label>
-			            <div class="controls">
-			                <input data-datepicker="datepicker" id="fecha_de_nacimiento" name="fecha_de_nacimiento" class="small" type="text" />
-						</div>
-					</div>
+		          	<div metal:use-macro="view.formularios['campo_sexo']"></div>
+			        <div metal:use-macro="view.formularios['campo_grado_de_instruccion']"></div>
+			        <div metal:use-macro="view.formularios['campo_ubicacion']"></div>
+       			    <div metal:use-macro="view.formularios['campo_fecha_de_nacimiento']"></div>
 					<hr />
-					<div class="control-group">
-			            <label class="control-label" for="condiciones">
-			            	<a data-toggle="modal" href="#condiciones_servicio">Condiciones del servicio</a>
-			            </label>
-			            <div class="controls">
-			            	<label class="checkbox">
-			                	<input type="checkbox" id="condiciones" name="condiciones" value="Acepto" />
-			                	Acepto
-			              	</label>
-		            	</div>
-		            </div>
+					<div metal:use-macro="view.formularios['campo_condiciones']"></div>
 		          	<div class="form-actions">
 		          		<button class="btn btn-primary" type="submit" name="enviar" id="enviar">Enviar</button>
 		            	<button class="btn" type="submit" name="cancelar" id="cancelar">Cancelar</button>

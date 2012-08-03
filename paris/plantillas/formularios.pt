@@ -1,0 +1,543 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal">
+<head>
+    <title>Formularios</title>
+</head>
+<body>
+	<!-- Campo: correo electronico
+	================================================== -->
+	<metal:campo_correo_electronico define-macro="campo_correo_electronico">
+		<div class="control-group">
+        	<label class="control-label" for="correo_electronico">Correo electrónico</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" placeholder="usuario@proveedor.com" id="correo_electronico" name="correo_electronico" />
+        	</div>
+      	</div>
+   	</metal:campo_correo_electronico>
+   	
+   	<!-- Campo: contraseña
+	================================================== -->
+	<metal:campo_contrasena define-macro="campo_contrasena">
+		<div class="control-group">
+        	<label class="control-label" for="contrasena">Contraseña</label>
+        	<div class="controls">
+          		<input type="password" class="input-large" id="contrasena" name="contrasena" />
+        	</div>
+      	</div>
+   	</metal:campo_contrasena>
+   	
+   	<!-- Campo: repetir contraseña
+	================================================== -->
+	<metal:campo_repetir_contrasena define-macro="campo_repetir_contrasena">
+		<div class="control-group">
+        	<label class="control-label" for="repetir_contrasena">Repetir contraseña</label>
+        	<div class="controls">
+          		<input type="password" class="input-large" id="repetir_contrasena" name="repetir_contrasena"/>
+        	</div>
+      	</div>
+   	</metal:campo_repetir_contrasena>
+   	
+   	<!-- Campo: nombre
+	================================================== -->
+	<metal:campo_nombre define-macro="campo_nombre">
+		<div class="control-group">
+        	<label class="control-label" for="nombre">Nombre</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" id="nombre" name="nombre" />
+        	</div>
+      	</div>
+   	</metal:campo_nombre>
+   	
+   	<!-- Campo: apellido
+	================================================== -->
+	<metal:campo_apellido define-macro="campo_apellido">
+		<div class="control-group">
+        	<label class="control-label" for="apellido">Apellido</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" id="apellido" name="apellido" />
+        	</div>
+      	</div>
+   	</metal:campo_apellido>
+   	
+   	<!-- Campo: sexo
+	================================================== -->
+	<metal:campo_sexo define-macro="campo_sexo">
+		<div class="control-group">
+            <label class="control-label">Sexo</label>
+            <div class="controls">
+            	<label class="radio inline" tal:repeat="item view.sexos">
+                	<input type="radio" name="sexo" tal:condition="repeat.item.index == 0" value="${item.valor}" checked />
+                	<input type="radio" name="sexo" tal:condition="repeat.item.index != 0" value="${item.valor}" />
+                	<span class="help-inline">${item.valor}</span>
+              	</label>
+        	</div>
+        </div>
+   	</metal:campo_sexo>
+   	
+   	<!-- Campo: grado de instruccion
+	================================================== -->
+	<metal:campo_grado_de_instruccion define-macro="campo_grado_de_instruccion">
+		<div class="control-group">
+        	<label class="control-label" for="grado_de_instruccion">Grado de instrucción</label>
+            <div class="controls">
+            	<select id="grado_de_instruccion" name="grado_de_instruccion">
+            		<option tal:repeat="item view.grados_de_instruccion" tal:content="item.valor"></option>
+              	</select>
+            </div>
+        </div>
+   	</metal:campo_grado_de_instruccion>
+   	
+   	<!-- Campo: ubicacion
+	================================================== -->
+	<metal:campo_ubicacion define-macro="campo_ubicacion">
+		<div class="control-group">
+            <label class="control-label">Ubicación</label>
+            <div class="controls">
+            	<span id="ubicacion_visible" class="input-large uneditable-input">Seleccione en el mapa de arriba</span>
+          		<input type="hidden" class="input-large" id="ubicacion" name="ubicacion" />
+        	</div>
+        </div>
+   	</metal:campo_ubicacion>
+   	
+   	<!-- Campo: fecha de nacimiento
+	================================================== -->
+	<metal:campo_fecha_de_nacimiento define-macro="campo_fecha_de_nacimiento">
+		<div class="control-group">
+            <label class="control-label" for="fecha_de_nacimiento">Fecha de nacimiento</label>
+            <div class="controls">
+                <input data-datepicker="datepicker" id="fecha_de_nacimiento" name="fecha_de_nacimiento" class="small" type="text" />
+			</div>
+		</div>
+   	</metal:campo_fecha_de_nacimiento>
+   	
+   	<!-- Campo: condiciones del servicio
+	================================================== -->
+	<metal:campo_condiciones define-macro="campo_condiciones">
+		<div class="control-group">
+	        <label class="control-label" for="condiciones">
+	        	<a data-toggle="modal" href="#condiciones_servicio">Condiciones del servicio</a>
+	        </label>
+	        <div class="controls">
+	        	<label class="checkbox">
+	            	<input type="checkbox" id="condiciones" name="condiciones" value="Acepto" />
+	            	Acepto
+	          	</label>
+	    	</div>
+	    </div>
+   	</metal:campo_condiciones>
+   	
+   	<!-- Campo: RIF
+	================================================== -->
+	<metal:campo_rif define-macro="campo_rif">
+		<div class="control-group">
+        	<label class="control-label" for="rif">RIF</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" id="rif" name="rif" placeholder="J-12345678-9" />
+        	</div>
+      	</div>
+   	</metal:campo_rif>
+   	
+   	<!-- Campo: nombre legal
+	================================================== -->
+	<metal:campo_nombre_legal define-macro="campo_nombre_legal">
+		<div class="control-group">
+        	<label class="control-label" for="nombre_legal">Nombre legal</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" id="nombre_legal" name="nombre_legal" placeholder="Inversiones Cabimas 2048 C.A." />
+        	</div>
+      	</div>
+   	</metal:campo_nombre_legal>
+   	
+   	<!-- Campo: nombre comun
+	================================================== -->
+	<metal:campo_nombre_comun define-macro="campo_nombre_comun">
+		<div class="control-group">
+        	<label class="control-label" for="nombre_comun">Nombre común</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" id="nombre_comun" name="nombre_comun" placeholder="Papelería La Remolacha" />
+        	</div>
+      	</div>
+   	</metal:campo_nombre_comun>
+   	
+   	<!-- Campo: categoria
+	================================================== -->
+	<metal:campo_categoria define-macro="campo_categoria">
+		<div class="control-group">
+        	<label class="control-label" for="categoria">Rubro/categoría</label>
+            <div class="controls">
+            	<select id="grado_de_instruccion" name="categoria">
+            		<option tal:repeat="item view.categorias" tal:attributes="value item.categoria_id">${item.nombre}</option>
+              	</select>
+            </div>
+        </div>
+   	</metal:campo_categoria>
+   	
+   	<!-- Campo: telefono
+	================================================== -->
+	<metal:campo_telefono define-macro="campo_telefono">
+		<div class="control-group">
+        	<label class="control-label" for="telefono">Teléfono</label>
+            <div class="controls">
+            	<div class="input-prepend">
+            		<span class="add-on">+58</span><input type="text" class="input-small" id="telefono" name="telefono" placeholder="555-5555555"/>
+            	</div>
+            </div>
+        </div>
+   	</metal:campo_telefono>
+   	
+  	<!-- Campo: calle
+	================================================== -->
+	<metal:campo_calle define-macro="campo_calle">
+		<div class="control-group">
+        	<label class="control-label" for="calle">Calle</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" id="calle" name="calle" />
+        	</div>
+      	</div>
+   	</metal:campo_calle>
+   	
+   	<!-- Campo: urbanizacion
+	================================================== -->
+	<metal:campo_urbanizacion define-macro="campo_urbanizacion">
+		<div class="control-group">
+        	<label class="control-label" for="urbanizacion">Urbanización</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" id="urbanizacion" name="urbanizacion" />
+        	</div>
+      	</div>
+   	</metal:campo_urbanizacion>
+   	
+   	<!-- Campo: edificio/c.c.
+	================================================== -->
+	<metal:campo_edificio define-macro="campo_edificio">
+		<div class="control-group">
+        	<label class="control-label" for="edificio">Edificio/C.C.</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" id="edificio" name="edificio" />
+        	</div>
+	   	</div>
+   	</metal:campo_edificio>
+   	
+   	<!-- Campo: piso
+	================================================== -->
+	<metal:campo_piso define-macro="campo_piso">
+		<div class="control-group">
+        	<label class="control-label" for="piso">Piso</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" id="piso" name="piso" />
+        	</div>
+      	</div>
+   	</metal:campo_piso>
+   	
+   	<!-- Campo: apartamento
+	================================================== -->
+	<metal:campo_apartamento define-macro="campo_apartamento">
+		<div class="control-group">
+        	<label class="control-label" for="apartamento">Apartamento</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" id="apartamento" name="apartamento" />
+        	</div>
+      	</div>
+   	</metal:campo_apartamento>
+   	
+   	<!-- Campo: local
+	================================================== -->
+	<metal:campo_local define-macro="campo_local">
+		<div class="control-group">
+        	<label class="control-label" for="local">Local</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" id="local" name="local" />
+        	</div>
+      	</div>
+   	</metal:campo_local>
+   	
+	<!-- Campo: casa
+	================================================== -->
+	<metal:campo_casa define-macro="campo_casa">
+		<div class="control-group">
+        	<label class="control-label" for="casa">Casa</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" id="casa" name="casa" />
+        	</div>
+      	</div>
+   	</metal:campo_casa>
+   	
+   	<!-- Campo: categoria
+	================================================== -->
+	<metal:campo_pais define-macro="campo_pais">
+		<div class="control-group">
+        	<label class="control-label" for="pais">País de orígen</label>
+            <div class="controls">
+            	<select id="grado_de_instruccion" name="pais">
+            		<option tal:repeat="item view.paises" tal:attributes="value item.territorio_id">${item.nombre}</option>
+              	</select>
+            </div>
+        </div>
+   	</metal:campo_pais>
+   	
+   	<!-- Campo: fabricante
+	================================================== -->
+	<metal:campo_fabricante define-macro="campo_fabricante">
+		<div class="control-group">
+        	<label class="control-label" for="fabricante">Fabricante</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" id="fabricante" name="fabricante" />
+        	</div>
+      	</div>
+   	</metal:campo_fabricante>
+   	
+   	<!-- Campo: modelo
+	================================================== -->
+	<metal:campo_modelo define-macro="campo_modelo">
+		<div class="control-group">
+        	<label class="control-label" for="modelo">Modelo</label>
+        	<div class="controls">
+          		<input type="text" class="input-large" id="modelo" name="modelo" />
+        	</div>
+      	</div>
+   	</metal:campo_modelo>
+   	
+   	<!-- Campo: fecha de nacimiento
+	================================================== -->
+	<metal:campo_debut define-macro="campo_debut">
+		<div class="control-group">
+            <label class="control-label" for="debut">Debut en el mercado</label>
+            <div class="controls">
+                <input data-datepicker="datepicker" id="debut" name="debut" class="small" type="text" />
+			</div>
+		</div>
+   	</metal:campo_debut>
+   	
+   	<!-- Campo: largo
+	================================================== -->
+	<metal:campo_largo define-macro="campo_largo">
+		<div class="control-group">
+        	<label class="control-label" for="largo">Largo</label>
+        	<div class="controls">
+        		<div class="input-append">
+	          		<input type="text" class="input-small" id="largo" name="largo" /><span class="add-on">m</span>
+          		</div>
+        	</div>
+      	</div>
+   	</metal:campo_largo>
+   	
+   	<!-- Campo: ancho
+	================================================== -->
+	<metal:campo_ancho define-macro="campo_ancho">
+		<div class="control-group">
+        	<label class="control-label" for="ancho">Ancho</label>
+        	<div class="controls">
+        		<div class="input-append">
+	          		<input type="text" class="input-small" id="ancho" name="ancho" /><span class="add-on">m</span>
+          		</div>
+        	</div>
+      	</div>
+   	</metal:campo_ancho>
+   				      	
+	<!-- Campo: alto
+	================================================== -->
+	<metal:campo_alto define-macro="campo_alto">
+		<div class="control-group">
+        	<label class="control-label" for="alto">Alto</label>
+        	<div class="controls">
+        		<div class="input-append">
+	          		<input type="text" class="input-small" id="alto" name="alto" /><span class="add-on">m</span>
+          		</div>
+        	</div>
+      	</div>
+   	</metal:campo_alto>
+   	
+	<!-- Campo: peso
+	================================================== -->
+	<metal:campo_peso define-macro="campo_peso">
+		<div class="control-group">
+        	<label class="control-label" for="peso">Peso</label>
+        	<div class="controls">
+        		<div class="input-append">
+	          		<input type="text" class="input-small" id="peso" name="peso" /><span class="add-on">kg</span>
+	          	</div>
+        	</div>
+      	</div>
+   	</metal:campo_peso>
+   	
+   	<!-- Campo: modelo
+	================================================== -->
+	<metal:campo_descripcion define-macro="campo_descripcion">
+		<div class="control-group">
+			<label class="control-label" for="descripcion">Descripción</label>
+        	<div class="controls">
+          		<textarea class="input-xlarge" id="descripcion" rows="10"></textarea>
+        	</div>
+      	</div>
+   	</metal:campo_descripcion>
+   	
+   	<!-- Registro de usuario
+	================================================== -->
+	<metal:registro define-macro="registro_usuario">
+		<div metal:use-macro="view.formularios['campo_correo_electronico']"></div>
+		<div metal:use-macro="view.formularios['campo_contrasena']"></div>
+		<div metal:use-macro="view.formularios['campo_repetir_contrasena']"></div>
+      	<div metal:use-macro="view.formularios['campo_nombre']"></div>
+      	<div metal:use-macro="view.formularios['campo_apellido']"></div>
+	</metal:registro>
+	
+	<!-- Editar descripcion
+	================================================== -->
+	<metal:editar_descripcion define-macro="editar_descripcion">
+		<div class="boton-editar-contenido">
+			<a data-toggle="modal" href="#editar_descripcion">
+				<i class="icon-edit"></i>
+				Editar
+			</a>
+		</div>
+		<div id="editar_descripcion" class="modal hide fade">
+			<div class="modal-header">
+	        	<button type="button" class="close" data-dismiss="modal">&times;</button>
+	          	<h3>Edición</h3>
+	        </div>
+	        <div class="modal-body">
+	        	<form class="form-horizontal" id="formulario_editar_descripcion" method="post" accept-charset="UTF-8">
+					<fieldset>
+						<div metal:use-macro="view.formularios['campo_descripcion']"></div>
+			          	<div class="form-actions">
+			          		<button class="btn btn-primary" type="submit" name="guardar" id="guardar">Guardar cambios</button>
+			            	<a class="btn" href="#" data-dismiss="modal">Cancelar</a>
+			          	</div>
+			        </fieldset>
+				</form>
+	        </div>
+		</div>
+	</metal:editar_descripcion>
+	
+	<!-- Editar direccion
+	================================================== -->
+	<metal:editar_direccion define-macro="editar_direccion">
+		<div class="boton-editar-contenido">
+			<a data-toggle="modal" href="#editar_direccion">
+				<i class="icon-edit"></i>
+				Editar
+			</a>
+		</div>
+		<div id="editar_direccion" class="modal hide fade">
+			<div class="modal-header">
+	        	<button type="button" class="close" data-dismiss="modal">&times;</button>
+	          	<h3>Edición</h3>
+	        </div>
+	        <div class="modal-body">
+	        	<form class="form-horizontal" id="formulario_editar_direccion" method="post" accept-charset="UTF-8">
+					<fieldset>
+	        			<div metal:use-macro="view.formularios['campo_edificio']"></div>
+				      	<div metal:use-macro="view.formularios['campo_piso']"></div>
+				      	<div metal:use-macro="view.formularios['campo_apartamento']"></div>
+				      	<div metal:use-macro="view.formularios['campo_local']"></div>
+				      	<div metal:use-macro="view.formularios['campo_casa']"></div>
+				      	<div metal:use-macro="view.formularios['campo_calle']"></div>
+				      	<div metal:use-macro="view.formularios['campo_urbanizacion']"></div>
+			          	<div class="form-actions">
+			          		<button class="btn btn-primary" type="submit" name="guardar" id="guardar">Guardar cambios</button>
+			            	<a class="btn" href="#" data-dismiss="modal">Cancelar</a>
+			          	</div>
+			        </fieldset>
+				</form>
+	        </div>
+		</div>
+	</metal:editar_direccion>
+	
+	<!-- Editar horario
+	================================================== -->
+	<metal:editar_horario define-macro="editar_horario">
+		<div class="boton-editar-contenido">
+			<a data-toggle="modal" href="#editar_horario">
+				<i class="icon-edit"></i>
+				Editar
+			</a>
+		</div>
+		<div id="editar_horario" class="modal hide fade">
+			<div class="modal-header">
+	        	<button type="button" class="close" data-dismiss="modal">&times;</button>
+	          	<h3>Edición</h3>
+	        </div>
+	        <div class="modal-body">
+	        	<form class="form-horizontal" id="formulario_editar_horario" method="post" accept-charset="UTF-8">
+					<fieldset>
+			          	<div class="form-actions">
+			          		<button class="btn btn-primary" type="submit" name="guardar" id="guardar">Guardar cambios</button>
+			            	<a class="btn" href="#" data-dismiss="modal">Cancelar</a>
+			          	</div>
+			        </fieldset>
+				</form>
+	        </div>
+		</div>
+	</metal:editar_horario>
+	
+	<!-- Editar producto
+	================================================== -->
+	<metal:editar_producto define-macro="editar_producto">
+		<div class="boton-editar-contenido">
+			<a data-toggle="modal" href="#editar_producto">
+				<i class="icon-edit"></i>
+				Editar
+			</a>
+		</div>
+		<div id="editar_producto" class="modal hide fade">
+			<div class="modal-header">
+	        	<button type="button" class="close" data-dismiss="modal">&times;</button>
+	          	<h3>Edición</h3>
+	        </div>
+	        <div class="modal-body">
+	        	<form class="form-horizontal" id="formulario_editar_producto" method="post" accept-charset="UTF-8">
+	        		<fieldset>
+						<div metal:use-macro="view.formularios['campo_fabricante']"></div>
+				      	<div metal:use-macro="view.formularios['campo_modelo']"></div>
+				      	<div metal:use-macro="view.formularios['campo_nombre']"></div>
+				      	<div metal:use-macro="view.formularios['campo_categoria']"></div>
+				      	<div metal:use-macro="view.formularios['campo_debut']"></div>
+				      	<div metal:use-macro="view.formularios['campo_largo']"></div>
+				      	<div metal:use-macro="view.formularios['campo_ancho']"></div>
+				      	<div metal:use-macro="view.formularios['campo_alto']"></div>
+				      	<div metal:use-macro="view.formularios['campo_peso']"></div>				      	
+				      	<div metal:use-macro="view.formularios['campo_pais']"></div>
+			          	<div class="form-actions">
+			          		<button class="btn btn-primary" type="submit" name="guardar" id="guardar">Guardar cambios</button>
+			            	<a class="btn" href="#" data-dismiss="modal">Cancelar</a>
+			          	</div>
+			        </fieldset>
+				</form>
+	        </div>
+		</div>
+	</metal:editar_producto>
+	
+	<!-- Editar usuario
+	================================================== -->
+	<metal:editar_usuario define-macro="editar_usuario">
+		<div class="boton-editar-contenido">
+			<a data-toggle="modal" href="#editar_usuario">
+				<i class="icon-edit"></i>
+				Editar
+			</a>
+		</div>
+		<div id="editar_usuario" class="modal hide fade">
+			<div class="modal-header">
+	        	<button type="button" class="close" data-dismiss="modal">&times;</button>
+	          	<h3>Edición</h3>
+	        </div>
+	        <div class="modal-body">
+	        	<form class="form-horizontal" id="formulario_editar_usuario" method="post" accept-charset="UTF-8">
+					<fieldset>
+						<div metal:use-macro="view.formularios['campo_nombre']"></div>
+      					<div metal:use-macro="view.formularios['campo_apellido']"></div>
+      					<div metal:use-macro="view.formularios['campo_ubicacion']"></div>
+      					<div metal:use-macro="view.formularios['campo_grado_de_instruccion']"></div>
+			          	<div class="form-actions">
+			          		<button class="btn btn-primary" type="submit" name="guardar" id="guardar">Guardar cambios</button>
+			            	<a class="btn" href="#" data-dismiss="modal">Cancelar</a>
+			          	</div>
+			        </fieldset>
+				</form>
+	        </div>
+		</div>
+	</metal:editar_usuario>
+</body>
+</html>

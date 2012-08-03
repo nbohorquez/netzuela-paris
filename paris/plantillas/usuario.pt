@@ -20,7 +20,7 @@
 				<div class="span9">
 					<h1>${usuario.nombre} ${usuario.apellido}</h1>
 					<div class="row-fluid">
-						<div class="span5">
+						<div class="span5 editable">
 							<table class="table" tal:define="consumidor view.consumidor_asociado">
 								<thead>
 					    			<tr>
@@ -36,7 +36,6 @@
 						    					Ubicación<br />
 						    					Sexo<br />
 						    					Fecha de nacimiento<br />
-						    					Grupo de edad<br />
 						    					Grado de instrucción<br />
 						    				</p>
 						    			</td>
@@ -48,7 +47,6 @@
 					  							<span tal:condition="consumidor">
 													${consumidor.sexo}<br />
 					  								${consumidor.fecha_de_nacimiento}<br />
-					  								${consumidor.grupo_de_edad}<br />
 					  								${consumidor.grado_de_instruccion}					  								
 					  							</span>
 					  						</p>
@@ -56,6 +54,7 @@
 					  				</tr>
 					  			</tbody>
 							</table>
+							<div metal:use-macro="view.formularios['editar_usuario']"></div>
 						</div>
 						<div class="span7"></div>
 					</div>

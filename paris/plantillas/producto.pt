@@ -60,7 +60,7 @@
 					  				</tr>
 					  			</tbody>
 							</table>
-							<div metal:use-macro="view.macros['editar_producto']"></div>
+							<div metal:use-macro="view.formularios['editar_producto']"></div>
 						</div>
 						<div class="span7"></div>
 					</div>
@@ -95,7 +95,7 @@
 				  				</tr>
 				  			</tbody>
 						</table>
-						<div metal:use-macro="view.macros['editar_descripcion']"></div>
+						<div metal:use-macro="view.formularios['editar_descripcion']"></div>
 					</div>
 				</div>
 				<div class="row-fluid">
@@ -116,6 +116,7 @@
 		</div>
   	</div>
   	<div metal:fill-slot="scripts_extra">
+  		<script type="text/javascript" src="/estatico/js/bootstrap-datepicker.js"></script>
   		<script type="text/javascript" src="/estatico/js/bootstrap-tooltip.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-carousel.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-popover.js"></script>

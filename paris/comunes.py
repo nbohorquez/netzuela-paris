@@ -57,6 +57,10 @@ class Comunes(object):
         return DBSession.query(categoria).filter_by(nivel = 1).all()
     
     @reify
+    def paises(self):
+        return DBSession.query(territorio).filter_by(nivel = 1).all()
+    
+    @reify
     def grados_de_instruccion(self):
         return DBSession.query(grado_de_instruccion).order_by(asc(grado_de_instruccion.orden)).all()
     

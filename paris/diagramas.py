@@ -21,3 +21,8 @@ class Diagramas(object):
     def macros(self):
         renderer = get_renderer("plantillas/macros.pt")
         return renderer.implementation().macros
+    
+    @reify
+    def formularios(self):
+        renderer = get_renderer("plantillas/formularios.pt")
+        return renderer.implementation().macros

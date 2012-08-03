@@ -18,26 +18,10 @@
 			<form class="form-horizontal" id="formulario_registro" method="post" accept-charset="UTF-8">
 		        <fieldset>
 		        	<input type="hidden" name="pagina_anterior" value="${view.pagina_anterior}" />
-		        	<div metal:use-macro="view.macros['registro_usuario']"></div>
-		        	<div class="control-group">
-			            <label class="control-label">Ubicación</label>
-			            <div class="controls">
-			            	<span id="ubicacion_visible" class="input-large uneditable-input">Seleccione en el mapa de arriba</span>
-		              		<input type="hidden" class="input-large" id="ubicacion" name="ubicacion" />
-		            	</div>
-		            </div>
+		        	<div metal:use-macro="view.formularios['registro_usuario']"></div>
+		        	<div metal:use-macro="view.formularios['campo_ubicacion']"></div>
 		          	<hr />
-			        <div class="control-group">
-			            <label class="control-label" for="condiciones">
-			            	<a data-toggle="modal" href="#condiciones_servicio">Condiciones del servicio</a>
-			            </label>
-			            <div class="controls">
-			            	<label class="checkbox">
-			                	<input type="checkbox" id="condiciones" name="condiciones" value="Acepto" />
-			                	Acepto
-			              	</label>
-		            	</div>
-		            </div>
+		          	<div metal:use-macro="view.formularios['campo_condiciones']"></div>
 		          	<div class="form-actions">
 		          		<button class="btn btn-primary" type="submit" name="enviar" id="enviar">Enviar</button>
 		            	<button class="btn" type="submit" name="cancelar" id="cancelar">Cancelar</button>
