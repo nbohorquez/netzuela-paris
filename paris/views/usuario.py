@@ -126,39 +126,18 @@ class UsuarioView(Diagramas, Comunes):
     @reify
     def fotos_grandes(self):
         return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'grandes')
-        
-        """
-        var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'grandes')
-        resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
-        return resultado
-        """
     
     @reify
     def fotos_medianas(self):
         return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'medianas')
-        """
-        var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'medianas')
-        resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
-        return resultado
-        """
-    
+
     @reify
     def fotos_pequenas(self):
         return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'pequenas')
-        """
-        var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'pequenas')
-        resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
-        return resultado
-        """
     
     @reify
     def fotos_miniaturas(self):
         return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'miniaturas')
-        """
-        var_fotos = self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'miniaturas')
-        resultado = [{'ruta_de_foto': ''}] if (var_fotos is None) else var_fotos
-        return resultado
-        """
 
     @view_config(route_name='usuario', renderer='../plantillas/usuario.pt')
     def usuario_view(self):

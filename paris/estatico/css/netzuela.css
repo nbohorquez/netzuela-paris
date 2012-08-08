@@ -28,3 +28,7 @@ div.boton-editar-contenido
 	right: 0; 
 	bottom: 0;
 }
+div.boton-editar-breadcum
+{
+	display: none;
+}

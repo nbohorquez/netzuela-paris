@@ -39,6 +39,10 @@ class PatrocinanteView(Diagramas, Comunes):
     def peticion_id(self):
         return self.patrocinante_id
     
+    @reify
+    def cliente_padre(self):
+        return self.obtener_cliente_padre(self.tipo_de_peticion, self.patrocinante_id)
+    
     @view_config(route_name='patrocinante', renderer='../plantillas/patrocinante.pt')
     def patrocinante_view(self):
         var_patrocinante = self.obtener_patrocinante(self.patrocinante_id)

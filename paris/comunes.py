@@ -54,7 +54,7 @@ class Comunes(object):
     
     @reify
     def categorias(self):
-        return DBSession.query(categoria).filter_by(nivel = 1).all()
+        return DBSession.query(categoria).all()
     
     @reify
     def paises(self):

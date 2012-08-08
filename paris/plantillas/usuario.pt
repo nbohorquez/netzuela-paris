@@ -20,8 +20,8 @@
 				<div class="span9">
 					<h1>${usuario.nombre} ${usuario.apellido}</h1>
 					<div class="row-fluid">
-						<div class="span5 editable">
-							<table class="table" tal:define="consumidor view.consumidor_asociado">
+						<div class="span5 editable" tal:define="consumidor view.consumidor_asociado; territorio view.obtener_territorio(usuario.ubicacion)">
+							<table class="table">
 								<thead>
 					    			<tr>
 					      				<th></th>
@@ -43,7 +43,9 @@
 					  						<p>
 					  							${usuario.nombre}<br />
 					  							${usuario.apellido}<br />
-					  							${usuario.ubicacion}<br />
+					  							<span tal:condition="territorio">
+					  								${territorio.nombre}<br />
+					  							</span>
 					  							<span tal:condition="consumidor">
 													${consumidor.sexo}<br />
 					  								${consumidor.fecha_de_nacimiento}<br />
@@ -54,7 +56,8 @@
 					  				</tr>
 					  			</tbody>
 							</table>
-							<div metal:use-macro="view.formularios['editar_usuario']"></div>
+							<div metal:use-macro="view.formularios['editar_usuario']"
+								tal:define="campo_nombre usuario.nombre; campo_apellido usuario.apellido; campo_ubicacion territorio; campo_grado_de_instruccion python:consumidor.grado_de_instruccion if consumidor else None; campo_sexo python:consumidor.sexo if consumidor else None"></div>
 						</div>
 						<div class="span7"></div>
 					</div>
@@ -63,6 +66,7 @@
 		</div>
 		<div id="meta_datos">
 			<input type="hidden" name="usuario_id" value="${usuario.usuario_id}" />
+			<input type="hidden" name="usuario_ubicacion" value="${usuario.ubicacion}" />
 		</div>
 		
 		<!-- Contenido
@@ -95,5 +99,6 @@
 		<script type="text/javascript" src="/estatico/js/bootstrap-popover.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-modal.js"></script>
 		<script type="text/javascript" src="/estatico/js/noticias.js"></script>
+		<script type="text/javascript" src="/estatico/js/usuario.js"></script>
 	</div>
 </div>

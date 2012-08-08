@@ -165,6 +165,9 @@
 		  	</li>
 		  	<li tal:condition="pagina == 'Producto'" class="active">${producto.fabricante} ${producto.nombre}</li>
 		  	<li tal:condition="pagina == 'Tienda'" class="active">${cliente.nombre_comun}</li>
+		  	<li class="pull-right">
+		  		<div metal:define-slot="ultima_rebanada"></div>
+		  	</li>
 		</ul>
 	</metal:ruta_de_categoria>
 	

@@ -68,8 +68,10 @@ $(document).ready(function () {
 	$('.editable').hover(function () {
 		//$(this).css('background-color', '#f5f5f5');
         $(this).find('.boton-editar-contenido').show();
+        $(this).find('.boton-editar-breadcum').show();
     }, function () {
     	//$(this).css('background-color', 'transparent');
         $(this).find('.boton-editar-contenido').hide();
+        $(this).find('.boton-editar-breadcum').hide();
     });
 });
