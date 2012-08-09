@@ -15,7 +15,8 @@ from paris.models.spuria import (
     DBSession, 
     patrocinante, 
     rastreable, 
-    registro, 
+    registro,
+    Spuria,
     tienda, 
     usuario
 )
@@ -71,6 +72,12 @@ class UsuarioView(Diagramas, Comunes):
     def consumidor_asociado(self):
         return DBSession.query(consumidor).filter_by(usuario_p = self.usuario_id).first()
     
+    @reify
+    def fecha_de_nacimiento(self):
+        return self.formatear_fecha_para_paris(str(self.consumidor_asociado.fecha_de_nacimiento)) \
+        if self.consumidor_asociado is not None \
+        else None
+        
     @reify
     def clientes_asociados(self):
         resultado = []
@@ -140,9 +147,17 @@ class UsuarioView(Diagramas, Comunes):
         return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'miniaturas')
 
     @view_config(route_name='usuario', renderer='../plantillas/usuario.pt')
+    @view_config(route_name='editar_usuario', renderer='../plantillas/usuario.pt')
     def usuario_view(self):
+        aviso = None
+        if 'guardar' in self.peticion.params:
+            resultado = Spuria.editar_usuario(dict(self.peticion.params), self.usuario_id)
+            aviso = { 'error': 'Error', 'mensaje': resultado['error'] } \
+            if (resultado['error'] is not None) \
+            else { 'error': 'OK', 'mensaje': 'Datos actualizados correctamente' }
+                
         var_usuario = self.obtener_usuario('id', self.usuario_id)
         resultado = HTTPNotFound(MENSAJE_DE_ERROR) \
         if (var_usuario is None) \
-        else {'pagina': 'Usuario', 'usuario': var_usuario, 'autentificado': authenticated_userid(self.peticion)}
+        else {'pagina': 'Usuario', 'usuario': var_usuario, 'autentificado': authenticated_userid(self.peticion), 'aviso': aviso}
         return resultado

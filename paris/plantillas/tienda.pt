@@ -1,5 +1,8 @@
 <!DOCTYPE HTML>
 <div metal:use-macro="view.diagrama_global">
+	<div metal:fill-slot="extra_meta_datos">
+		<input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
+	</div>
 	<div metal:fill-slot="contenido" tal:define="cliente view.cliente_padre">
 		
 		<!-- Encabezado
@@ -97,9 +100,6 @@
 		  			</div>
 				</div>
 			</div>
-		</div>
-		<div id="meta_datos">
-			<input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
 		</div>
 		
 		<!-- Contenido

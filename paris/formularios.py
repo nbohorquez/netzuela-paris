@@ -134,8 +134,15 @@ class NullableString(validators.FancyValidator):
     
     def validate_python(self, valor, estado):
         self.validador.to_python(valor)
-        
-class FormularioConsumidor(formencode.Schema):
+
+class FormularioAgregarConsumidor(formencode.Schema):
+    allow_extra_fields = True
+    filter_extra_fields = True
+    grado_de_instruccion = formencode.All(validators.String(not_empty=True), GradoDeInstruccionValido())
+    sexo = formencode.All(validators.String(not_empty=True), SexoValido())
+    fecha_de_nacimiento = EdadValida()
+    
+class FormularioCrearConsumidor(formencode.Schema):
     allow_extra_fields = True
     filter_extra_fields = True
     correo_electronico = formencode.All(validators.Email(resolve_domain=True), UsuarioUnico())
@@ -149,7 +156,7 @@ class FormularioConsumidor(formencode.Schema):
     fecha_de_nacimiento = EdadValida()
     chained_validators = [validators.FieldsMatch('contrasena', 'repetir_contrasena')]
     
-class FormularioUsuario(formencode.Schema):
+class FormularioCrearUsuario(formencode.Schema):
     allow_extra_fields = True
     filter_extra_fields = True
     correo_electronico = formencode.All(validators.Email(resolve_domain=True), UsuarioUnico())
@@ -160,7 +167,7 @@ class FormularioUsuario(formencode.Schema):
     ubicacion = UbicacionExistente()
     chained_validators = [validators.FieldsMatch('contrasena', 'repetir_contrasena')]
     
-class FormularioTienda(formencode.Schema):
+class FormularioCrearTienda(formencode.Schema):
     allow_extra_fields = True
     filter_extra_fields = True
     rif = formencode.All(validators.String(not_empty=True), RifValido())
@@ -180,3 +187,17 @@ class FormularioTienda(formencode.Schema):
     twitter = NullableString()
     correo_electronico_publico = NullableString()
     ubicacion = UbicacionExistente()
+    
+class FormularioEditarUsuario(formencode.Schema):
+    allow_extra_fields = True
+    filter_extra_fields = True
+    nombre = validators.String(not_empty=True)
+    apellido = validators.String(not_empty=True)
+    ubicacion = UbicacionExistente()
+    
+class FormularioEditarConsumidor(formencode.Schema):
+    allow_extra_fields = True
+    filter_extra_fields = True
+    grado_de_instruccion = GradoDeInstruccionValido(if_missing=None)
+    sexo = SexoValido(if_missing=None)
+    fecha_de_nacimiento = EdadValida(if_missing=None)

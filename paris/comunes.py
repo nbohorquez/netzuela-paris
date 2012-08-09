@@ -47,6 +47,7 @@ from paris.models.spuria import (
 from pyramid.decorator import reify
 from sqlalchemy import and_, or_, case, func
 from sqlalchemy.sql import asc
+from time import strftime, strptime
 
 class Comunes(object):
     def __init__(self):
@@ -108,6 +109,10 @@ class Comunes(object):
     def dias(self):
         return DBSession.query(dia).order_by(asc(dia.orden)).all()
     
+    def formatear_fecha_para_paris(self, fecha):
+        fecha_neutra = strptime(fecha, '%Y-%m-%d')
+        return strftime('%d/%m/%Y', fecha_neutra)
+    
     def formatear_comentarios(self, comentarios):
         resultado = []
         for comentario in comentarios:
@@ -127,12 +132,6 @@ class Comunes(object):
             
             resultado.append(tmp)
         return resultado
-    
-    def depurar_columnas_registro(self, diccionario):
-        return dict((entrada[0].replace('_', ' '), entrada[1]) for entrada in diccionario.items() if entrada[0] not in Spuria.columnas_no_visibles)
-    
-    def pulir_columnas_registro(self, diccionario):
-        return dict((entrada[0].capitalize(), entrada[1]) for entrada in diccionario.items())
 
     def formatear_entrada_registro(self, reg, peticion, demandante):
         def obtener_objeto(tipo, tipo_id, muestro_href):
@@ -330,6 +329,10 @@ class Comunes(object):
             valor['href'] = '#' if muestro_href else None
             valor['diccionario'] = {}
             return valor
+        def depurar_columnas_registro(diccionario):
+            return dict((entrada[0].replace('_', ' '), entrada[1]) for entrada in diccionario.items() if entrada[0] not in Spuria.columnas_no_visibles)
+        def pulir_columnas_registro(diccionario):
+            return dict((entrada[0].capitalize(), entrada[1]) for entrada in diccionario.items())
         
         por_defecto = {}
         por_defecto['nombre'] = por_defecto['titulo'] = ''
@@ -360,7 +363,7 @@ class Comunes(object):
         columnas = reg.columna.split('<|>') if (reg.columna is not None) else ''
         valores = reg.valor.split('<|>') if (reg.valor is not None) else ''
         diccionario = dict(zip(columnas, valores)) if (len(columnas) == len(valores)) else {'Error': 'Numero de columnas y valores no concuerda'}
-        diccionario_depurado = self.depurar_columnas_registro(diccionario)
+        diccionario_depurado = depurar_columnas_registro(diccionario)
         entrada['parametros'] = diccionario_depurado if (entrada['accion'] == 'actualizo') else {}
 
         fecha = str(reg.fecha_hora)
@@ -548,29 +551,12 @@ class Comunes(object):
     
     def obtener_tienda(self, tie_id):
         return DBSession.query(tienda).filter_by(tienda_id = tie_id).first()
-        """
-        tmp = DBSession.query(tienda).filter_by(tienda_id = tie_id).first()
-        return tmp if (tmp is not None) else {}
-        """
-    
+
     def obtener_patrocinante(self, pat_id):
         return DBSession.query(patrocinante).filter_by(patrocinante_id = pat_id).first()
-        """
-        tmp = DBSession.query(patrocinante).filter_by(patrocinante_id = pat_id).first()
-        return tmp if (tmp is not None) else {}
-        """
     
     def obtener_producto(self, pro_id):
         return DBSession.query(producto).filter_by(producto_id = pro_id).first()
-        """
-        tmp = DBSession.query(producto).filter_by(producto_id = pro_id).first()
-        return tmp if (tmp is not None) \
-        else { 
-            'codigo': '-1', 
-            'nombre': '', 
-            'categoria': '-1' 
-        }
-        """
 
     def obtener_usuario(self, objeto, objeto_id):
         def usu_id(_id):
@@ -586,18 +572,6 @@ class Comunes(object):
         }[objeto](objeto_id)
         
         return tmp
-        """        
-        return tmp if (tmp is not None) \
-        else {
-            'rastreable_p': -1,
-            'describible_p': -1,
-            'usuario_id': usu_id,
-            'nombre': '',
-            'apellido': '',
-            'estatus': 'Eliminado',
-            'ubicacion': '-1'
-        }
-        """
 
     def sql_foto(self, objeto, objeto_id, tamano):
         def foto_tienda():
@@ -649,13 +623,6 @@ class Comunes(object):
             
     def obtener_foto(self, objeto, objeto_id, tamano):
         return self.sql_foto(objeto, objeto_id, tamano).first()
-        """
-        por_defecto = {}
-        por_defecto['ruta_de_foto'] = ''
-        por_defecto['foto_id'] = por_defecto['describible'] = 0
-        tmp = self.sql_foto(objeto, objeto_id, tamano).first()
-        return tmp if (tmp is not None) else por_defecto
-        """
     
     def obtener_fotos(self, objeto, objeto_id, tamano):
         return self.sql_foto(objeto, objeto_id, tamano).all()

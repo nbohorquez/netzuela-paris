@@ -1,9 +1,23 @@
 <!DOCTYPE HTML>
 <div metal:use-macro="view.diagrama_global">
+	<div metal:fill-slot="extra_meta_datos">
+		<input type="hidden" name="usuario_id" value="${usuario.usuario_id}" />
+		<input type="hidden" name="usuario_ubicacion" value="${usuario.ubicacion}" />
+	</div>
 	<div metal:fill-slot="contenido">
 		
 		<!-- Encabezado
 		================================================== -->	
+		<tal:block tal:condition="aviso" tal:switch="aviso.error">
+			<div tal:case="'Error'" class="alert alert-error">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<strong>Error</strong> <span tal:content="aviso.mensaje"></span>
+			</div>
+			<div tal:case="'OK'" class="alert alert-success">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<strong>OK</strong> <span tal:content="aviso.mensaje"></span>
+			</div>
+		</tal:block>
 		<div class="page-header">
 			<div class="row-fluid">
 				<div class="span3">
@@ -48,7 +62,7 @@
 					  							</span>
 					  							<span tal:condition="consumidor">
 													${consumidor.sexo}<br />
-					  								${consumidor.fecha_de_nacimiento}<br />
+					  								<span tal:content="view.fecha_de_nacimiento"></span><br />
 					  								${consumidor.grado_de_instruccion}					  								
 					  							</span>
 					  						</p>
@@ -57,16 +71,12 @@
 					  			</tbody>
 							</table>
 							<div metal:use-macro="view.formularios['editar_usuario']"
-								tal:define="campo_nombre usuario.nombre; campo_apellido usuario.apellido; campo_ubicacion territorio; campo_grado_de_instruccion python:consumidor.grado_de_instruccion if consumidor else None; campo_sexo python:consumidor.sexo if consumidor else None"></div>
+								tal:define="campo_nombre usuario.nombre; campo_apellido usuario.apellido; campo_ubicacion territorio; campo_grado_de_instruccion python:consumidor.grado_de_instruccion if consumidor else None; campo_sexo python:consumidor.sexo if consumidor else None; campo_fecha_de_nacimiento python:view.fecha_de_nacimiento if consumidor else None; consumidor_asociado consumidor"></div>
 						</div>
 						<div class="span7"></div>
 					</div>
 				</div>
 			</div>
-		</div>
-		<div id="meta_datos">
-			<input type="hidden" name="usuario_id" value="${usuario.usuario_id}" />
-			<input type="hidden" name="usuario_ubicacion" value="${usuario.ubicacion}" />
 		</div>
 		
 		<!-- Contenido
@@ -94,9 +104,11 @@
       	</div>
 	</div>
 	<div metal:fill-slot="scripts_extra">
+		<script type="text/javascript" src="/estatico/js/bootstrap-datepicker.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-tooltip.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-carousel.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-popover.js"></script>
+		<script type="text/javascript" src="/estatico/js/bootstrap-alert.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-modal.js"></script>
 		<script type="text/javascript" src="/estatico/js/noticias.js"></script>
 		<script type="text/javascript" src="/estatico/js/usuario.js"></script>

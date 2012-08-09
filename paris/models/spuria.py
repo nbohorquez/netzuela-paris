@@ -13,6 +13,7 @@ from sqlalchemy.sql import select, func, bindparam
 from time import strftime, strptime
 from zope.sqlalchemy import ZopeTransactionExtension
 import bcrypt
+import transaction
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 
@@ -159,6 +160,35 @@ class Spuria(object):
         'fecha_inicio'
     ]
     
+    _FormularioAgregarConsumidor = None
+    _FormularioCrearUsuario = None
+    _FormularioCrearTienda = None
+    _FormularioCrearConsumidor = None
+    _FormularioEditarUsuario = None
+    _FormularioEditarConsumidor = None
+    
+    @staticmethod
+    def formatear_fecha_para_mysql(fecha):
+        fecha_neutra = strptime(fecha, '%d/%m/%Y')
+        return strftime('%Y-%m-%d', fecha_neutra)
+    
+    @staticmethod
+    def inicializar(motor):
+        Spuria.cargar_tablas(motor)
+        paris_formularios = __import__('paris.formularios', fromlist = [
+            'FormularioEditarConsumidor', 
+            'FormularioCrearUsuario',
+            'FormularioCrearTienda',
+            'FormularioCrearConsumidor',
+            'FormularioEditarUsuario',
+        ])
+        Spuria._FormularioAgregarConsumidor = getattr(paris_formularios, 'FormularioAgregarConsumidor')
+        Spuria._FormularioCrearUsuario = getattr(paris_formularios, 'FormularioCrearUsuario')
+        Spuria._FormularioCrearTienda = getattr(paris_formularios, 'FormularioCrearTienda')
+        Spuria._FormularioCrearConsumidor = getattr(paris_formularios, 'FormularioCrearConsumidor')
+        Spuria._FormularioEditarUsuario = getattr(paris_formularios, 'FormularioEditarUsuario')
+        Spuria._FormularioEditarConsumidor = getattr(paris_formularios, 'FormularioEditarConsumidor')
+        
     # Asocia las tablas de la base de datos con clases en python
     @staticmethod
     def cargar_tablas(motor):
@@ -187,12 +217,47 @@ class Spuria(object):
         mapper(globals()['tamano_reciente'], esquema_tabla)
         
     @staticmethod
+    def agregar_consumidor(parametros, usuario_id):
+        resultado = {}
+        try:
+            valido = Spuria._FormularioAgregarConsumidor.to_python(parametros)
+        except Invalid as e:
+            resultado['error'] = e.msg
+            resultado['consumidor'] = -1
+        else:
+            error = None
+            sql = select([func.InsertarConsumidor2(
+                bindparam('a_usuario_id'), 
+                bindparam('a_sexo'),
+                bindparam('a_fecha_de_nacimiento'),
+                bindparam('a_grupo_de_edad'),
+                bindparam('a_grado_de_instruccion'),
+            )])
+
+            fecha_string = Spuria.formatear_fecha_para_mysql(str(valido['fecha_de_nacimiento']))
+            
+            DBSession.execute('begin')
+            consumidor = DBSession.execute(sql, params=dict(
+                a_usuario_id = usuario_id,
+                a_sexo = valido['sexo'],
+                a_fecha_de_nacimiento = fecha_string,
+                a_grupo_de_edad = 'Adultos jovenes',
+                a_grado_de_instruccion = valido['grado_de_instruccion']
+            )).scalar()
+            DBSession.execute('commit')
+            
+            if consumidor == -1048 or consumidor == -1452 or consumidor == -1062:
+                error = 'Registro de consumidor no exitoso'
+            resultado['error'] = error
+            resultado['consumidor'] = consumidor
+            
+        return resultado
+    
+    @staticmethod
     def crear_usuario(parametros):
         resultado = {}
         try:
-            modulo = __import__('paris.formularios', fromlist=['FormularioUsuario'])
-            FormularioUsuario = getattr(modulo, 'FormularioUsuario')
-            valido = FormularioUsuario.to_python(parametros)
+            valido = Spuria._FormularioCrearUsuario.to_python(parametros)
         except Invalid as e:
             resultado['error'] = e.msg
             resultado['usuario'] = -1
@@ -230,9 +295,7 @@ class Spuria(object):
     def crear_tienda(parametros, propietario):
         resultado = {}
         try:
-            modulo = __import__('paris.formularios', fromlist=['FormularioTienda'])
-            FormularioTienda = getattr(modulo, 'FormularioTienda')
-            valido = FormularioTienda.to_python(parametros)
+            valido = Spuria._FormularioCrearTienda.to_python(parametros)
         except Invalid as e:
             resultado['error'] = e.msg
             resultado['tienda'] = -1
@@ -295,9 +358,7 @@ class Spuria(object):
     def crear_consumidor(parametros):
         resultado = {}
         try:
-            modulo = __import__('paris.formularios', fromlist=['FormularioConsumidor'])
-            FormularioConsumidor = getattr(modulo, 'FormularioConsumidor')
-            valido = FormularioConsumidor.to_python(parametros)
+            valido = Spuria._FormularioCrearConsumidor.to_python(parametros)
         except Invalid as e:
             resultado['error'] = e.msg
             resultado['consumidor'] = -1
@@ -326,8 +387,8 @@ class Spuria(object):
             connection.begin() y connection.commit(). Lee:            
             http://stackoverflow.com/questions/7559570/make-sqlalchemy-commit-instead-of-rollback-after-a-select-query
             """
-            fecha_time = strptime(valido['fecha_de_nacimiento'], '%d/%m/%Y')
-            fecha_string = strftime('%Y-%m-%d', fecha_time)
+            
+            fecha_string = Spuria.formatear_fecha_para_mysql(str(valido['fecha_de_nacimiento']))
             
             DBSession.execute('begin')
             consumidor = DBSession.execute(sql, params=dict(
@@ -353,41 +414,70 @@ class Spuria(object):
         return resultado
     
     @staticmethod
-    def crear_consumidor2(parametros, usuario):
-        resultado = {}
+    def editar_usuario(parametros, _id):
+        resultado = {'error': None, 'consumidor': None}
         try:
-            modulo = __import__('paris.formularios', fromlist=['FormularioConsumidor'])
-            FormularioConsumidor = getattr(modulo, 'FormularioConsumidor')
-            valido = FormularioConsumidor.to_python(parametros)
+            valido = Spuria._FormularioEditarUsuario.to_python(parametros)
+            
+            usu = DBSession.query(usuario).filter_by(usuario_id = _id).first()
+            usu.nombre = valido['nombre'] if usu.nombre != valido['nombre'] else usu.nombre
+            usu.apellido = valido['apellido'] if usu.apellido != valido['apellido'] else usu.apellido
+            usu.ubicacion = valido['ubicacion'] if usu.ubicacion != valido['ubicacion'] else usu.ubicacion
+            """
+            Aqui hay una buena explicacion de por que tengo que hacer transaction.commit() y 
+            no DBSession.commit() 
+            http://turbogears.org/2.0/docs/main/Wiki20/wiki20.html#initializing-the-tables
+            """
+            transaction.commit()
+            
+            # Si ya hay un consumidor asociado a este usuario lo editamos, sino, lo creamos
+            if 'sexo' in parametros or 'fecha_de_nacimiento' in parametros or 'grado_de_instruccion' in parametros:
+                con = DBSession.query(consumidor).filter_by(usuario_p = _id).first()
+                con_id = con.consumidor_id
+                tmp = Spuria.agregar_consumidor(parametros, _id) if con is None else Spuria.editar_consumidor(parametros, con.consumidor_id)
+                
+                if isinstance(tmp, dict):
+                    if 'consumidor' in tmp:
+                        resultado['consumidor'] = tmp['consumidor']
+                    resultado['error'] = tmp['error']
+                else:
+                    resultado['error'] = tmp
+                    resultado['consumidor'] = con_id
+                
         except Invalid as e:
             resultado['error'] = e.msg
-            resultado['consumidor'] = -1
-        else:
-            error = None
-            sql = select([func.InsertarConsumidor2(
-                bindparam('a_usuario_id'), 
-                bindparam('a_sexo'),
-                bindparam('a_fecha_de_nacimiento'),
-                bindparam('a_grupo_de_edad'),
-                bindparam('a_grado_de_instruccion'),
-            )])
-
-            fecha_time = strptime(valido['fecha_de_nacimiento'], '%d/%m/%Y')
-            fecha_string = strftime('%Y-%m-%d', fecha_time)
-            
-            DBSession.execute('begin')
-            consumidor = DBSession.execute(sql, params=dict(
-                a_usuario_id = usuario,
-                a_sexo = valido['sexo'],
-                a_fecha_de_nacimiento = fecha_string,
-                a_grupo_de_edad = 'Adultos jovenes',
-                a_grado_de_instruccion = valido['grado_de_instruccion']
-            )).scalar()
-            DBSession.execute('commit')
-            
-            if consumidor == -1048 or consumidor == -1452 or consumidor == -1062:
-                error = 'Registro de consumidor no exitoso'
-            resultado['error'] = error
-            resultado['consumidor'] = consumidor
+        except AttributeError as e:
+            resultado['error'] = 'Usuario no existe'
             
         return resultado
+    
+    @staticmethod
+    def editar_consumidor(parametros, _id):
+        error = None        
+        try:
+            valido = Spuria._FormularioEditarConsumidor.to_python(parametros)
+            
+            fecha_string = lambda: Spuria.formatear_fecha_para_mysql(str(valido['fecha_de_nacimiento'])) \
+            if 'fecha_de_nacimiento' in valido \
+            else None
+            
+            con = DBSession.query(consumidor).filter_by(consumidor_id = _id).first()
+            
+            con.sexo = valido['sexo'] \
+            if 'sexo' in valido and con.sexo != valido['sexo'] \
+            else con.sexo
+            
+            con.fecha_de_nacimiento = fecha_string \
+            if fecha_string is not None and con.fecha_de_nacimiento != fecha_string \
+            else con.fecha_de_nacimiento
+            
+            con.grado_de_instruccion = valido['grado_de_instruccion'] \
+            if 'grado_de_instruccion' in valido and con.grado_de_instruccion != valido['grado_de_instruccion'] \
+            else con.grado_de_instruccion
+            
+            transaction.commit()
+        except Invalid as e:
+            error = e.msg
+        except AttributeError as e:
+            error = 'Consumidor no existe'            
+        return error

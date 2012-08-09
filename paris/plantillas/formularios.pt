@@ -85,8 +85,7 @@
             <label class="control-label">Sexo</label>
             <div class="controls" tal:define="existe exists:campo_sexo">
             	<label class="radio inline" tal:repeat="item view.sexos">
-                	<input type="radio" name="sexo" value="${item.valor}" tal:attributes="checked python:'checked' if (existe and campo_sexo == item.valor) else None" />
-                	<!--<input type="radio" name="sexo" tal:condition="repeat.item.index != 0" value="${item.valor}" />-->
+                	<input type="radio" name="sexo" value="${item.valor}" tal:attributes="checked python:'checked' if (existe and campo_sexo == item.valor) else None; disabled python:None if mostrar_campo_sexo else 'disabled'" />
                 	<span class="help-inline">${item.valor}</span>
               	</label>
         	</div>
@@ -123,8 +122,8 @@
 	<metal:campo_fecha_de_nacimiento define-macro="campo_fecha_de_nacimiento">
 		<div class="control-group">
             <label class="control-label" for="fecha_de_nacimiento">Fecha de nacimiento</label>
-            <div class="controls">
-                <input data-datepicker="datepicker" id="fecha_de_nacimiento" name="fecha_de_nacimiento" class="small" type="text" />
+            <div class="controls" tal:define="existe exists:campo_fecha_de_nacimiento">
+                <input data-datepicker="datepicker" id="fecha_de_nacimiento" name="fecha_de_nacimiento" type="text" class="small" tal:attributes="disabled python:None if mostrar_campo_fecha_de_nacimiento else 'disabled'; value python:campo_fecha_de_nacimiento if existe else ''" />
 			</div>
 		</div>
    	</metal:campo_fecha_de_nacimiento>
@@ -529,8 +528,10 @@
 						<div metal:use-macro="view.formularios['campo_nombre']"></div>
       					<div metal:use-macro="view.formularios['campo_apellido']"></div>
       					<div metal:use-macro="view.formularios['campo_ubicacion']"></div>
-      					<div metal:use-macro="view.formularios['campo_sexo']"></div>
-      					<div metal:use-macro="view.formularios['campo_fecha_de_nacimiento']"></div>
+      					<tal:block tal:define="mostrar_campo_sexo python:'True' if not consumidor_asociado else None; mostrar_campo_fecha_de_nacimiento python:'True' if not consumidor_asociado else None">
+      						<div metal:use-macro="view.formularios['campo_sexo']"></div>
+		  					<div metal:use-macro="view.formularios['campo_fecha_de_nacimiento']"></div>
+		  				</tal:block>
       					<div metal:use-macro="view.formularios['campo_grado_de_instruccion']"></div>
 			          	<div metal:use-macro="view.formularios['botones_pie_de_pagina']"></div>
 			        </fieldset>

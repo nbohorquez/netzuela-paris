@@ -33,10 +33,12 @@ class RegistroView(Diagramas, Comunes):
     
     @view_config(route_name='registro', renderer='../plantillas/registro.pt')
     def registro_view(self):
-        resultado = {'pagina': 'Registro', 'mensaje': ''}
+        resultado = {'pagina': 'Registro', 'aviso': None}
         if 'enviar' in self.peticion.params:      
             usuario = Spuria.crear_usuario(dict(self.peticion.params))
-            resultado['mensaje'] = usuario['error'] if (usuario['error'] is not None) else 'Registro completado con éxito'
+            resultado['aviso'] = {'error': 'Error', 'mensaje': usuario['error']} \
+            if (usuario['error'] is not None) \
+            else {'error': 'OK', 'mensaje': 'Registro completado con éxito'}
         elif 'cancelar' in self.peticion.params:
             resultado = HTTPFound(location = self.pagina_anterior)
         
@@ -44,26 +46,30 @@ class RegistroView(Diagramas, Comunes):
     
     @view_config(route_name='registro_consumidor', renderer='../plantillas/registro_consumidor.pt')
     def registro_consumidor_view(self):
-        resultado = {'pagina': 'Registro de consumidor', 'mensaje': ''}
+        resultado = {'pagina': 'Registro de consumidor', 'aviso': None}
         if 'enviar' in self.peticion.params:      
             consumidor = Spuria.crear_consumidor(dict(self.peticion.params))
-            resultado['mensaje'] = consumidor['error'] if (consumidor['error'] is not None) else 'Registro completado con éxito'
+            resultado['aviso'] = {'error': 'Error', 'mensaje': consumidor['error']} \
+            if (consumidor['error'] is not None) \
+            else {'error': 'OK', 'mensaje': 'Registro completado con éxito'}
         elif 'cancelar' in self.peticion.params:
             resultado = HTTPFound(location = self.pagina_anterior)
-        
+                    
         return resultado   
     
     @view_config(route_name='registro_tienda', renderer='../plantillas/registro_tienda.pt')
     def registro_tienda_view(self):        
-        resultado = {'pagina': 'Registro de tienda', 'mensaje': ''}
+        resultado = {'pagina': 'Registro de tienda', 'aviso': None}
         if 'enviar' in self.peticion.params:
-            usuario = Spuria.crear_usuario(dict(self.peticion.params))
-            
+            usuario = Spuria.crear_usuario(dict(self.peticion.params))            
             if (usuario['error'] is not None):
-                resultado['mensaje'] = usuario['error']
+                resultado['aviso'] = {'error': 'Error', 'mensaje': usuario['error']}
             else:
                 tienda = Spuria.crear_tienda(dict(self.peticion.params), usuario['usuario'])
-                resultado['mensaje'] = tienda['error'] if (tienda['error'] is not None) else 'Registro completado con éxito' 
+                resultado['aviso'] = {'error': 'Error', 'mensaje': tienda['error']} \
+                if (tienda['error'] is not None) \
+                else {'error': 'OK', 'mensaje': 'Registro completado con éxito'}
         elif 'cancelar' in self.peticion.params:
             resultado = HTTPFound(location = self.pagina_anterior)
+            
         return resultado

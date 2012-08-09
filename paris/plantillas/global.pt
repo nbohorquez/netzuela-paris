@@ -10,10 +10,10 @@
     <link rel="stylesheet" href="/estatico/css/netzuela.css" />
     <!-- <link rel="stylesheet" href="/estatico/css/font-awesome.css" /> -->
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <div id="meta_datos_global">
+    <div id="meta_datos">
 		<input type="hidden" name="pagina" value="${pagina}" />
-	</div>
-    <div metal:define-slot="extra_head"></div>
+		<div metal:define-slot="extra_meta_datos"></div>
+	</div>    
 </head>
 <body>
 	
@@ -83,7 +83,7 @@
 		================================================== -->		
 		<div class="row-fluid">
 			
-			<div class="span3">
+			<div class="span2">
 				
 				<!-- Menu lateral
 				================================================== -->
@@ -164,7 +164,7 @@
           
 			<!-- Zona central
 			================================================== -->
-			<div class="span9">
+			<div class="span10">
 				<div id="gadget1" class="accordion-group">
               		<div id="gadget1_encabezado" class="accordion-heading">
                 		<a class="accordion-toggle" data-toggle="collapse" href="#gadget1_colapsable">

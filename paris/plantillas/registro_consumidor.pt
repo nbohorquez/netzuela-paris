@@ -11,10 +11,16 @@
 		<!-- Contenido
 		================================================== -->	
 		<div id="contenido_pestanas" class="tab-content">
-			<div class="alert alert-error" tal:condition="python:len(mensaje) > 0">
-  				<button type="button" class="close" data-dismiss="alert">&times;</button>
-  				<strong>Error</strong> <span tal:replace="mensaje"></span>
-			</div>
+			<tal:block tal:condition="aviso" tal:switch="aviso.error">
+				<div tal:case="'Error'" class="alert alert-error">
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<strong>Error</strong> <span tal:content="aviso.mensaje"></span>
+				</div>
+				<div tal:case="'OK'" class="alert alert-success">
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<strong>OK</strong> <span tal:content="aviso.mensaje"></span>
+				</div>
+			</tal:block>
 			<form class="form-horizontal" id="formulario_registro_consumidor" method="post" accept-charset="UTF-8">
 		        <fieldset>
 		        	<input type="hidden" name="pagina_anterior" value="${view.pagina_anterior}" />

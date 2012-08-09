@@ -11,7 +11,7 @@ def main(global_config, **settings):
 	"""
 	# Cargamos de forma dinamica todas las tablas desde la base de datos
 	engine = engine_from_config(settings, 'sqlalchemy.')
-	Spuria.cargar_tablas(engine)
+	Spuria.inicializar(engine)
 	DBSession.configure(bind=engine)
 	
 	"""
@@ -40,13 +40,17 @@ def main(global_config, **settings):
 	config.add_route('inicio', '/')
 	config.add_route('usuario', '/usuario/{usuario_id}')
 	config.add_route('producto', '/producto/{producto_id}')
-	config.add_route('tienda', '/tienda/{tienda_id}')
 	config.add_route('patrocinante', '/patrocinante/{patrocinante_id}')
+	config.add_route('tienda', '/tienda/{tienda_id}')	
 	config.add_route('tienda_turno', '/tienda/{tienda_id}/turno.json')
 	config.add_route('tienda_coordenadas', '/tienda/{tienda_id}/coordenadas.json')
 	config.add_route('productos', '/productos/cat{categoria_id}geo{territorio_id}')
 	config.add_route('tiendas', '/tiendas/cat{categoria_id}geo{territorio_id}')
 	config.add_route('territorio_coordenadas', '/territorio/terr{territorio_id}niv{nivel}/coordenadas.json')
+	config.add_route('editar_usuario', '/usuario/{usuario_id}/editar')
+	config.add_route('editar_producto', '/producto/{producto_id}/editar')
+	config.add_route('editar_patrocinante', '/patrocinante/{patrocinante_id}/editar')
+	config.add_route('editar_tienda', '/tienda/{tienda_id}/editar')
 	config.add_route('ingresar', '/ingresar')
 	config.add_route('salir', '/salir')
 	config.add_route('registro', '/registro')

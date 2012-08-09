@@ -1,16 +1,16 @@
 <!DOCTYPE HTML>
 <div metal:use-macro="view.diagrama_global">
+	<div metal:fill-slot="extra_meta_datos">
+		<input type="hidden" name="territorio_id" value="${view.territorio_id}" />
+		<input type="hidden" name="categoria_id" value="${view.categoria_id}" />
+		<input type="hidden" name="territorio_padre" value="${view.territorio_padre}" />
+	</div>
 	<div metal:fill-slot="contenido">
 		
 		<!-- Encabezado
 		================================================== -->
 		<div class="page-header">
   			<h1>${pagina}</h1>
-		</div>
-		<div id="meta_datos">
-			<input type="hidden" name="territorio_id" value="${view.territorio_id}" />
-			<input type="hidden" name="categoria_id" value="${view.categoria_id}" />
-			<input type="hidden" name="territorio_padre" value="${view.territorio_padre}" />
 		</div>
 		
 		<!-- Listado
