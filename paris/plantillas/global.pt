@@ -217,11 +217,32 @@
     <script type="text/javascript" src="/estatico/js/mapa.js"></script>
     <div id="scripts" metal:define-slot="scripts_extra"></div>
     <script type="text/javascript">
+    	$.extend($.fn.datepicker.defaults, {
+			parse: function (string) {
+		  		var matches;
+		  		if ((matches = string.match(/^(\d{2,2})\/(\d{2,2})\/(\d{4,4})$/))) {
+		        	return new Date(matches[3], matches[2] - 1, matches[1]);
+		  		} else {
+		            return null;
+		      	}
+			},
+			format: function (date) {
+		    	var month = (date.getMonth() + 1).toString(), dom = date.getDate().toString();
+		  		if (month.length === 1) {
+		          	month = "0" + month;
+		    	}
+		  		if (dom.length === 1) {
+		          	dom = "0" + dom;
+		  		}
+		  		return dom + "/" + month + "/" + date.getFullYear();
+			}
+		});
     	$(document).ready(function () {
 			// No escribais nada despues de estas lineas porque el javascript no lo va a ejecutar
 			// No se por que...
 			$(".collapse").collapse();
 			$('.carousel').carousel();
+			/* Cambio el formato de la fecha a dd/mm/aaaa */
     	});
     </script>
 </body>

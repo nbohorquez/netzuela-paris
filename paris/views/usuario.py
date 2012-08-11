@@ -5,18 +5,23 @@ Created on 20/07/2012
 @author: nestor
 '''
 
-from paris.comunes import Comunes
+from paris.comunes import (
+    Comunes,
+    formatear_comentarios,
+    formatear_entrada_registro,
+    formatear_fecha_para_paris
+)
 from paris.constantes import MENSAJE_DE_ERROR
 from paris.diagramas import Diagramas
 from paris.models.spuria import (
     calificacion_resena,
     cliente, 
     consumidor,
-    DBSession, 
+    DBSession,
+    editar_usuario, 
     patrocinante, 
     rastreable, 
     registro,
-    Spuria,
     tienda, 
     usuario
 )
@@ -29,6 +34,7 @@ from sqlalchemy.orm import aliased
 
 class UsuarioView(Diagramas, Comunes):
     def __init__(self, peticion):
+        self.usuario = None
         self.peticion = peticion
         self.pagina_actual = peticion.url
         if 'usuario_id' in self.peticion.matchdict:
@@ -64,7 +70,7 @@ class UsuarioView(Diagramas, Comunes):
         join(r, or_(registro.actor_activo == r.rastreable_id, registro.actor_pasivo == r.rastreable_id)).\
         join(u, r.rastreable_id == u.rastreable_p).\
         filter(u.usuario_id == self.usuario_id).order_by(registro.fecha_hora.desc()).all():
-            resultado.append(self.formatear_entrada_registro(reg, self.peticion, self.tipo_de_rastreable))
+            resultado.append(formatear_entrada_registro(reg, self.peticion, self.tipo_de_rastreable))
 
         return resultado
     
@@ -74,7 +80,7 @@ class UsuarioView(Diagramas, Comunes):
     
     @reify
     def fecha_de_nacimiento(self):
-        return self.formatear_fecha_para_paris(str(self.consumidor_asociado.fecha_de_nacimiento)) \
+        return formatear_fecha_para_paris(str(self.consumidor_asociado.fecha_de_nacimiento)) \
         if self.consumidor_asociado is not None \
         else None
         
@@ -128,7 +134,7 @@ class UsuarioView(Diagramas, Comunes):
         join(usuario).\
         filter(usuario.usuario_id == self.usuario_id).all()
         
-        return self.formatear_comentarios(var_comentarios)
+        return formatear_comentarios(var_comentarios)
        
     @reify
     def fotos_grandes(self):
@@ -146,18 +152,17 @@ class UsuarioView(Diagramas, Comunes):
     def fotos_miniaturas(self):
         return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'miniaturas')
 
-    @view_config(route_name='usuario', renderer='../plantillas/usuario.pt')
-    @view_config(route_name='editar_usuario', renderer='../plantillas/usuario.pt')
+    @view_config(route_name='usuario', renderer='../plantillas/usuario.pt', request_method='GET')
+    @view_config(route_name='usuario', renderer='../plantillas/usuario.pt', request_method='POST')
     def usuario_view(self):
         aviso = None
-        if 'guardar' in self.peticion.params:
-            resultado = Spuria.editar_usuario(dict(self.peticion.params), self.usuario_id)
+        if 'guardar' in self.peticion.POST:
+            resultado = editar_usuario(dict(self.peticion.POST), self.usuario_id)
             aviso = { 'error': 'Error', 'mensaje': resultado['error'] } \
             if (resultado['error'] is not None) \
             else { 'error': 'OK', 'mensaje': 'Datos actualizados correctamente' }
-                
-        var_usuario = self.obtener_usuario('id', self.usuario_id)
-        resultado = HTTPNotFound(MENSAJE_DE_ERROR) \
-        if (var_usuario is None) \
-        else {'pagina': 'Usuario', 'usuario': var_usuario, 'autentificado': authenticated_userid(self.peticion), 'aviso': aviso}
-        return resultado
+
+        self.usuario = self.obtener_usuario('id', self.usuario_id)
+        return HTTPNotFound(MENSAJE_DE_ERROR) \
+        if (self.usuario is None) \
+        else {'pagina': 'Usuario', 'usuario': self.usuario, 'autentificado': authenticated_userid(self.peticion), 'aviso': aviso}

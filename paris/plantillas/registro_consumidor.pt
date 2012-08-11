@@ -22,7 +22,7 @@
 				</div>
 			</tal:block>
 			<form class="form-horizontal" id="formulario_registro_consumidor" method="post" accept-charset="UTF-8">
-		        <fieldset>
+		        <fieldset tal:define="habilitar_campo_sexo 'True'; habilitar_campo_fecha_de_nacimiento 'True'">
 		        	<input type="hidden" name="pagina_anterior" value="${view.pagina_anterior}" />
 		        	<div metal:use-macro="view.formularios['registro_usuario']"></div>
 		          	<hr />

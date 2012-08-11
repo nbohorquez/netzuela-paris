@@ -5,7 +5,11 @@ Created on 08/04/2012
 @author: nestor
 '''
 
-from paris.comunes import Comunes
+from paris.comunes import (
+    Comunes,
+    formatear_comentarios,
+    formatear_entrada_registro
+)
 from paris.constantes import MENSAJE_DE_ERROR
 from paris.diagramas import Diagramas
 from paris.models.spuria import (
@@ -21,6 +25,7 @@ from paris.models.spuria import (
     describible,
     descripcion,
     dibujable,
+    editar_tienda,
     estadisticas,
     factura,
     foto,
@@ -57,6 +62,7 @@ import string
 
 class TiendaView(Diagramas, Comunes):
     def __init__(self, peticion):
+        self.tienda = None
         self.peticion = peticion
         self.pagina_actual = peticion.url
         if 'tienda_id' in self.peticion.matchdict:
@@ -103,7 +109,7 @@ class TiendaView(Diagramas, Comunes):
         join(c, r.rastreable_id == c.rastreable_p).\
         join(t, c.rif == t.cliente_p).\
         filter(t.tienda_id == self.tienda_id).order_by(registro.fecha_hora.desc()).all():
-            resultado.append(self.formatear_entrada_registro(reg, self.peticion, self.tipo_de_rastreable))
+            resultado.append(formatear_entrada_registro(reg, self.peticion, self.tipo_de_rastreable))
         return resultado
         
     @reify
@@ -132,7 +138,6 @@ class TiendaView(Diagramas, Comunes):
             }
         except Exception, e:
             resultado = None
-            #resultado = {'parroquia': 'N/D', 'municipio': 'N/D', 'estado': 'N/D' }
             
         return resultado
         
@@ -162,7 +167,6 @@ class TiendaView(Diagramas, Comunes):
                 resultado.append(horario)
         else:
             resultado = None
-            #resultado = [{'dia': 'N/A', 'laborable': 0, 'turnos': ''}]
 
         return resultado
     
@@ -176,7 +180,7 @@ class TiendaView(Diagramas, Comunes):
         var_comentarios = DBSession.query(calificacion_resena).\
         join(calificable_seguible).join(tienda).\
         filter(tienda.tienda_id == self.tienda_id).all()
-        return self.formatear_comentarios(var_comentarios)
+        return formatear_comentarios(var_comentarios)
     
     @reify
     def fotos_grandes(self):
@@ -201,12 +205,20 @@ class TiendaView(Diagramas, Comunes):
         filter(tienda.tienda_id == self.peticion_id).first()[0]        
         return self.obtener_ruta_categoria(cat_padre)
     
-    @view_config(route_name='tienda', renderer='../plantillas/tienda.pt')
+    @view_config(route_name='tienda', renderer='../plantillas/tienda.pt', request_method='GET')
+    @view_config(route_name='tienda', renderer='../plantillas/tienda.pt', request_method='POST')
     def tienda_view(self):
-        var_tienda = self.obtener_tienda(self.tienda_id)
+        aviso = None
+        if 'guardar' in self.peticion.POST:
+            error = editar_tienda(dict(self.peticion.POST), self.tienda_id)
+            aviso = { 'error': 'Error', 'mensaje': error } \
+            if (error is not None) \
+            else { 'error': 'OK', 'mensaje': 'Datos actualizados correctamente' }
+            
+        self.tienda = self.obtener_tienda(self.tienda_id)
         resultado = HTTPNotFound(MENSAJE_DE_ERROR) \
-        if (var_tienda is None) \
-        else {'pagina': 'Tienda', 'tienda': var_tienda, 'autentificado': authenticated_userid(self.peticion)}
+        if (self.tienda is None) \
+        else {'pagina': 'Tienda', 'tienda': self.tienda, 'autentificado': authenticated_userid(self.peticion), 'aviso': aviso}
         return resultado
 
     @view_config(route_name="tienda_turno", renderer="json")

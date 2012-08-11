@@ -5,7 +5,9 @@ Created on 09/04/2012
 @author: nestor
 '''
 
-from paris.comunes import Comunes
+from paris.comunes import (
+    Comunes
+)
 from paris.constantes import MENSAJE_DE_ERROR
 from paris.diagramas import Diagramas
 from paris.models.spuria import (
@@ -53,6 +55,8 @@ p = aliased(producto)
 
 class ListadoView(Diagramas, Comunes):
     def __init__(self, peticion):
+        self.tiendas = None
+        self.productos = None
         self.peticion = peticion
         self.pagina_actual = peticion.url
         if 'categoria_id' in self.peticion.matchdict: 
@@ -171,7 +175,7 @@ class ListadoView(Diagramas, Comunes):
     def listado_productos_view(self):
         # Este metodo me permite saber rapidamente si una
         # categoria o territorio es hijo de otro(a).        
-        productos = DBSession.query(p).\
+        self.productos = DBSession.query(p).\
         join(i, p.producto_id == i.producto_id).\
         join(t, i.tienda_id == t.tienda_id).\
         join(c, t.cliente_p == c.rif).\
@@ -181,7 +185,7 @@ class ListadoView(Diagramas, Comunes):
         )).all()
         
         self.subtipo_de_peticion = 'Productos'
-        return {'pagina': self.subtipo_de_peticion, 'lista': productos, 'autentificado': authenticated_userid(self.peticion)}
+        return {'pagina': self.subtipo_de_peticion, 'lista': self.productos, 'autentificado': authenticated_userid(self.peticion)}
     
     @view_config(route_name='tiendas', renderer='../plantillas/listado.pt')
     def listado_tiendas_view(self):
@@ -195,8 +199,9 @@ class ListadoView(Diagramas, Comunes):
         tie = aliased(tienda, t_sub)
         tiendas = DBSession.query(tie).all()
         
-        self.subtipo_de_peticion = 'Tiendas'        
-        return {'pagina': self.subtipo_de_peticion, 'lista': set(tiendas), 'autentificado': authenticated_userid(self.peticion)}
+        self.subtipo_de_peticion = 'Tiendas'
+        self.tiendas = set(tiendas)
+        return {'pagina': self.subtipo_de_peticion, 'lista': self.tiendas, 'autentificado': authenticated_userid(self.peticion)}
     
     @view_config(route_name="territorio_coordenadas", renderer="json")
     def territorio_coordenadas_view(self):

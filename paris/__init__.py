@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from paris.models.spuria import DBSession, Spuria
+from paris.models.spuria import DBSession, inicializar
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.config import Configurator
@@ -11,7 +11,7 @@ def main(global_config, **settings):
 	"""
 	# Cargamos de forma dinamica todas las tablas desde la base de datos
 	engine = engine_from_config(settings, 'sqlalchemy.')
-	Spuria.inicializar(engine)
+	inicializar(engine)
 	DBSession.configure(bind=engine)
 	
 	"""
@@ -36,6 +36,8 @@ def main(global_config, **settings):
 		authentication_policy=authn_policy,
         authorization_policy=authz_policy
     )
+	config.add_settings(encoding="UTF-8")
+	config.add_settings(default_encoding="UTF-8")
 	config.add_static_view('estatico', 'estatico', cache_max_age=3600)
 	config.add_route('inicio', '/')
 	config.add_route('usuario', '/usuario/{usuario_id}')
@@ -47,10 +49,6 @@ def main(global_config, **settings):
 	config.add_route('productos', '/productos/cat{categoria_id}geo{territorio_id}')
 	config.add_route('tiendas', '/tiendas/cat{categoria_id}geo{territorio_id}')
 	config.add_route('territorio_coordenadas', '/territorio/terr{territorio_id}niv{nivel}/coordenadas.json')
-	config.add_route('editar_usuario', '/usuario/{usuario_id}/editar')
-	config.add_route('editar_producto', '/producto/{producto_id}/editar')
-	config.add_route('editar_patrocinante', '/patrocinante/{patrocinante_id}/editar')
-	config.add_route('editar_tienda', '/tienda/{tienda_id}/editar')
 	config.add_route('ingresar', '/ingresar')
 	config.add_route('salir', '/salir')
 	config.add_route('registro', '/registro')

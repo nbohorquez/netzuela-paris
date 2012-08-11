@@ -5,7 +5,12 @@ Created on 08/04/2012
 @author: nestor
 '''
 
-from paris.comunes import Comunes
+from paris.comunes import (
+    Comunes,
+    formatear_comentarios,
+    formatear_entrada_registro,
+    formatear_fecha_para_paris
+)
 from paris.constantes import MENSAJE_DE_ERROR
 from paris.diagramas import Diagramas
 from paris.models.spuria import (
@@ -18,7 +23,8 @@ from paris.models.spuria import (
     DBSession,
     describible,
     descripcion,
-    dibujable,    
+    dibujable,
+    editar_producto,
     foto,
     horario_de_trabajo,
     inventario_reciente,
@@ -48,6 +54,7 @@ from pyramid.view import view_config
 
 class ProductoView(Diagramas, Comunes):
     def __init__(self, peticion):
+        self.producto = None
         self.peticion = peticion
         self.pagina_actual = peticion.url
         if 'producto_id' in self.peticion.matchdict:
@@ -79,6 +86,12 @@ class ProductoView(Diagramas, Comunes):
         filter_by(producto_id = self.producto_id).all()
 
     @reify
+    def debut_en_el_mercado(self):
+        return formatear_fecha_para_paris(str(self.producto.debut_en_el_mercado)) \
+        if self.producto.debut_en_el_mercado is not None \
+        else None
+    
+    @reify
     def registro(self):
         r = aliased(rastreable)
         p = aliased(producto)
@@ -88,7 +101,7 @@ class ProductoView(Diagramas, Comunes):
         join(r, or_(registro.actor_activo == r.rastreable_id, registro.actor_pasivo == r.rastreable_id)).\
         join(p, r.rastreable_id == p.rastreable_p).\
         filter(p.producto_id == self.producto_id).order_by(registro.fecha_hora.desc()).all():
-            resultado.append(self.formatear_entrada_registro(reg, self.peticion, self.tipo_de_rastreable))
+            resultado.append(formatear_entrada_registro(reg, self.peticion, self.tipo_de_rastreable))
 
         return resultado
     
@@ -106,7 +119,7 @@ class ProductoView(Diagramas, Comunes):
         join(producto).\
         filter(producto.producto_id == self.producto_id).all()
         
-        return self.formatear_comentarios(var_comentarios)
+        return formatear_comentarios(var_comentarios)
     
     @reify
     def fotos_grandes(self):
@@ -130,10 +143,18 @@ class ProductoView(Diagramas, Comunes):
         filter_by(producto_id = self.peticion_id).first()[0]
         return self.obtener_ruta_categoria(cat_padre)
         
-    @view_config(route_name='producto', renderer='../plantillas/producto.pt')
+    @view_config(route_name='producto', renderer='../plantillas/producto.pt', request_method='GET')
+    @view_config(route_name='producto', renderer='../plantillas/producto.pt', request_method='POST')
     def producto_view(self):
-        var_producto = self.obtener_producto(self.producto_id)
+        aviso = None
+        if 'guardar' in self.peticion.POST:
+            error = editar_producto(dict(self.peticion.POST), self.producto_id)
+            aviso = { 'error': 'Error', 'mensaje': error } \
+            if (error is not None) \
+            else { 'error': 'OK', 'mensaje': 'Datos actualizados correctamente' }
+            
+        self.producto = self.obtener_producto(self.producto_id)
         resultado = HTTPNotFound(MENSAJE_DE_ERROR) \
-        if (var_producto is None) \
-        else {'pagina': 'Producto', 'producto': var_producto, 'autentificado': authenticated_userid(self.peticion)}
+        if (self.producto is None) \
+        else {'pagina': 'Producto', 'producto': self.producto, 'autentificado': authenticated_userid(self.peticion), 'aviso': aviso}
         return resultado

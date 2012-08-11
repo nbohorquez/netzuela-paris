@@ -1,4 +1,4 @@
-#Tue Jul 31 17:06:35 VET 2012
+#Fri Aug 10 02:24:30 VET 2012
 eclipse.preferences.version=1
 encoding//paris/__init__.py=utf-8
 encoding//paris/comunes.py=utf-8
@@ -8,9 +8,11 @@ encoding//paris/formularios.py=utf-8
 encoding//paris/models/spuria.py=utf-8
 encoding//paris/seguridad.py=utf-8
 encoding//paris/tests.py=utf-8
+encoding//paris/views/__init__.py=utf-8
 encoding//paris/views/acceso.py=utf-8
 encoding//paris/views/inicio.py=utf-8
 encoding//paris/views/listado.py=utf-8
+encoding//paris/views/patrocinante.py=utf-8
 encoding//paris/views/producto.py=utf-8
 encoding//paris/views/registro.py=utf-8
 encoding//paris/views/tienda.py=utf-8

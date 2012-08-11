@@ -7,6 +7,7 @@
 		
 		<!-- Encabezado
 		================================================== -->
+		<div metal:use-macro="view.macros['resultado_de_operacion']"></div>
 		<div class="page-header">
 			<div class="row-fluid">
 				<div class="span3">
@@ -52,7 +53,7 @@
 					  							${producto.nombre}<br />
 					  							${producto.modelo}<br />
 					  							${producto.codigo}<br />
-					  							${producto.debut_en_el_mercado}<br />
+					  							<span tal:content="view.debut_en_el_mercado"></span><br />
 					  							${producto.largo}<br />
 					  							${producto.ancho}<br />
 					  							${producto.alto}<br />
@@ -66,7 +67,7 @@
 					  			</tbody>
 							</table>
 							<div metal:use-macro="view.formularios['editar_producto']"
-								tal:define="campo_fabricante producto.fabricante; campo_modelo producto.modelo; campo_nombre producto.nombre; campo_debut producto.debut_en_el_mercado; campo_largo producto.largo; campo_ancho producto.ancho; campo_alto producto.alto; campo_peso producto.peso; campo_pais territorio.territorio_id"></div>
+								tal:define="campo_tipo_de_codigo producto.tipo_de_codigo; campo_codigo producto.codigo; campo_fabricante producto.fabricante; campo_modelo producto.modelo; campo_nombre producto.nombre; campo_debut_en_el_mercado view.debut_en_el_mercado; campo_largo producto.largo; campo_ancho producto.ancho; campo_alto producto.alto; campo_peso producto.peso; campo_pais_de_origen territorio.territorio_id"></div>
 						</div>
 						<div class="span7"></div>
 					</div>
@@ -129,6 +130,7 @@
   		<script type="text/javascript" src="/estatico/js/bootstrap-tooltip.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-carousel.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-popover.js"></script>
+		<script type="text/javascript" src="/estatico/js/bootstrap-alert.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-modal.js"></script>
 		<script type="text/javascript" src="/estatico/js/noticias.js"></script>
   		<script type="text/javascript" src="/estatico/js/producto.js"></script>

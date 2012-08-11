@@ -8,16 +8,7 @@
 		
 		<!-- Encabezado
 		================================================== -->	
-		<tal:block tal:condition="aviso" tal:switch="aviso.error">
-			<div tal:case="'Error'" class="alert alert-error">
-				<button type="button" class="close" data-dismiss="alert">&times;</button>
-				<strong>Error</strong> <span tal:content="aviso.mensaje"></span>
-			</div>
-			<div tal:case="'OK'" class="alert alert-success">
-				<button type="button" class="close" data-dismiss="alert">&times;</button>
-				<strong>OK</strong> <span tal:content="aviso.mensaje"></span>
-			</div>
-		</tal:block>
+		<div metal:use-macro="view.macros['resultado_de_operacion']"></div>
 		<div class="page-header">
 			<div class="row-fluid">
 				<div class="span3">
@@ -71,7 +62,7 @@
 					  			</tbody>
 							</table>
 							<div metal:use-macro="view.formularios['editar_usuario']"
-								tal:define="campo_nombre usuario.nombre; campo_apellido usuario.apellido; campo_ubicacion territorio; campo_grado_de_instruccion python:consumidor.grado_de_instruccion if consumidor else None; campo_sexo python:consumidor.sexo if consumidor else None; campo_fecha_de_nacimiento python:view.fecha_de_nacimiento if consumidor else None; consumidor_asociado consumidor"></div>
+								tal:define="campo_nombre usuario.nombre; campo_apellido usuario.apellido; campo_ubicacion territorio; campo_grado_de_instruccion python:consumidor.grado_de_instruccion if consumidor else None; campo_sexo python:consumidor.sexo if consumidor else None; campo_fecha_de_nacimiento view.fecha_de_nacimiento; consumidor_asociado consumidor"></div>
 						</div>
 						<div class="span7"></div>
 					</div>

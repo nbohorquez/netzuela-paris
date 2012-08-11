@@ -7,6 +7,21 @@
 </head>
 <body>
 	
+	<!-- Resultado de operacion
+	================================================== -->
+	<metal:resultado_de_operacion define-macro="resultado_de_operacion">
+		<tal:block tal:condition="aviso" tal:switch="aviso.error">
+			<div tal:case="'Error'" class="alert alert-error">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<strong>Error</strong> <span tal:content="aviso.mensaje"></span>
+			</div>
+			<div tal:case="'OK'" class="alert alert-success">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<strong>OK</strong> <span tal:content="aviso.mensaje"></span>
+			</div>
+		</tal:block>
+	</metal:resultado_de_operacion>
+	
 	<!-- Inventario de productos
 	================================================== -->	
 	<metal:inventario_de_productos define-macro="inventario_de_productos">
@@ -222,9 +237,7 @@
 									
 									${registro.accion}
 									<span tal:repeat="item registro.parametros.items()">
-										${item[0]} = ${item[1]}  
-										<tal:block tal:condition="not repeat.item.end">,</tal:block>
-										<tal:block tal:condition="repeat.item.end">de</tal:block>
+										${item[0]} = ${item[1]}<tal:block tal:condition="not repeat.item.end">,</tal:block><tal:block tal:condition="repeat.item.end"> de</tal:block>
 									</span>
 									
 									<a tal:omit-tag="not registro.actor_pasivo.href" class="popover-aqui" title="${registro.actor_pasivo.titulo}" tal:attributes="href registro.actor_pasivo.href">${registro.actor_pasivo.nombre}</a>

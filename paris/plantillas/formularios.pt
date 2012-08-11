@@ -85,7 +85,7 @@
             <label class="control-label">Sexo</label>
             <div class="controls" tal:define="existe exists:campo_sexo">
             	<label class="radio inline" tal:repeat="item view.sexos">
-                	<input type="radio" name="sexo" value="${item.valor}" tal:attributes="checked python:'checked' if (existe and campo_sexo == item.valor) else None; disabled python:None if mostrar_campo_sexo else 'disabled'" />
+                	<input type="radio" name="sexo" value="${item.valor}" tal:attributes="checked python:'checked' if (existe and campo_sexo == item.valor) else None; disabled python:None if habilitar_campo_sexo else 'disabled'" />
                 	<span class="help-inline">${item.valor}</span>
               	</label>
         	</div>
@@ -123,7 +123,7 @@
 		<div class="control-group">
             <label class="control-label" for="fecha_de_nacimiento">Fecha de nacimiento</label>
             <div class="controls" tal:define="existe exists:campo_fecha_de_nacimiento">
-                <input data-datepicker="datepicker" id="fecha_de_nacimiento" name="fecha_de_nacimiento" type="text" class="small" tal:attributes="disabled python:None if mostrar_campo_fecha_de_nacimiento else 'disabled'; value python:campo_fecha_de_nacimiento if existe else ''" />
+                <input data-datepicker="datepicker" id="fecha_de_nacimiento" name="fecha_de_nacimiento" type="text" class="small" tal:attributes="disabled python:None if habilitar_campo_fecha_de_nacimiento else 'disabled'; value python:campo_fecha_de_nacimiento if existe else ''" />
 			</div>
 		</div>
    	</metal:campo_fecha_de_nacimiento>
@@ -214,7 +214,7 @@
       	</div>
    	</metal:campo_calle>
    	
-   	<!-- Campo: urbanizacion
+   	<!-- Campo: sector/urbanizacion/barrio
 	================================================== -->
 	<metal:campo_urbanizacion define-macro="campo_urbanizacion">
 		<div class="control-group">
@@ -258,16 +258,16 @@
       	</div>
    	</metal:campo_apartamento>
    	
-   	<!-- Campo: local
+   	<!-- Campo: local numero 
 	================================================== -->
-	<metal:campo_local define-macro="campo_local">
+	<metal:campo_local_no define-macro="campo_local_no">
 		<div class="control-group">
-        	<label class="control-label" for="local">Local</label>
-        	<div class="controls" tal:define="existe exists:campo_local">
-          		<input type="text" class="input-large" id="local" name="local" tal:attributes="value python:campo_local if existe else ''" />
+        	<label class="control-label" for="local_no">Local</label>
+        	<div class="controls" tal:define="existe exists:campo_local_no">
+          		<input type="text" class="input-large" id="local_no" name="local_no" tal:attributes="value python:campo_local_no if existe else ''" />
         	</div>
       	</div>
-   	</metal:campo_local>
+   	</metal:campo_local_no>
    	
 	<!-- Campo: casa
 	================================================== -->
@@ -282,16 +282,40 @@
 
    	<!-- Campo: pais de origen
 	================================================== -->
-	<metal:campo_pais define-macro="campo_pais">
+	<metal:campo_pais_de_origen define-macro="campo_pais_de_origen">
 		<div class="control-group">
-        	<label class="control-label" for="pais">País de orígen</label>
-            <div class="controls" tal:define="existe exists:campo_pais">
-            	<select id="pais" name="pais">
-            		<option tal:repeat="item view.paises" tal:attributes="value item.territorio_id; selected python:'selected' if (existe and campo_pais == item.territorio_id) else None">${item.nombre}</option>
+        	<label class="control-label" for="pais_de_origen">País de orígen</label>
+            <div class="controls" tal:define="existe exists:campo_pais_de_origen">
+            	<select id="pais_de_origen" name="pais_de_origen">
+            		<option tal:repeat="item view.paises" tal:attributes="value item.territorio_id; selected python:'selected' if (existe and campo_pais_de_origen == item.territorio_id) else None">${item.nombre}</option>
               	</select>
             </div>
         </div>
-   	</metal:campo_pais>
+   	</metal:campo_pais_de_origen>
+   	
+   	<!-- Campo: tipo de codigo
+	================================================== -->
+	<metal:campo_tipo_de_codigo define-macro="campo_tipo_de_codigo">
+		<div class="control-group">
+        	<label class="control-label" for="tipo_de_codigo">Tipo de código</label>
+            <div class="controls" tal:define="existe exists:campo_tipo_de_codigo">
+            	<select id="tipo_de_codigo" name="tipo_de_codigo">
+            		<option tal:repeat="item view.tipos_de_codigo" tal:attributes="selected python:'selected' if (existe and campo_tipo_de_codigo == item.valor) else None">${item.valor}</option>
+              	</select>
+            </div>
+        </div>
+   	</metal:campo_tipo_de_codigo>
+   	
+   	<!-- Campo: codigo
+	================================================== -->
+	<metal:campo_codigo define-macro="campo_codigo">
+		<div class="control-group">
+        	<label class="control-label" for="codigo">Tipo de código</label>
+            <div class="controls" tal:define="existe exists:campo_codigo">
+          		<input type="text" class="input-large" id="codigo" name="codigo" tal:attributes="value python:campo_codigo if existe else ''" />
+        	</div>
+        </div>
+   	</metal:campo_codigo>
    	
    	<!-- Campo: fabricante
 	================================================== -->
@@ -317,14 +341,14 @@
    	
    	<!-- Campo: debut en el mercado
 	================================================== -->
-	<metal:campo_debut define-macro="campo_debut">
+	<metal:campo_debut_en_el_mercado define-macro="campo_debut_en_el_mercado">
 		<div class="control-group">
-            <label class="control-label" for="debut">Debut en el mercado</label>
-            <div class="controls">
-                <input data-datepicker="datepicker" id="debut" name="debut" class="small" type="text" />
+            <label class="control-label" for="debut_en_el_mercado">Debut en el mercado</label>
+            <div class="controls" tal:define="existe exists:campo_debut_en_el_mercado">
+                <input data-datepicker="datepicker" id="debut_en_el_mercado" name="debut_en_el_mercado" class="small" type="text" tal:attributes="value python:campo_debut_en_el_mercado if existe else ''" />
 			</div>
 		</div>
-   	</metal:campo_debut>
+   	</metal:campo_debut_en_el_mercado>
    	
    	<!-- Campo: largo
 	================================================== -->
@@ -442,7 +466,7 @@
 	        			<div metal:use-macro="view.formularios['campo_edificio']"></div>
 				      	<div metal:use-macro="view.formularios['campo_piso']"></div>
 				      	<div metal:use-macro="view.formularios['campo_apartamento']"></div>
-				      	<div metal:use-macro="view.formularios['campo_local']"></div>
+				      	<div metal:use-macro="view.formularios['campo_local_no']"></div>
 				      	<div metal:use-macro="view.formularios['campo_casa']"></div>
 				      	<div metal:use-macro="view.formularios['campo_calle']"></div>
 				      	<div metal:use-macro="view.formularios['campo_urbanizacion']"></div>
@@ -493,15 +517,17 @@
 	        <div class="modal-body">
 	        	<form class="form-horizontal" id="formulario_editar_producto" method="post" accept-charset="UTF-8">
 	        		<fieldset>
+	        			<div metal:use-macro="view.formularios['campo_tipo_de_codigo']"></div>
+	        			<div metal:use-macro="view.formularios['campo_codigo']"></div>
 						<div metal:use-macro="view.formularios['campo_fabricante']"></div>
 				      	<div metal:use-macro="view.formularios['campo_modelo']"></div>
 				      	<div metal:use-macro="view.formularios['campo_nombre']"></div>
-				      	<div metal:use-macro="view.formularios['campo_debut']"></div>
+				      	<div metal:use-macro="view.formularios['campo_debut_en_el_mercado']"></div>
 				      	<div metal:use-macro="view.formularios['campo_largo']"></div>
 				      	<div metal:use-macro="view.formularios['campo_ancho']"></div>
 				      	<div metal:use-macro="view.formularios['campo_alto']"></div>
 				      	<div metal:use-macro="view.formularios['campo_peso']"></div>				      	
-				      	<div metal:use-macro="view.formularios['campo_pais']"></div>
+				      	<div metal:use-macro="view.formularios['campo_pais_de_origen']"></div>
 			          	<div metal:use-macro="view.formularios['botones_pie_de_pagina']"></div>
 			        </fieldset>
 				</form>
@@ -528,7 +554,10 @@
 						<div metal:use-macro="view.formularios['campo_nombre']"></div>
       					<div metal:use-macro="view.formularios['campo_apellido']"></div>
       					<div metal:use-macro="view.formularios['campo_ubicacion']"></div>
-      					<tal:block tal:define="mostrar_campo_sexo python:'True' if not consumidor_asociado else None; mostrar_campo_fecha_de_nacimiento python:'True' if not consumidor_asociado else None">
+      					<!-- Si este usuario no tiene un consumidor asociado, permitir que 
+      					creen uno especificando sexo y fecha de nacimiento. De lo contrario,
+      					son campos no editables -->
+      					<tal:block tal:define="habilitar_campo_sexo python:'True' if not consumidor_asociado else None; habilitar_campo_fecha_de_nacimiento python:'True' if not consumidor_asociado else None">
       						<div metal:use-macro="view.formularios['campo_sexo']"></div>
 		  					<div metal:use-macro="view.formularios['campo_fecha_de_nacimiento']"></div>
 		  				</tal:block>

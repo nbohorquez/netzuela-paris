@@ -6,7 +6,8 @@
 	<div metal:fill-slot="contenido" tal:define="cliente view.cliente_padre">
 		
 		<!-- Encabezado
-		================================================== -->	
+		================================================== -->
+		<div metal:use-macro="view.macros['resultado_de_operacion']"></div>
 		<div class="page-header">
 			<div class="row-fluid">
 				<div class="span3">
@@ -46,11 +47,13 @@
 					  			<tbody>
 						    		<tr>
 						    			<td>
-						    				${cliente.edificio_cc} ${cliente.piso} ${cliente.apartamento} ${cliente.local_no} ${cliente.casa}<br />
-											${cliente.calle}, ${cliente.sector_urb_barrio}<br />
+						    				<span tal:condition="cliente.edificio_cc">Edif. ${cliente.edificio_cc}</span><span tal:condition="cliente.casa">Casa ${cliente.casa}</span><span tal:condition="cliente.piso">, Piso ${cliente.piso}</span><span tal:condition="cliente.apartamento">, Apart. ${cliente.apartamento}</span><span tal:condition="cliente.local_no">, Local ${cliente.local_no}</span>
+											<br />
+											<span tal:condition="cliente.calle">Cl. ${cliente.calle}</span><span tal:condition="cliente.sector_urb_barrio">, Sector ${cliente.sector_urb_barrio}</span>
+											<br />
 											<span tal:condition ="region">
-												${region.parroquia}<br />
-												${region.municipio}, ${region.estado}<br />
+												Parr. ${region.parroquia}<br />
+												${region.municipio}, Edo. ${region.estado}<br />
 											</span> 
 											${cliente.telefono}<br />
 										</td>
@@ -58,7 +61,7 @@
 					  			</tbody>
 							</table>
 							<div metal:use-macro="view.formularios['editar_direccion']" 
-								tal:define="campo_edificio cliente.edificio_cc; campo_piso cliente.piso; campo_apartamento cliente.apartamento; campo_local cliente.local_no; campo_casa cliente.casa; campo_calle cliente.calle; campo_urbanizacion cliente.sector_urb_barrio; campo_ubicacion territorio"></div>
+								tal:define="campo_edificio cliente.edificio_cc; campo_piso cliente.piso; campo_apartamento cliente.apartamento; campo_local_no cliente.local_no; campo_casa cliente.casa; campo_calle cliente.calle; campo_urbanizacion cliente.sector_urb_barrio; campo_ubicacion territorio"></div>
 		  				</div>
 		  				<div class="span4 editable">
 		  					<table id="horarios" class="table pull-left" tal:define="horarios view.horarios">
@@ -157,6 +160,7 @@
 		<script type="text/javascript" src="/estatico/js/bootstrap-carousel.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-popover.js"></script>
 		<script type="text/javascript" src="/estatico/js/bootstrap-modal.js"></script>
+		<script type="text/javascript" src="/estatico/js/bootstrap-alert.js"></script>
 		<script type="text/javascript" src="/estatico/js/noticias.js"></script>
 		<script type="text/javascript" src="/estatico/js/tienda.js"></script>
 	</div>

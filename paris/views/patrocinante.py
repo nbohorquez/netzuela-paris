@@ -1,10 +1,13 @@
+# -*- coding: utf-8 -*-
 '''
 Created on 31/07/2012
 
 @author: nestor
 '''
 
-from paris.comunes import Comunes
+from paris.comunes import (
+    Comunes
+)    
 from paris.constantes import MENSAJE_DE_ERROR
 from paris.diagramas import Diagramas
 from pyramid.decorator import reify
