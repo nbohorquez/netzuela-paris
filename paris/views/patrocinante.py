@@ -10,6 +10,7 @@ from paris.comunes import (
 )    
 from paris.constantes import MENSAJE_DE_ERROR
 from paris.diagramas import Diagramas
+from paris.models.spuria import editar_patrocinante
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.security import authenticated_userid
@@ -42,14 +43,39 @@ class PatrocinanteView(Diagramas, Comunes):
     def peticion_id(self):
         return self.patrocinante_id
     
+    @property
+    def patrocinante(self):
+        return self.obtener_patrocinante(self.patrocinante_id)
+    
     @reify
     def cliente_padre(self):
         return self.obtener_cliente_padre(self.tipo_de_peticion, self.patrocinante_id)
     
     @view_config(route_name='patrocinante', renderer='../plantillas/patrocinante.pt')
-    def patrocinante_view(self):
-        var_patrocinante = self.obtener_patrocinante(self.patrocinante_id)
-        resultado = HTTPNotFound(MENSAJE_DE_ERROR) \
-        if (var_patrocinante is None) \
-        else {'pagina': 'Patrocinante', 'patrocinante': var_patrocinante, 'autentificado': authenticated_userid(self.peticion)}
-        return resultado
+    def patrocinante_view(self):        
+        editar = False
+        aviso = None
+        
+        if self.patrocinante is None:
+            return HTTPNotFound(MENSAJE_DE_ERROR)
+        
+        autentificado = authenticated_userid(self.peticion)
+        
+        if autentificado:
+            usuario_autentificado = self.obtener_usuario('correo_electronico', autentificado)
+            propietario = self.obtener_usuario('id', self.cliente_padre.propietario)
+            editar = True if usuario_autentificado.usuario_id == propietario.usuario_id else False
+            
+            if editar and ('guardar' in self.peticion.POST):
+                resultado = editar_patrocinante(dict(self.peticion.POST), self.patrocinante_id)
+                aviso = { 'error': 'Error', 'mensaje': resultado['error'] } \
+                if (resultado['error'] is not None) \
+                else { 'error': 'OK', 'mensaje': 'Datos actualizados correctamente' }
+        
+        return {
+            'pagina': 'Patrocinante', 
+            'usuario': self.patrocinante, 
+            'autentificado': autentificado, 
+            'aviso': aviso, 
+            'editar': editar
+        }

@@ -567,3 +567,14 @@ def editar_tienda(parametros, _id):
     except AttributeError as e:
         error = 'Consumidor no existe'
     """
+    
+def editar_patrocinante(parametros, _id):
+    error = None        
+    try:
+        pat = DBSession.query(cliente).\
+        join(patrocinante).\
+        filter(patrocinante.patrocinante_id == _id).first()
+    except Invalid as e:
+        error = e.msg
+    finally:
+        return error

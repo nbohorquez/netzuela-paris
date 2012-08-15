@@ -61,7 +61,7 @@
 					  				</tr>
 					  			</tbody>
 							</table>
-							<div metal:use-macro="view.formularios['editar_usuario']"
+							<div tal:condition="editar" metal:use-macro="view.formularios['editar_usuario']"
 								tal:define="campo_nombre usuario.nombre; campo_apellido usuario.apellido; campo_ubicacion territorio; campo_grado_de_instruccion python:consumidor.grado_de_instruccion if consumidor else None; campo_sexo python:consumidor.sexo if consumidor else None; campo_fecha_de_nacimiento view.fecha_de_nacimiento; consumidor_asociado consumidor"></div>
 						</div>
 						<div class="span7"></div>

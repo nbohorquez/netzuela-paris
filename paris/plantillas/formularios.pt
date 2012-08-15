@@ -413,6 +413,36 @@
       	</div>
    	</metal:campo_descripcion>
    	
+   	<!-- Campo: laborable
+	================================================== -->
+	<metal:campo_laborable define-macro="campo_laborable">
+		<div class="control-group">
+            <label class="control-label">${dia}</label>
+            <div class="controls" tal:define="existe exists:campo_laborable">
+            	<label class="radio inline" tal:repeat="item view.turnos">
+                	<input type="radio" name="${dia}" value="${item}" tal:attributes="checked python:'checked' if (existe and campo_laborable == item) else None" />
+                	<span class="help-inline">${item}</span>
+              	</label>
+        	</div>
+        </div>
+   	</metal:campo_laborable>
+   	
+   	<!-- Campo: turno
+	================================================== -->
+	<metal:campo_turno define-macro="campo_turno">
+		<div class="control-group">
+            <!--<label class="control-label">Turno</label>-->
+            <div class="controls">
+            	<div class="input-prepend" tal:define="existe exists:campo_hora_de_apertura">
+            		<span class="add-on">De</span><input type="text" class="input-small" id="hora_de_apertura" name="hora_de_apertura" placeholder="06:00" tal:attributes="value python:campo_hora_de_apertura if existe else ''" />
+            	</div>
+            	<div class="input-prepend" tal:define="existe exists:campo_hora_de_cierre">
+            		<span class="add-on">A</span><input type="text" class="input-small" id="hora_de_cierre" name="hora_de_cierre" placeholder="17:00" tal:attributes="value python:campo_hora_de_cierre if existe else ''" />
+            	</div>
+            </div>
+        </div>
+   	</metal:campo_turno>
+   	
    	<!-- Registro de usuario
 	================================================== -->
 	<metal:registro define-macro="registro_usuario">
@@ -494,6 +524,13 @@
 	        <div class="modal-body">
 	        	<form class="form-horizontal" id="formulario_editar_horario" method="post" accept-charset="UTF-8">
 					<fieldset>
+						<tal:block tal:repeat="horario horarios">
+							<div tal:define="dia horario.dia; campo_laborable python: 'Abierto' if horario.laborable else 'Cerrado'" metal:use-macro="view.formularios['campo_laborable']"></div>
+							<tal:block tal:repeat="turno horario.turnos">
+								<div tal:define="campo_hora_de_apertura turno.hora_de_apertura; campo_hora_de_cierre turno.hora_de_cierre" metal:use-macro="view.formularios['campo_turno']"></div>								
+							</tal:block>
+							<hr />
+						</tal:block>
 			          	<div metal:use-macro="view.formularios['botones_pie_de_pagina']"></div>
 			        </fieldset>
 				</form>

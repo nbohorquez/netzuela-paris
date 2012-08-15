@@ -34,7 +34,6 @@ from sqlalchemy.orm import aliased
 
 class UsuarioView(Diagramas, Comunes):
     def __init__(self, peticion):
-        self.usuario = None
         self.peticion = peticion
         self.pagina_actual = peticion.url
         if 'usuario_id' in self.peticion.matchdict:
@@ -59,6 +58,10 @@ class UsuarioView(Diagramas, Comunes):
     @reify
     def peticion_id(self):
         return self.usuario_id
+    
+    @property
+    def usuario(self):
+        return self.obtener_usuario('id', self.usuario_id)
     
     @reify
     def registro(self):
@@ -155,14 +158,28 @@ class UsuarioView(Diagramas, Comunes):
     @view_config(route_name='usuario', renderer='../plantillas/usuario.pt', request_method='GET')
     @view_config(route_name='usuario', renderer='../plantillas/usuario.pt', request_method='POST')
     def usuario_view(self):
+        editar = False
         aviso = None
-        if 'guardar' in self.peticion.POST:
-            resultado = editar_usuario(dict(self.peticion.POST), self.usuario_id)
-            aviso = { 'error': 'Error', 'mensaje': resultado['error'] } \
-            if (resultado['error'] is not None) \
-            else { 'error': 'OK', 'mensaje': 'Datos actualizados correctamente' }
-
-        self.usuario = self.obtener_usuario('id', self.usuario_id)
-        return HTTPNotFound(MENSAJE_DE_ERROR) \
-        if (self.usuario is None) \
-        else {'pagina': 'Usuario', 'usuario': self.usuario, 'autentificado': authenticated_userid(self.peticion), 'aviso': aviso}
+        
+        if self.usuario is None:
+            return HTTPNotFound(MENSAJE_DE_ERROR)
+        
+        autentificado = authenticated_userid(self.peticion)
+        
+        if autentificado:
+            usuario_autentificado = self.obtener_usuario('correo_electronico', autentificado)
+            editar = True if usuario_autentificado.usuario_id == self.usuario.usuario_id else False
+            
+            if editar and ('guardar' in self.peticion.POST):
+                resultado = editar_usuario(dict(self.peticion.POST), self.usuario_id)
+                aviso = { 'error': 'Error', 'mensaje': resultado['error'] } \
+                if (resultado['error'] is not None) \
+                else { 'error': 'OK', 'mensaje': 'Datos actualizados correctamente' }
+        
+        return {
+            'pagina': 'Usuario', 
+            'usuario': self.usuario, 
+            'autentificado': autentificado, 
+            'aviso': aviso, 
+            'editar': editar
+        }

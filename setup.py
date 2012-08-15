@@ -18,7 +18,7 @@ requires = [
 	'py-bcrypt',
 	'FormEncode',
 	'pyDNS'
-    ]
+]
 
 setup(name='paris',
       version='0.0',

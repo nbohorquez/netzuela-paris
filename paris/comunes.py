@@ -545,6 +545,10 @@ class Comunes(object):
     def dias(self):
         return DBSession.query(dia).order_by(asc(dia.orden)).all()
     
+    @reify
+    def turnos(self):
+        return ['Abierto', 'Cerrado']
+    
     def obtener_foto(self, objeto, objeto_id, tamano):
         return sql_foto(objeto, objeto_id, tamano).first()
     

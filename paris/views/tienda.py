@@ -62,7 +62,6 @@ import string
 
 class TiendaView(Diagramas, Comunes):
     def __init__(self, peticion):
-        self.tienda = None
         self.peticion = peticion
         self.pagina_actual = peticion.url
         if 'tienda_id' in self.peticion.matchdict:
@@ -88,12 +87,16 @@ class TiendaView(Diagramas, Comunes):
     def tipo_de_rastreable(self):
         return 'cliente'
     
+    @property
+    def tienda(self):
+        return self.obtener_tienda(self.tienda_id)
+
     @reify
     def inventario_reciente(self):
         return DBSession.query(inventario_reciente).\
         filter_by(tienda_id = self.tienda_id).all()
         
-    @reify
+    @property
     def cliente_padre(self):
         return self.obtener_cliente_padre(self.tipo_de_peticion, self.tienda_id)
 
@@ -163,7 +166,8 @@ class TiendaView(Diagramas, Comunes):
                 horario['laborable'] = jornada.laborable
                 turnos = DBSession.query(turno).\
                 filter(and_(turno.tienda_id == self.tienda_id, turno.dia == jornada.dia)).all()
-                horario['turnos'] = string.join(["{0.hora_de_apertura} - {0.hora_de_cierre} ".format(t) for t in turnos])
+                #horario['turnos'] = [{'apertura': str(t.hora_de_apertura), 'cierre': str(t.hora_de_cierre)} for t in turnos]
+                horario['turnos'] = turnos
                 resultado.append(horario)
         else:
             resultado = None
@@ -208,30 +212,47 @@ class TiendaView(Diagramas, Comunes):
     @view_config(route_name='tienda', renderer='../plantillas/tienda.pt', request_method='GET')
     @view_config(route_name='tienda', renderer='../plantillas/tienda.pt', request_method='POST')
     def tienda_view(self):
+        editar = False
         aviso = None
-        if 'guardar' in self.peticion.POST:
-            error = editar_tienda(dict(self.peticion.POST), self.tienda_id)
-            aviso = { 'error': 'Error', 'mensaje': error } \
-            if (error is not None) \
-            else { 'error': 'OK', 'mensaje': 'Datos actualizados correctamente' }
-            
-        self.tienda = self.obtener_tienda(self.tienda_id)
-        resultado = HTTPNotFound(MENSAJE_DE_ERROR) \
-        if (self.tienda is None) \
-        else {'pagina': 'Tienda', 'tienda': self.tienda, 'autentificado': authenticated_userid(self.peticion), 'aviso': aviso}
-        return resultado
+        
+        if self.tienda is None:
+            return HTTPNotFound(MENSAJE_DE_ERROR)
+        
+        autentificado = authenticated_userid(self.peticion)
+        
+        if autentificado:
+            usuario_autentificado = self.obtener_usuario('correo_electronico', autentificado)
+            propietario = self.obtener_usuario('id', self.cliente_padre.propietario)
+            editar = True if usuario_autentificado.usuario_id == propietario.usuario_id else False
+        
+            if editar and ('guardar' in self.peticion.POST):
+                error = editar_tienda(dict(self.peticion.POST), self.tienda_id)
+                aviso = { 'error': 'Error', 'mensaje': error } \
+                if (error is not None) \
+                else { 'error': 'OK', 'mensaje': 'Datos actualizados correctamente' }
+        
+        return {
+            'pagina': 'Tienda', 
+            'tienda': self.tienda, 
+            'autentificado': autentificado, 
+            'aviso': aviso, 
+            'editar': editar
+        }
 
     @view_config(route_name="tienda_turno", renderer="json")
     def tienda_turno_view(self):
         var_dia = self.peticion.params['dia']
         
-        apertura, cierre = DBSession.query(turno.hora_de_apertura, turno.hora_de_cierre).\
+        turnos = []
+        for apertura, cierre in DBSession.query(turno.hora_de_apertura, turno.hora_de_cierre).\
         filter(and_(
             turno.tienda_id == self.tienda_id, 
             turno.dia == var_dia)
-        ).first()
-        
-        return { 'apertura': "{0}".format(str(apertura)), 'cierre': "{0}".format(str(cierre)) } 
+        ).all():
+            _turno = {'apertura': "{0}".format(str(apertura)), 'cierre': "{0}".format(str(cierre))} 
+            turnos.append(_turno)
+                    
+        return turnos
         
     @view_config(route_name="tienda_coordenadas", renderer="json")
     def tienda_coordenadas_view(self):

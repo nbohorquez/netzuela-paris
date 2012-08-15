@@ -19,6 +19,7 @@ from paris.models.spuria import (
     categoria,
     cliente,
     consumidor,
+    creador,
     croquis,
     DBSession,
     describible,
@@ -54,7 +55,6 @@ from pyramid.view import view_config
 
 class ProductoView(Diagramas, Comunes):
     def __init__(self, peticion):
-        self.producto = None
         self.peticion = peticion
         self.pagina_actual = peticion.url
         if 'producto_id' in self.peticion.matchdict:
@@ -79,6 +79,10 @@ class ProductoView(Diagramas, Comunes):
     @reify
     def tipo_de_rastreable(self):
         return 'producto'
+    
+    @property
+    def producto(self):
+        return self.obtener_producto(self.producto_id)
     
     @reify
     def inventario_reciente(self):
@@ -146,15 +150,28 @@ class ProductoView(Diagramas, Comunes):
     @view_config(route_name='producto', renderer='../plantillas/producto.pt', request_method='GET')
     @view_config(route_name='producto', renderer='../plantillas/producto.pt', request_method='POST')
     def producto_view(self):
+        editar = False
         aviso = None
-        if 'guardar' in self.peticion.POST:
-            error = editar_producto(dict(self.peticion.POST), self.producto_id)
-            aviso = { 'error': 'Error', 'mensaje': error } \
-            if (error is not None) \
-            else { 'error': 'OK', 'mensaje': 'Datos actualizados correctamente' }
+        
+        if self.producto is None:
+            return HTTPNotFound(MENSAJE_DE_ERROR)
+        
+        autentificado = authenticated_userid(self.peticion)
+        
+        if autentificado:
+            usuario_autentificado = self.obtener_usuario('correo_electronico', autentificado)
+            editar = True if usuario_autentificado.usuario_id == creador else False
+                        
+            if editar and ('guardar' in self.peticion.POST):
+                error = editar_producto(dict(self.peticion.POST), self.producto_id)
+                aviso = { 'error': 'Error', 'mensaje': error } \
+                if (error is not None) \
+                else { 'error': 'OK', 'mensaje': 'Datos actualizados correctamente' }
             
-        self.producto = self.obtener_producto(self.producto_id)
-        resultado = HTTPNotFound(MENSAJE_DE_ERROR) \
-        if (self.producto is None) \
-        else {'pagina': 'Producto', 'producto': self.producto, 'autentificado': authenticated_userid(self.peticion), 'aviso': aviso}
-        return resultado
+        return {
+            'pagina': 'Producto', 
+            'producto': self.producto, 
+            'autentificado': autentificado,
+            'aviso': aviso,
+            'editar': editar
+        }

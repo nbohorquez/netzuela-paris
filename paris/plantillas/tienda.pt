@@ -60,11 +60,11 @@
 					  				</tr>
 					  			</tbody>
 							</table>
-							<div metal:use-macro="view.formularios['editar_direccion']" 
+							<div tal:condition="editar" metal:use-macro="view.formularios['editar_direccion']" 
 								tal:define="campo_edificio cliente.edificio_cc; campo_piso cliente.piso; campo_apartamento cliente.apartamento; campo_local_no cliente.local_no; campo_casa cliente.casa; campo_calle cliente.calle; campo_urbanizacion cliente.sector_urb_barrio; campo_ubicacion territorio"></div>
 		  				</div>
-		  				<div class="span4 editable">
-		  					<table id="horarios" class="table pull-left" tal:define="horarios view.horarios">
+		  				<div class="span4 editable" tal:define="horarios view.horarios">
+		  					<table id="horarios" class="table pull-left">
 					  			<thead>
 					    			<tr>
 					    				<tal:block tal:repeat="horario horarios">
@@ -76,7 +76,7 @@
 						    		<tr>
 						    			<tal:block tal:repeat="horario horarios">
 						    				<td>
-						    					<a href="#" tal:condition="horario.laborable" rel="popover" title="${horario.dia}" data-content="${horario.turnos}">
+						    					<a href="#" tal:condition="horario.laborable" rel="popover" title="${horario.dia}" tal:attributes="data-content python:'\n'.join(['{0.hora_de_apertura} - {0.hora_de_cierre}'.format(t) for t in horario.turnos])">
 						    						<i class="icon-ok"></i>
 						    					</a>
 						    					<a href="#" tal:condition="not horario.laborable" rel="popover" title="${horario.dia}" data-content="No laborable">
@@ -97,7 +97,7 @@
 					  				</tr>
 					  			</tbody>
 							</table>
-							<div metal:use-macro="view.formularios['editar_horario']"></div>
+							<div tal:condition="editar" metal:use-macro="view.formularios['editar_horario']"></div>
 		  				</div>
 		  				<div class="span4"></div>
 		  			</div>
@@ -115,7 +115,7 @@
         		<div class="editable">
 					<div metal:use-macro="view.macros['ruta_de_categoria']" tal:define="ruta view.ruta_categoria_actual">
 						<div metal:fill-slot="ultima_rebanada">
-							<div metal:use-macro="view.formularios['editar_categoria']" tal:define="campo_categoria cliente.categoria"></div>
+							<div tal:condition="editar" metal:use-macro="view.formularios['editar_categoria']" tal:define="campo_categoria cliente.categoria"></div>
 						</div>
 					</div>
 				</div>
@@ -135,7 +135,7 @@
 				  				</tr>
 				  			</tbody>
 						</table>
-						<div metal:use-macro="view.formularios['editar_descripcion']" tal:define="campo_descripcion view.descripciones[0].contenido"></div>
+						<div tal:condition="editar" metal:use-macro="view.formularios['editar_descripcion']" tal:define="campo_descripcion view.descripciones[0].contenido"></div>
           			</div>
 				</div>
 				<div class="row-fluid">

@@ -25,14 +25,35 @@ Tienda.prototype.actualizar = function () {
 		inicio_dia.setSeconds(0);
 		inicio_dia = inicio_dia.getTime();
 		
-		var apertura = string2date(data.apertura).getTime() - inicio_dia;
-		var cierre = string2date(data.cierre).getTime() - inicio_dia;
 		var ahorita = new Date().getTime() - inicio_dia;
-		
-		apertura = redondear(apertura * milisegundos_a_horas, 0);
-		cierre = redondear(cierre * milisegundos_a_horas, 0);
 		ahorita = redondear(ahorita * milisegundos_a_horas, 2);
+		
+		var turno = null;
+		var apertura = new Array();
+		var cierre = new Array(); 
+		
+		/* Revisamos cual de los turnos que nos envian es el que aplica para la hora actual */
+		for (var i = 0, len_data = data.length; i < len_data; i++) {
+			tmp_apertura = string2date(data[i].apertura).getTime() - inicio_dia;
+			tmp_cierre = string2date(data[i].cierre).getTime() - inicio_dia;
+			apertura.push(redondear(tmp_apertura * milisegundos_a_horas, 0));
+			cierre.push(redondear(tmp_cierre * milisegundos_a_horas, 0));
 
+			if (ahorita < apertura[i] || (ahorita < cierre[i] && ahorita >= apertura[i])) {
+				turno = i;
+				break;
+			}
+			else if (ahorita >= cierre[i] && (i == len_data - 1)) {
+				turno = i;
+				break;
+			}
+		}
+
+		/* Tomamos el turno pertinente */
+		apertura = apertura[turno];
+		cierre = cierre[turno];
+
+		/* Logica de la barra de turno */
 		if (cierre == apertura || ahorita < apertura) {
 			porcentaje = 0;
 			var minutos = ((apertura - ahorita) % 1);
