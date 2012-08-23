@@ -109,21 +109,23 @@ def formatear_entrada_registro(reg, peticion, demandante):
         join(cliente).\
         filter(cliente.rastreable_p == _id)
 
-        tmp1, tmp2 = DBSession.query(case([
-            (cliente.rif == tienda.cliente_p, 'tienda'),
-            (cliente.rif == patrocinante.cliente_p, 'patrocinante'),
-        ]),
-        case([
-            (cliente.rif == tienda.cliente_p, tienda.tienda_id),
-            (cliente.rif == patrocinante.cliente_p, patrocinante.patrocinante_id),
-        ])).\
-        filter(and_(
-            or_(
-                cliente.rif == tienda.cliente_p, 
-                cliente.rif == patrocinante.cliente_p
-            ),
-            cliente.rastreable_p == _id, 
-        )).first()
+        x1 = DBSession.query(
+            case([(cliente.rif == tienda.cliente_p, 'tienda')]),
+            case([(cliente.rif == tienda.cliente_p, tienda.tienda_id)])
+        ).filter(and_(
+            cliente.rif == tienda.cliente_p, 
+            cliente.rastreable_p == _id
+        ))
+        
+        x2 = DBSession.query(
+            case([(cliente.rif == patrocinante.cliente_p, 'patrocinante')]),
+            case([(cliente.rif == patrocinante.cliente_p, patrocinante.patrocinante_id)])
+        ).filter(and_(
+            cliente.rif == patrocinante.cliente_p,
+            cliente.rastreable_p == _id
+        ))
+        
+        tmp1, tmp2 = x1.union(x2).first()
         
         valor['href'] = {
             'tienda': lambda x: peticion.route_url('tienda', tienda_id = x),
@@ -140,7 +142,7 @@ def formatear_entrada_registro(reg, peticion, demandante):
             'Telefono': diccionario.telefono,
             'Ubicacion': diccionario.ubicacion
         }
-        
+
         return valor
     def reg_usuario(_id, muestro_href):
         valor = {}
@@ -234,21 +236,36 @@ def formatear_entrada_registro(reg, peticion, demandante):
     def reg_descripcion(_id, muestro_href):
         valor = {}
         valor['nombre'] = 'descripcion'
-        tmp = DBSession.query(case([
-            (descripcion.describible == producto.describible_p, func.concat(producto.fabricante, ' ', producto.nombre)),
-            (descripcion.describible == cliente.describible_p, cliente.nombre_legal),
-            (descripcion.describible == usuario.describible_p, func.concat(usuario.nombre, ' ', usuario.apellido)),
-            (descripcion.describible == publicidad.describible_p, publicidad.nombre),
-        ])).\
-        filter(and_(
-            or_(
-                descripcion.describible == producto.describible_p,
-                descripcion.describible == cliente.describible_p,
-                descripcion.describible == usuario.describible_p,
-                descripcion.describible == publicidad.describible_p
-            ),
+        
+        x1 = DBSession.query(case([
+            (descripcion.describible == producto.describible_p, func.concat(producto.fabricante, ' ', producto.nombre))
+        ])).filter(and_(
+            descripcion.describible == producto.describible_p,
             descripcion.rastreable_p == _id
-        )).first()
+        ))
+        
+        x2 = DBSession.query(case([
+            (descripcion.describible == cliente.describible_p, cliente.nombre_legal)
+        ])).filter(and_(
+            descripcion.describible == cliente.describible_p,
+            descripcion.rastreable_p == _id
+        ))
+        
+        x3 = DBSession.query(case([
+            (descripcion.describible == usuario.describible_p, func.concat(usuario.nombre, ' ', usuario.apellido))
+        ])).filter(and_(
+            descripcion.describible == usuario.describible_p,
+            descripcion.rastreable_p == _id
+        ))
+        
+        x4 = DBSession.query(case([
+            (descripcion.describible == publicidad.describible_p, publicidad.nombre)
+        ])).filter(and_(
+            descripcion.describible == publicidad.describible_p,
+            descripcion.rastreable_p == _id
+        ))
+        
+        tmp = x1.union(x2, x3, x4).first()
         valor['titulo'] = tmp[0] if (tmp is not None) else ""
         valor['href'] = '#' if muestro_href else None
         valor['diccionario'] = {}
@@ -336,106 +353,49 @@ def formatear_entrada_registro(reg, peticion, demandante):
     return entrada
 
 def rastreable_a_tipo(rastreable_id):
-    tmp = DBSession.query(case([(rastreable_id == cliente.rastreable_p, 'cliente')])).\
-    filter(rastreable_id == cliente.rastreable_p).first()
-    if (tmp is not None):
-        return tmp[0]
+    tmp1 = DBSession.query(case([(rastreable_id == cliente.rastreable_p, 'cliente')])).\
+    filter(rastreable_id == cliente.rastreable_p)
     
-    tmp = DBSession.query(case([(rastreable_id == inventario.rastreable_p, 'inventario')])).\
-    filter(rastreable_id == inventario.rastreable_p).first()
-    if (tmp is not None):
-        return tmp[0]
+    tmp2 = DBSession.query(case([(rastreable_id == inventario.rastreable_p, 'inventario')])).\
+    filter(rastreable_id == inventario.rastreable_p)
     
-    tmp = DBSession.query(case([(rastreable_id == producto.rastreable_p, 'producto')])).\
-    filter(rastreable_id == producto.rastreable_p).first()
-    if (tmp is not None):
-        return tmp[0]
+    tmp3 = DBSession.query(case([(rastreable_id == producto.rastreable_p, 'producto')])).\
+    filter(rastreable_id == producto.rastreable_p)
     
-    tmp = DBSession.query(case([(rastreable_id == mensaje.rastreable_p, 'mensaje')])).\
-    filter(rastreable_id == mensaje.rastreable_p).first()
-    if (tmp is not None):
-        return tmp[0]
+    tmp4 = DBSession.query(case([(rastreable_id == mensaje.rastreable_p, 'mensaje')])).\
+    filter(rastreable_id == mensaje.rastreable_p)
     
-    tmp = DBSession.query(case([(rastreable_id == usuario.rastreable_p, 'usuario')])).\
-    filter(rastreable_id == usuario.rastreable_p).first()
-    if (tmp is not None):
-        return tmp[0]
+    tmp5 = DBSession.query(case([(rastreable_id == usuario.rastreable_p, 'usuario')])).\
+    filter(rastreable_id == usuario.rastreable_p)
     
-    tmp = DBSession.query(case([(rastreable_id == busqueda.rastreable_p, 'busqueda')])).\
-    filter(rastreable_id == busqueda.rastreable_p).first()
-    if (tmp is not None):
-        return tmp[0]
+    tmp6 = DBSession.query(case([(rastreable_id == busqueda.rastreable_p, 'busqueda')])).\
+    filter(rastreable_id == busqueda.rastreable_p)
     
-    tmp = DBSession.query(case([(rastreable_id == calificacion_resena.rastreable_p, 'calificacion_resena')])).\
-    filter(rastreable_id == calificacion_resena.rastreable_p).first()
-    if (tmp is not None):
-        return tmp[0]
+    tmp7 = DBSession.query(case([(rastreable_id == calificacion_resena.rastreable_p, 'calificacion_resena')])).\
+    filter(rastreable_id == calificacion_resena.rastreable_p)
     
-    tmp = DBSession.query(case([(rastreable_id == seguidor.rastreable_p, 'seguidor')])).\
-    filter(rastreable_id == seguidor.rastreable_p).first()
-    if (tmp is not None):
-        return tmp[0]
+    tmp8 = DBSession.query(case([(rastreable_id == seguidor.rastreable_p, 'seguidor')])).\
+    filter(rastreable_id == seguidor.rastreable_p)
     
-    tmp = DBSession.query(case([(rastreable_id == descripcion.rastreable_p, 'descripcion')])).\
-    filter(rastreable_id == descripcion.rastreable_p).first()
-    if (tmp is not None):
-        return tmp[0]
+    tmp9 = DBSession.query(case([(rastreable_id == descripcion.rastreable_p, 'descripcion')])).\
+    filter(rastreable_id == descripcion.rastreable_p)
     
-    tmp = DBSession.query(case([(rastreable_id == publicidad.rastreable_p, 'publicidad')])).\
-    filter(rastreable_id == publicidad.rastreable_p).first()
-    if (tmp is not None):
-        return tmp[0]
+    tmp10 = DBSession.query(case([(rastreable_id == publicidad.rastreable_p, 'publicidad')])).\
+    filter(rastreable_id == publicidad.rastreable_p)
     
-    tmp = DBSession.query(case([(rastreable_id == estadisticas.rastreable_p, 'estadisticas')])).\
-    filter(rastreable_id == estadisticas.rastreable_p).first()
-    if (tmp is not None):
-        return tmp[0]
+    tmp11 = DBSession.query(case([(rastreable_id == estadisticas.rastreable_p, 'estadisticas')])).\
+    filter(rastreable_id == estadisticas.rastreable_p)
     
-    tmp = DBSession.query(case([(rastreable_id == croquis.rastreable_p, 'croquis')])).\
-    filter(rastreable_id == croquis.rastreable_p).first()
-    if (tmp is not None):
-        return tmp[0]
+    tmp12 = DBSession.query(case([(rastreable_id == croquis.rastreable_p, 'croquis')])).\
+    filter(rastreable_id == croquis.rastreable_p)
+        
+    tmp13 = DBSession.query(case([(rastreable_id == factura.rastreable_p, 'factura')])).\
+    filter(rastreable_id == factura.rastreable_p)
     
-    tmp = DBSession.query(case([(rastreable_id == factura.rastreable_p, 'factura')])).\
-    filter(rastreable_id == factura.rastreable_p).first()
-    if (tmp is not None):
-        return tmp[0]
-    
-    return None
-    """
-    tmp = DBSession.query(case([
-        (rastreable_id == cliente.rastreable_p, 'cliente'),
-        (rastreable_id == inventario.rastreable_p, 'inventario'),
-        (rastreable_id == producto.rastreable_p, 'producto'),
-        (rastreable_id == mensaje.rastreable_p, 'mensaje'),
-        (rastreable_id == usuario.rastreable_p, 'usuario'),
-        (rastreable_id == busqueda.rastreable_p, 'busqueda'),
-        (rastreable_id == calificacion_resena.rastreable_p, 'calificacion_resena'),
-        (rastreable_id == seguidor.rastreable_p, 'seguidor'),
-        (rastreable_id == descripcion.rastreable_p, 'descripcion'),
-        (rastreable_id == publicidad.rastreable_p, 'publicidad'),
-        (rastreable_id == estadisticas.rastreable_p, 'estadisticas'),
-        (rastreable_id == croquis.rastreable_p, 'croquis'),
-        (rastreable_id == factura.rastreable_p, 'factura')
-    ])).\
-    filter(or_(
-        rastreable_id == cliente.rastreable_p,
-        rastreable_id == inventario.rastreable_p,
-        rastreable_id == producto.rastreable_p,
-        rastreable_id == mensaje.rastreable_p,
-        rastreable_id == usuario.rastreable_p,
-        rastreable_id == busqueda.rastreable_p,
-        rastreable_id == calificacion_resena.rastreable_p,
-        rastreable_id == seguidor.rastreable_p,
-        rastreable_id == descripcion.rastreable_p,
-        rastreable_id == publicidad.rastreable_p,
-        rastreable_id == estadisticas.rastreable_p,
-        rastreable_id == croquis.rastreable_p,
-        rastreable_id == factura.rastreable_p
-    )).first()
+    tmp = tmp1.union(tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, 
+                     tmp9, tmp10, tmp11, tmp12, tmp13).first()
 
     return tmp[0] if (tmp is not None) else None
-    """
 
 def sql_foto(objeto, objeto_id, tamano):
     def foto_tienda():

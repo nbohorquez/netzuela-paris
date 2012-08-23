@@ -217,6 +217,12 @@
     <script type="text/javascript" src="/estatico/js/mapa.js"></script>
     <div id="scripts" metal:define-slot="scripts_extra"></div>
     <script type="text/javascript">
+    	$(document).ready(function () {
+			// No escribais nada despues de estas lineas porque el javascript no lo va a ejecutar
+			// No se por que...
+			$(".collapse").collapse();
+			$('.carousel').carousel();
+    	});
     	/* Cambio el formato de la fecha a dd/mm/aaaa */
     	$.extend($.fn.datepicker.defaults, {
 			parse: function (string) {
@@ -238,12 +244,6 @@
 		  		return dom + "/" + month + "/" + date.getFullYear();
 			}
 		});
-    	$(document).ready(function () {
-			// No escribais nada despues de estas lineas porque el javascript no lo va a ejecutar
-			// No se por que...
-			$(".collapse").collapse();
-			$('.carousel').carousel();
-    	});
     </script>
 </body>
 </html>
