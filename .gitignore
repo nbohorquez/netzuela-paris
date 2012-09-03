@@ -1,17 +1,18 @@
 *.*~
 *.pyc
 
-.project
-.pydevproject
-pyramid.pdf
+bin/env/
 
-build/
-dist/
-env/
+src/paris/.project
+src/paris/.pydevproject
+src/paris/.settings/
+src/paris/pyramid.pdf
 
-paris/*.pyc
-paris/estatico/js/flot/examples/
-paris/estatico/js/flot/*.txt
-paris/estatico/js/flot/Makefile
+src/paris/build/
+src/paris/dist/
+src/paris/paris.egg-info/
+src/paris/paris/*.pyc
 
-paris.egg-info/
+src/paris/paris/estatico/js/flot/examples/
+src/paris/paris/estatico/js/flot/*.txt
+src/paris/paris/estatico/js/flot/Makefile
