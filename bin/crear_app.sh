@@ -51,7 +51,7 @@ apache_redireccion="cat > /etc/apache2/sites-available/redireccion << EOF
 EOF
 "
 
-function crear_env {
+crear_env() {
 	virtualenv --no-site-packages --distribute env
 	rm *.tar.gz
 	source env/bin/activate
@@ -62,7 +62,7 @@ function crear_env {
 	cd ../../bin
 }
 
-function instalar_mod_wsgi {
+instalar_mod_wsgi() {
 	wget https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz
 	tar -xvfz mod_wsgi-3.4.tar.gz
 	cd mod_wsgi-3.4
@@ -70,102 +70,106 @@ function instalar_mod_wsgi {
 	make
 	make install
 	rm mod_wsgi-3.4.tar.gz
-
-	if [ ! -f /etc/apache2/mods-enabled/wsgi.load ]
-	then
-		if [ ! -f /etc/apache2/mods-available/wsgi.load ]
-		then
-			sh -c "$wsgi_load"
-		fi
-		ln -s /etc/apache2/mods-available/wsgi.load /etc/apache2/mods-enabled/wsgi.load
-	fi
-
-	if [ ! -f /etc/apache2/mods-enabled/wsgi.conf ]
-	then
-		if [ ! -f /etc/apache2/mods-available/wsgi.conf ]
-		then
-			sh -c "$wsgi_conf"
-		fi
-		ln -s /etc/apache2/mods-available/wsgi.conf /etc/apache2/mods-enabled/wsgi.conf
-	fi
 }
 
-function crear_archivo_wsgi {
+crear_archivo_wsgi_load() {
+	if [ ! -f /etc/apache2/mods-available/wsgi.load ]; then
+		sh -c "$wsgi_load"
+	fi
+	ln -s /etc/apache2/mods-available/wsgi.load /etc/apache2/mods-enabled/wsgi.load
+}
+
+crear_archivo_wsgi_conf() {
+	if [ ! -f /etc/apache2/mods-available/wsgi.conf ]; then
+		sh -c "$wsgi_conf"
+	fi
+	ln -s /etc/apache2/mods-available/wsgi.conf /etc/apache2/mods-enabled/wsgi.conf
+}
+crear_archivo_pyramid_wsgi() {
 	sh -c "$pyramid_wsgi"
 	chmod 755 env/pyramid.wsgi
 }
 
-function crear_archivo_ini {
+crear_production_ini() {
 	ln -s `pwd`/../src/paris/production.ini env/production.ini
 }
 
-function crear_archivo_apache {
-	if [ ! -f /etc/apache2/sites-available/redireccion ]
-	then
+crear_archivo_apache() {
+	if [ ! -f /etc/apache2/sites-available/redireccion ]; then
 		sh -c "$apache_paris"
 	fi
 	ln -s /etc/apache2/sites-available/paris /etc/apache2/sites-enabled/paris
 }
 
-function crear_archivo_redireccion {
-	if [ ! -f /etc/apache2/sites-available/redireccion ]
-	then
+crear_archivo_redireccion() {
+	if [ ! -f /etc/apache2/sites-available/redireccion ]; then
 		sh -c "$apache_redireccion"
 	fi
 	ln -s /etc/apache2/sites-available/redireccion /etc/apache2/sites-enabled/redireccion
 }
 
-function configurar_var_www {
+configurar_var_www() {
 	ln -s `pwd`/env/ /var/www/paris
 }
 
-if [ "$USER" != "root" ]
-then
+if [ "$USER" != "root" ]; then
 	echo "Error: Debe correr este script como root"
-	exit 1
+	exit 1;
 fi
+echo "Ejecutando script como root"
 
-if [ ! -f env/bin/python ]
-then
+if [ ! -f env/bin/python ]; then
 	echo "No existe el ambiente virtual, creandolo..."
 	crear_env
-	echo "Ambiente virtual creado"
 fi
+echo "Ambiente virtual creado"
 
-if [ ! -f /usr/lib/apache2/modules/mod_wsgi.so ]
-then
+if [ ! -f /usr/lib/apache2/modules/mod_wsgi.so ]; then
+	echo "mod_wsgi no esta instalado, instalando..."
 	instalar_mod_wsgi
-	echo "mod_wsgi instalado"
 fi
+echo "mod_wsgi instalado"
 
-if [ ! -f env/pyramid.wsgi ]
-then
-	crear_archivo_wsgi
-	echo "Archivo wsgi creado"
+if [ ! -f /etc/apache2/mods-enabled/wsgi.load ]; then
+	echo "El archivo wsgi.load no existe, creandolo..."
+	crear_archivo_wsgi_load
 fi
+echo "wsgi.load creado"
 
-if [ ! -L env/production.ini ]
-then
-	crear_archivo_ini
-	echo "Archivo de configuracion inicial copiado"
+if [ ! -f /etc/apache2/mods-enabled/wsgi.conf ]; then
+	echo "El archivo wsgi.conf no existe, creandolo..."
+	crear_archivo_wsgi_conf
 fi
+echo "wsgi.conf creado"
 
-if [ ! -f /etc/apache2/sites-available/paris ]
-then
+if [ ! -f env/pyramid.wsgi ]; then
+	echo "El archivo pyramid.wsgi no existe, creandolo..."
+	crear_archivo_pyramid_wsgi
+fi
+echo "pyramid.wsgi creado"
+
+if [ ! -f env/production.ini ]; then
+	echo "El archivo production.ini no existe, creandolo..."
+	crear_production_ini
+fi
+echo "production.ini creado"
+
+if [ ! -f /etc/apache2/sites-available/paris ]; then
+	echo "El archivo paris no existe, creandolo..."
 	crear_archivo_apache
-	echo "Archivo de configuracion de apache creado"
 fi
+echo "paris creado"
 
-if [ ! -f /etc/apache2/sites-enabled/redireccion ]
-then
+if [ ! -f /etc/apache2/sites-enabled/redireccion ]; then
+	echo "El archivo redireccion no existe, creandolo..."
 	crear_archivo_redireccion
-	echo "Archivo de redireccion creado"
 fi
+echo "redireccion creado"
 
-if [ ! -L /var/www/paris ]
-then
+if [ ! -L /var/www/paris ]; then
+	echo "El directorio /var/www/ no esta configurado, trabajando..."
 	configurar_var_www
-	echo "Directorio /var/www/ configurado"
 fi
+echo "Directorio /var/www/ configurado"
 
 sudo service apache2 restart
