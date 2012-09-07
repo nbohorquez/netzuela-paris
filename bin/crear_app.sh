@@ -63,6 +63,8 @@ crear_env() {
 }
 
 instalar_mod_wsgi() {
+	dir=`pwd`
+	cd /tmp
 	wget https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz
 	tar -xvfz mod_wsgi-3.4.tar.gz
 	cd mod_wsgi-3.4
@@ -70,23 +72,24 @@ instalar_mod_wsgi() {
 	make
 	make install
 	rm mod_wsgi-3.4.tar.gz
+	cd "$dir"
 }
 
 crear_archivo_wsgi_load() {
 	if [ ! -f /etc/apache2/mods-available/wsgi.load ]; then
-		sh -c "$wsgi_load"
+		bash -c "$wsgi_load"
 	fi
 	ln -s /etc/apache2/mods-available/wsgi.load /etc/apache2/mods-enabled/wsgi.load
 }
 
 crear_archivo_wsgi_conf() {
 	if [ ! -f /etc/apache2/mods-available/wsgi.conf ]; then
-		sh -c "$wsgi_conf"
+		bash -c "$wsgi_conf"
 	fi
 	ln -s /etc/apache2/mods-available/wsgi.conf /etc/apache2/mods-enabled/wsgi.conf
 }
 crear_archivo_pyramid_wsgi() {
-	sh -c "$pyramid_wsgi"
+	bash -c "$pyramid_wsgi"
 	chmod 755 env/pyramid.wsgi
 }
 
@@ -96,14 +99,14 @@ crear_production_ini() {
 
 crear_archivo_apache() {
 	if [ ! -f /etc/apache2/sites-available/redireccion ]; then
-		sh -c "$apache_paris"
+		bash -c "$apache_paris"
 	fi
 	ln -s /etc/apache2/sites-available/paris /etc/apache2/sites-enabled/paris
 }
 
 crear_archivo_redireccion() {
 	if [ ! -f /etc/apache2/sites-available/redireccion ]; then
-		sh -c "$apache_redireccion"
+		bash -c "$apache_redireccion"
 	fi
 	ln -s /etc/apache2/sites-available/redireccion /etc/apache2/sites-enabled/redireccion
 }
