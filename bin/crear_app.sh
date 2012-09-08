@@ -66,7 +66,7 @@ instalar_mod_wsgi() {
 	dir=`pwd`
 	cd /tmp
 	wget https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz
-	tar -xvfz mod_wsgi-3.4.tar.gz
+	tar -xvf mod_wsgi-3.4.tar.gz
 	cd mod_wsgi-3.4
 	./configure
 	make
@@ -157,7 +157,13 @@ if [ ! -f env/production.ini ]; then
 fi
 echo "production.ini creado"
 
-if [ ! -f /etc/apache2/sites-available/paris ]; then
+if [ -f /etc/apache2/sites-enabled/000-default ]; then
+	echo "El archivo 000-default existe, borrandolo..."
+	rm /etc/apache2/sites-enabled/000-default
+fi
+echo "000-default borrado"
+
+if [ ! -f /etc/apache2/sites-enabled/paris ]; then
 	echo "El archivo paris no existe, creandolo..."
 	crear_archivo_apache
 fi
