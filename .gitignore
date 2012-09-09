@@ -16,3 +16,8 @@ src/paris/paris/*.pyc
 src/paris/paris/estatico/js/flot/examples/
 src/paris/paris/estatico/js/flot/*.txt
 src/paris/paris/estatico/js/flot/Makefile
+
+src/paris/paris/estatico/img/grandes/
+src/paris/paris/estatico/img/medianas/
+src/paris/paris/estatico/img/pequenas/
+src/paris/paris/estatico/img/miniaturas/

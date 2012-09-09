@@ -71,7 +71,9 @@ instalar_mod_wsgi() {
 	./configure
 	make
 	make install
+	cd ..
 	rm mod_wsgi-3.4.tar.gz
+	rm -rf mod_wsgi-3.4.tar.gz
 	cd "$dir"
 }
 
