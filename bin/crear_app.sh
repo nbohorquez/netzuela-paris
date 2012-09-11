@@ -1,13 +1,11 @@
 #/bin/bash
 
 wsgi_load="echo LoadModule wsgi_module /usr/lib/apache2/modules/mod_wsgi.so >> /etc/apache2/mods-available/wsgi.load"
-
 wsgi_conf="cat > /etc/apache2/mods-available/wsgi.conf << EOF
 WSGIApplicationGroup %{GLOBAL}
 WSGIPassAuthorization On
 EOF
 "
-
 pyramid_wsgi="cat > env/pyramid.wsgi << EOF
 from os import path
 production_ini = path.abspath(path.join(path.dirname(__file__), 'production.ini'))
@@ -15,7 +13,6 @@ from pyramid.paster import get_app
 application = get_app(production_ini, 'main')
 EOF
 "
-
 apache_paris="cat > /etc/apache2/sites-available/paris << EOF
 <VirtualHost *:80>
 	ServerName www.netzuela.com
@@ -41,7 +38,6 @@ apache_paris="cat > /etc/apache2/sites-available/paris << EOF
 </VirtualHost>
 EOF
 "
-
 apache_redireccion="cat > /etc/apache2/sites-available/redireccion << EOF
 <VirtualHost *:80>
 	ServerName redireccion.netzuela.com
@@ -73,7 +69,7 @@ instalar_mod_wsgi() {
 	make install
 	cd ..
 	rm mod_wsgi-3.4.tar.gz
-	rm -rf mod_wsgi-3.4.tar.gz
+	rm -rf mod_wsgi-3.4
 	cd "$dir"
 }
 
