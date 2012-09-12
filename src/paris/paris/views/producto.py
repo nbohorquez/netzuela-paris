@@ -126,22 +126,6 @@ class ProductoView(Diagramas, Comunes):
         return formatear_comentarios(var_comentarios)
     
     @reify
-    def fotos_grandes(self):
-        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'grandes')
-    
-    @reify
-    def fotos_medianas(self):
-        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'medianas')
-    
-    @reify
-    def fotos_pequenas(self):
-        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'pequenas')
-    
-    @reify
-    def fotos_miniaturas(self):
-        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'miniaturas')
-    
-    @reify
     def ruta_categoria_actual(self):
         cat_padre = DBSession.query(producto.categoria).\
         filter_by(producto_id = self.peticion_id).first()[0]

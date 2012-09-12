@@ -111,8 +111,8 @@
 	    					</div>
 	    					<div class="span2">
 	    						<tal:block tal:define="tienda view.obtener_tienda(item.tienda_id)" tal:condition="tienda">
-	    							<p class="label label-success" tal:condition="tienda.abierto">Abierto</p>
-									<p class="label label-important" tal:condition="not tienda.abierto">Cerrado</p>
+	    							<p class="label label-success" tal:condition="tienda.abierto">Conectada</p>
+									<p class="label label-important" tal:condition="not tienda.abierto">Desconectada</p>
 	    						</tal:block>	    						
 	    					</div>
 	    				</div>

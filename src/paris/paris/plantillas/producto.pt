@@ -105,7 +105,7 @@
 				  				</tr>
 				  			</tbody>
 						</table>
-						<div tal:condition="editar" metal:use-macro="view.formularios['editar_descripcion']" tal:define="campo_descripcion view.descripciones[0].contenido"></div>
+						<div tal:condition="editar" metal:use-macro="view.formularios['editar_descripcion']" tal:define="campo_descripcion view.descripciones[0]"></div>
 					</div>
 				</div>
 				<div class="row-fluid">

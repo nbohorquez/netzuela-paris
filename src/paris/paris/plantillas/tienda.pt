@@ -23,8 +23,8 @@
 				</div>
 				<div class="span9">
 					<h1>${cliente.nombre_comun} 
-		  				<span class="label label-success" tal:condition="tienda.abierto">Abierta</span>
-						<span class="label label-important" tal:condition="not tienda.abierto">Cerrada</span>
+		  				<span class="label label-success" tal:condition="tienda.abierto">Conectada</span>
+						<span class="label label-important" tal:condition="not tienda.abierto">Desconectada</span>
 					</h1>
 					<h3>
 						<a href="${cliente.facebook}"><i class="icon-remove"></i></a>
@@ -97,7 +97,7 @@
 					  				</tr>
 					  			</tbody>
 							</table>
-							<div tal:condition="editar" metal:use-macro="view.formularios['editar_horario']"></div>
+							<div tal:condition="editar" metal:use-macro="view.formularios['editar_horario']" tal:define="campo_horarios horarios"></div>
 		  				</div>
 		  				<div class="span4"></div>
 		  			</div>
@@ -135,7 +135,7 @@
 				  				</tr>
 				  			</tbody>
 						</table>
-						<div tal:condition="editar" metal:use-macro="view.formularios['editar_descripcion']" tal:define="campo_descripcion view.descripciones[0].contenido"></div>
+						<div tal:condition="editar" metal:use-macro="view.formularios['editar_descripcion']" tal:define="campo_descripcion view.descripciones[0]"></div>
           			</div>
 				</div>
 				<div class="row-fluid">

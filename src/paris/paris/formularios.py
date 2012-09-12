@@ -5,11 +5,11 @@ Created on 19/06/2012
 @author: nestor
 '''
 
-import formencode, re
 from .constantes import EDAD_MINIMA
 from paris.models.spuria import (
     acceso, 
-    categoria, 
+    categoria,
+    dia, 
     DBSession, 
     grado_de_instruccion, 
     sexo, 
@@ -20,6 +20,7 @@ from datetime import date, timedelta
 from formencode import validators
 from formencode.api import Invalid
 from sqlalchemy import and_
+import formencode, re
 
 class ContrasenaSegura(validators.FancyValidator):
     minimo = 8
@@ -159,7 +160,18 @@ class RifValido(validators.FancyValidator):
     
     def validate_python(self, valor, estado):
         self.validador.to_python(valor)
-      
+        
+class DiaValido(validators.FancyValidator):
+    mensaje = unicode("Dia no conocido", 'utf-8')
+    
+    def _to_python(self, valor, estado):
+        return valor.strip()
+    
+    def validate_python(self, valor, estado):
+        resultado = DBSession.query(dia).filter(dia.valor == valor).first()
+        if resultado is None:
+            raise Invalid(self.mensaje, valor, estado)
+        
 class NullableString(validators.FancyValidator):
     if_missing = None
     
@@ -262,3 +274,15 @@ class FormularioEditarDireccion(formencode.Schema):
     calle = validators.UnicodeString(not_empty=True)
     urbanizacion = validators.UnicodeString(not_empty=True)
     ubicacion = UbicacionExistente(not_empty=False)
+    
+class FormularioEditarHorarioDeTrabajo(formencode.Schema):
+    allow_extra_fields = True
+    filter_extra_fieds = True
+    laborable = formencode.All(validators.UnicodeString(not_empty=True), validators.OneOf(['Abierto', 'Cerrado']))
+    #laborable = formencode.All(validators.UnicodeString(not_empty=True), validators.DictConverter({'Abierto': True, 'Cerrado': False}))
+    
+class FormularioEditarTurno(formencode.Schema):
+    allow_extra_fields = True
+    filter_extra_fieds = True
+    hora_de_apertura = validators.TimeConverter(use_ampm=False, use_seconds=True)
+    hora_de_cierre = validators.TimeConverter(use_ampm=False, use_seconds=True)

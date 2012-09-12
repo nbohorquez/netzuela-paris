@@ -54,7 +54,6 @@ from pyramid.view import view_config
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import asc
-import string
 
 # Aptana siempre va a decir que las clases de spuria (tienda, producto, etc) no estan 
 # definidas explicitamente en ninguna parte. Lo que ocurre es que yo las cargo de forma 
@@ -182,26 +181,11 @@ class TiendaView(Diagramas, Comunes):
     @reify
     def calificaciones_resenas(self):
         var_comentarios = DBSession.query(calificacion_resena).\
-        join(calificable_seguible).join(tienda).\
+        join(calificable_seguible).\
+        join(tienda).\
         filter(tienda.tienda_id == self.tienda_id).all()
         return formatear_comentarios(var_comentarios)
     
-    @reify
-    def fotos_grandes(self):
-        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'grandes')
-    
-    @reify
-    def fotos_medianas(self):
-        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'medianas')
-    
-    @reify
-    def fotos_pequenas(self):
-        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'pequenas')
-    
-    @reify
-    def fotos_miniaturas(self):
-        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'miniaturas')
-
     @reify
     def ruta_categoria_actual(self):
         cat_padre = DBSession.query(cliente.categoria).\

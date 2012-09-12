@@ -53,7 +53,7 @@ crear_env() {
 	source env/bin/activate
 	cd ../src/paris
 	pip install pyramid
-	python setup.py install
+	python setup.py develop
 	deactivate
 	cd ../../bin
 }

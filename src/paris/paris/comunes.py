@@ -509,6 +509,22 @@ class Comunes(object):
     def turnos(self):
         return ['Abierto', 'Cerrado']
     
+    @reify
+    def fotos_grandes(self):
+        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'grandes')
+    
+    @reify
+    def fotos_medianas(self):
+        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'medianas')
+    
+    @reify
+    def fotos_pequenas(self):
+        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'pequenas')
+    
+    @reify
+    def fotos_miniaturas(self):
+        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'miniaturas')
+    
     def obtener_foto(self, objeto, objeto_id, tamano):
         return sql_foto(objeto, objeto_id, tamano).first()
     

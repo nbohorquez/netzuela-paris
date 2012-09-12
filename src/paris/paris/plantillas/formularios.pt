@@ -407,8 +407,9 @@
 	<metal:campo_descripcion define-macro="campo_descripcion">
 		<div class="control-group">
 			<label class="control-label" for="descripcion">Descripción</label>
-        	<div class="controls" tal:define="existe exists:campo_descripcion; contenido python:campo_descripcion if existe else ''">
+        	<div class="controls" tal:define="existe exists:campo_descripcion; contenido python:campo_descripcion.contenido if existe else ''">
           		<textarea class="input-xlarge" id="descripcion" name="descripcion" rows="10">${contenido}</textarea>
+				<input type="hidden" class="input-large" id="descripcion_id" name="descripcion_id" tal:attributes="value python:campo_descripcion.descripcion_id if existe else -1" />
         	</div>
       	</div>
    	</metal:campo_descripcion>
@@ -417,10 +418,10 @@
 	================================================== -->
 	<metal:campo_laborable define-macro="campo_laborable">
 		<div class="control-group">
-            <label class="control-label">${dia}</label>
+            <label class="control-label" for="${dia}">${dia}</label>
             <div class="controls" tal:define="existe exists:campo_laborable">
             	<label class="radio inline" tal:repeat="item view.turnos">
-                	<input type="radio" name="${dia}" value="${item}" tal:attributes="checked python:'checked' if (existe and campo_laborable == item) else None" />
+                	<input type="radio" name="${dia}" value="${item}" id="${dia}" tal:attributes="checked python:'checked' if (existe and campo_laborable == item) else None" />
                 	<span class="help-inline">${item}</span>
               	</label>
         	</div>
@@ -432,13 +433,19 @@
 	<metal:campo_turno define-macro="campo_turno">
 		<div class="control-group">
             <!--<label class="control-label">Turno</label>-->
-            <div class="controls">
-            	<div class="input-prepend" tal:define="existe exists:campo_hora_de_apertura">
-            		<span class="add-on">De</span><input type="text" class="input-small" id="hora_de_apertura" name="hora_de_apertura" placeholder="06:00" tal:attributes="value python:campo_hora_de_apertura if existe else ''" />
-            	</div>
-            	<div class="input-prepend" tal:define="existe exists:campo_hora_de_cierre">
-            		<span class="add-on">A</span><input type="text" class="input-small" id="hora_de_cierre" name="hora_de_cierre" placeholder="17:00" tal:attributes="value python:campo_hora_de_cierre if existe else ''" />
-            	</div>
+            <div class="controls" tal:define="existe_dia exists:dia; existe_indice exists:indice">
+            	<tal:block tal:define="dia python:'{}.'.format(dia) if existe_dia else ''; indice python:'.{}'.format(indice) if existe_indice else ''">
+	            	<div class="input-prepend" tal:define="existe exists:campo_hora_de_apertura">
+	            		<tal:block tal:define="nombre python:'{}hora_de_apertura{}'.format(dia, indice)">
+							<span class="add-on">De</span><input type="text" class="input-small" placeholder="06:00" tal:attributes="value python:campo_hora_de_apertura if existe else ''; name nombre; id nombre" />
+						</tal:block>
+	            	</div>
+	            	<div class="input-prepend" tal:define="existe exists:campo_hora_de_cierre">
+	            		<tal:block tal:define="nombre python:'{}hora_de_cierre{}'.format(dia, indice)">
+	            			<span class="add-on">A</span><input type="text" class="input-small" placeholder="17:00" tal:attributes="value python:campo_hora_de_cierre if existe else ''; name nombre; id nombre" />
+	            		</tal:block>
+	            	</div>
+            	</tal:block>
             </div>
         </div>
    	</metal:campo_turno>
@@ -523,11 +530,11 @@
 	        </div>
 	        <div class="modal-body">
 	        	<form class="form-horizontal" id="formulario_editar_horario" method="post" accept-charset="UTF-8">
-					<fieldset>
-						<tal:block tal:repeat="horario horarios">
+					<fieldset tal:define="existe exists:campo_horarios">
+						<tal:block tal:condition="existe" tal:repeat="horario campo_horarios">
 							<div tal:define="dia horario.dia; campo_laborable python: 'Abierto' if horario.laborable else 'Cerrado'" metal:use-macro="view.formularios['campo_laborable']"></div>
 							<tal:block tal:repeat="turno horario.turnos">
-								<div tal:define="campo_hora_de_apertura turno.hora_de_apertura; campo_hora_de_cierre turno.hora_de_cierre" metal:use-macro="view.formularios['campo_turno']"></div>								
+								<div tal:define="campo_hora_de_apertura turno.hora_de_apertura; campo_hora_de_cierre turno.hora_de_cierre; dia horario.dia; indice repeat.turno.index" metal:use-macro="view.formularios['campo_turno']"></div>								
 							</tal:block>
 							<hr />
 						</tal:block>
