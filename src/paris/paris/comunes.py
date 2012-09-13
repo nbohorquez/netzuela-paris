@@ -46,7 +46,7 @@ from paris.models.spuria import (
     visibilidad
 )
 from pyramid.decorator import reify
-from sqlalchemy import and_, or_, case, func
+from sqlalchemy import and_, case, func
 from sqlalchemy.sql.expression import asc
 from time import strftime, strptime
 
@@ -237,9 +237,10 @@ def formatear_entrada_registro(reg, peticion, demandante):
         valor = {}
         valor['nombre'] = 'descripcion'
         
-        x1 = DBSession.query(case([
-            (descripcion.describible == producto.describible_p, func.concat(producto.fabricante, ' ', producto.nombre))
-        ])).filter(and_(
+        x1 = DBSession.query(case([(
+            descripcion.describible == producto.describible_p, 
+            func.concat(producto.fabricante, ' ', producto.nombre)
+        )])).filter(and_(
             descripcion.describible == producto.describible_p,
             descripcion.rastreable_p == _id
         ))
@@ -251,9 +252,10 @@ def formatear_entrada_registro(reg, peticion, demandante):
             descripcion.rastreable_p == _id
         ))
         
-        x3 = DBSession.query(case([
-            (descripcion.describible == usuario.describible_p, func.concat(usuario.nombre, ' ', usuario.apellido))
-        ])).filter(and_(
+        x3 = DBSession.query(case([(
+            descripcion.describible == usuario.describible_p, 
+            func.concat(usuario.nombre, ' ', usuario.apellido)
+        )])).filter(and_(
             descripcion.describible == usuario.describible_p,
             descripcion.rastreable_p == _id
         ))
@@ -292,16 +294,21 @@ def formatear_entrada_registro(reg, peticion, demandante):
         valor['diccionario'] = {}
         return valor
     def depurar_columnas_registro(diccionario):
-        return dict((entrada[0].replace('_', ' '), entrada[1]) for entrada in diccionario.items() if entrada[0] not in columnas_no_visibles)
+        return dict((entrada[0].replace('_', ' '), entrada[1]) \
+        for entrada in diccionario.items() \
+        if entrada[0] not in columnas_no_visibles)
     def pulir_columnas_registro(diccionario):
-        return dict((entrada[0].capitalize(), entrada[1]) for entrada in diccionario.items())
+        return dict((entrada[0].capitalize(), entrada[1]) \
+        for entrada in diccionario.items())
     
     por_defecto = {}
     por_defecto['nombre'] = por_defecto['titulo'] = ''
     por_defecto['href'] = None
     
     tipo_activo = rastreable_a_tipo(reg.actor_activo)
-    activo = obtener_objeto(tipo_activo, reg.actor_activo, demandante != tipo_activo) if (tipo_activo is not None) else por_defecto
+    activo = obtener_objeto(tipo_activo, reg.actor_activo, demandante != tipo_activo) \
+    if (tipo_activo is not None) else por_defecto
+    
     if 'foto' in activo:
         tmp = activo['foto'].filter(foto.ruta_de_foto.like('%miniaturas%')).first()
         activo['foto'] = tmp[0] if (tmp is not None) else ''
@@ -309,7 +316,9 @@ def formatear_entrada_registro(reg, peticion, demandante):
         activo['foto'] = ''
     
     tipo_pasivo = rastreable_a_tipo(reg.actor_pasivo)
-    pasivo = obtener_objeto(tipo_pasivo, reg.actor_pasivo, demandante != tipo_pasivo) if (tipo_pasivo is not None) else por_defecto
+    pasivo = obtener_objeto(tipo_pasivo, reg.actor_pasivo, demandante != tipo_pasivo) \
+    if (tipo_pasivo is not None) else por_defecto
+    
     if 'foto' in pasivo:
         tmp = pasivo['foto'].filter(foto.ruta_de_foto.like('%miniaturas%')).first()
         pasivo['foto'] = tmp[0] if (tmp is not None) else ''
@@ -324,9 +333,14 @@ def formatear_entrada_registro(reg, peticion, demandante):
                     
     columnas = reg.columna.split('<|>') if (reg.columna is not None) else ''
     valores = reg.valor.split('<|>') if (reg.valor is not None) else ''
-    diccionario = dict(zip(columnas, valores)) if (len(columnas) == len(valores)) else {'Error': 'Numero de columnas y valores no concuerda'}
+    
+    diccionario = dict(zip(columnas, valores)) \
+    if (len(columnas) == len(valores)) \
+    else {'Error': 'Numero de columnas y valores no concuerda'}
+    
     diccionario_depurado = depurar_columnas_registro(diccionario)
-    entrada['parametros'] = diccionario_depurado if (entrada['accion'] == 'actualizo') else {}
+    entrada['parametros'] = diccionario_depurado \
+    if (entrada['accion'] == 'actualizo') else {}
 
     fecha = str(reg.fecha_hora)
     ano = int(fecha[0:4])
@@ -353,44 +367,57 @@ def formatear_entrada_registro(reg, peticion, demandante):
     return entrada
 
 def rastreable_a_tipo(rastreable_id):
-    tmp1 = DBSession.query(case([(rastreable_id == cliente.rastreable_p, 'cliente')])).\
-    filter(rastreable_id == cliente.rastreable_p)
+    tmp1 = DBSession.query(case([(
+        rastreable_id == cliente.rastreable_p, 'cliente'
+    )])).filter(rastreable_id == cliente.rastreable_p)
     
-    tmp2 = DBSession.query(case([(rastreable_id == inventario.rastreable_p, 'inventario')])).\
-    filter(rastreable_id == inventario.rastreable_p)
+    tmp2 = DBSession.query(case([(
+        rastreable_id == inventario.rastreable_p, 'inventario'
+    )])).filter(rastreable_id == inventario.rastreable_p)
     
-    tmp3 = DBSession.query(case([(rastreable_id == producto.rastreable_p, 'producto')])).\
-    filter(rastreable_id == producto.rastreable_p)
+    tmp3 = DBSession.query(case([(
+        rastreable_id == producto.rastreable_p, 'producto'
+    )])).filter(rastreable_id == producto.rastreable_p)
     
-    tmp4 = DBSession.query(case([(rastreable_id == mensaje.rastreable_p, 'mensaje')])).\
-    filter(rastreable_id == mensaje.rastreable_p)
+    tmp4 = DBSession.query(case([(
+        rastreable_id == mensaje.rastreable_p, 'mensaje'
+    )])).filter(rastreable_id == mensaje.rastreable_p)
     
-    tmp5 = DBSession.query(case([(rastreable_id == usuario.rastreable_p, 'usuario')])).\
-    filter(rastreable_id == usuario.rastreable_p)
+    tmp5 = DBSession.query(case([(
+        rastreable_id == usuario.rastreable_p, 'usuario'
+    )])).filter(rastreable_id == usuario.rastreable_p)
     
-    tmp6 = DBSession.query(case([(rastreable_id == busqueda.rastreable_p, 'busqueda')])).\
-    filter(rastreable_id == busqueda.rastreable_p)
+    tmp6 = DBSession.query(case([(
+        rastreable_id == busqueda.rastreable_p, 'busqueda'
+    )])).filter(rastreable_id == busqueda.rastreable_p)
     
-    tmp7 = DBSession.query(case([(rastreable_id == calificacion_resena.rastreable_p, 'calificacion_resena')])).\
-    filter(rastreable_id == calificacion_resena.rastreable_p)
+    tmp7 = DBSession.query(case([(
+        rastreable_id == calificacion_resena.rastreable_p, 'calificacion_resena'
+    )])).filter(rastreable_id == calificacion_resena.rastreable_p)
     
-    tmp8 = DBSession.query(case([(rastreable_id == seguidor.rastreable_p, 'seguidor')])).\
-    filter(rastreable_id == seguidor.rastreable_p)
+    tmp8 = DBSession.query(case([(
+        rastreable_id == seguidor.rastreable_p, 'seguidor'
+    )])).filter(rastreable_id == seguidor.rastreable_p)
     
-    tmp9 = DBSession.query(case([(rastreable_id == descripcion.rastreable_p, 'descripcion')])).\
-    filter(rastreable_id == descripcion.rastreable_p)
+    tmp9 = DBSession.query(case([(
+        rastreable_id == descripcion.rastreable_p, 'descripcion'
+    )])).filter(rastreable_id == descripcion.rastreable_p)
     
-    tmp10 = DBSession.query(case([(rastreable_id == publicidad.rastreable_p, 'publicidad')])).\
-    filter(rastreable_id == publicidad.rastreable_p)
+    tmp10 = DBSession.query(case([(
+        rastreable_id == publicidad.rastreable_p, 'publicidad'
+    )])).filter(rastreable_id == publicidad.rastreable_p)
     
-    tmp11 = DBSession.query(case([(rastreable_id == estadisticas.rastreable_p, 'estadisticas')])).\
-    filter(rastreable_id == estadisticas.rastreable_p)
+    tmp11 = DBSession.query(case([(
+        rastreable_id == estadisticas.rastreable_p, 'estadisticas'
+    )])).filter(rastreable_id == estadisticas.rastreable_p)
     
-    tmp12 = DBSession.query(case([(rastreable_id == croquis.rastreable_p, 'croquis')])).\
-    filter(rastreable_id == croquis.rastreable_p)
+    tmp12 = DBSession.query(case([(
+        rastreable_id == croquis.rastreable_p, 'croquis'
+    )])).filter(rastreable_id == croquis.rastreable_p)
         
-    tmp13 = DBSession.query(case([(rastreable_id == factura.rastreable_p, 'factura')])).\
-    filter(rastreable_id == factura.rastreable_p)
+    tmp13 = DBSession.query(case([(
+        rastreable_id == factura.rastreable_p, 'factura'
+    )])).filter(rastreable_id == factura.rastreable_p)
     
     tmp = tmp1.union(tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, 
                      tmp9, tmp10, tmp11, tmp12, tmp13).first()

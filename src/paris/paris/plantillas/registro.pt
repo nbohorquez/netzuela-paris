@@ -1,9 +1,11 @@
 <!DOCTYPE HTML>
 <div metal:use-macro="view.diagrama_global">
+	<div metal:fill-slot="extra_meta_datos"></div>
 	<div metal:fill-slot="contenido">
 		
 		<!-- Encabezado
 		================================================== -->
+		<div metal:use-macro="view.macros['resultado_de_operacion']"></div>
 		<div class="page-header">
   			<h1>Registro</h1>
 		</div>
@@ -11,16 +13,6 @@
 		<!-- Contenido
 		================================================== -->	
 		<div id="contenido_pestanas" class="tab-content">
-			<tal:block tal:condition="aviso" tal:switch="aviso.error">
-				<div tal:case="'Error'" class="alert alert-error">
-					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<strong>Error</strong> <span tal:content="aviso.mensaje"></span>
-				</div>
-				<div tal:case="'OK'" class="alert alert-success">
-					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<strong>OK</strong> <span tal:content="aviso.mensaje"></span>
-				</div>
-			</tal:block>
 			<form class="form-horizontal" id="formulario_registro" method="post" accept-charset="UTF-8">
 		        <fieldset>
 		        	<input type="hidden" name="pagina_anterior" value="${view.pagina_anterior}" />
@@ -28,10 +20,7 @@
 		        	<div metal:use-macro="view.formularios['campo_ubicacion']"></div>
 		          	<hr />
 		          	<div metal:use-macro="view.formularios['campo_condiciones']"></div>
-		          	<div class="form-actions">
-		          		<button class="btn btn-primary" type="submit" name="enviar" id="enviar">Enviar</button>
-		            	<button class="btn" type="submit" name="cancelar" id="cancelar">Cancelar</button>
-		          	</div>
+		          	<div metal:use-macro="view.formularios['botones_pie_de_pagina']"></div>
 		        </fieldset>
 			</form>
 			<div id="condiciones_servicio" class="modal hide fade">

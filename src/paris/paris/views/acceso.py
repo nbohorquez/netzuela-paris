@@ -17,7 +17,8 @@ class AccesoView(Diagramas):
     def __init__(self, peticion):
         ingresar_url = peticion.route_url('ingresar')
         # never use the login form itself as came_from
-        self.referido_por = peticion.url if (peticion.url != ingresar_url) else '/'
+        self.referido_por = peticion.url \
+        if (peticion.url != ingresar_url) else '/'
         self.peticion = peticion
     
     @reify
@@ -52,7 +53,9 @@ class AccesoView(Diagramas):
             
             if self.autentificar(usuario, contrasena) is True:
                 headers = remember(self.peticion, usuario)
-                return HTTPFound(location = self.pagina_anterior, headers = headers)
+                return HTTPFound(
+                    location = self.pagina_anterior, headers = headers
+                )
             else:
                 mensaje = 'Par usuario/contrasena invalido'
         elif 'registrarse' in self.peticion.params:

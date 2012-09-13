@@ -14,25 +14,7 @@ $(document).ready(function () {
 	);
 	$('#formulario_registro_tienda').validate({
 		rules: {
-			correo_electronico: {
-	        	required: true,
-	        	email: true
-	      	},
-	      	contrasena: {
-		        required: true,
-	        	minlength: 8
-	      	},
-	      	repetir_contrasena: {
-		        required: true,
-		        equalTo: "#contrasena"
-	      	},
-	      	nombre: {
-	        	required: true
-	      	},
-	      	apellido: {
-	        	required: true
-	      	},
-	      	rif: {
+			rif: {
 	      		required: true,
 	      		regex: "^[JVG]-[0-9]{8}-[0-9]$"
 	      	},
@@ -63,22 +45,7 @@ $(document).ready(function () {
 	      	}
 	    },
 	    messages: {
-	    	correo_electronico: {
-	    		required: "Se requiere una dirección de correo electrónico",
-	    		email: "Correo electrónico inválido"
-	    	},
-			contrasena: {
-				required: "Se requiere una contraseña",
-				minlength: "Ingrese una contraseña de más de 8 dígitos"
-			},
-			repetir_contrasena: {
-				required: "Repita la contraseña aquí",
-				minlength: "Ingrese una contraseña de más de 8 dígitos",
-				equalTo: "Contraseñas no concuerdan"
-			},
-			nombre: "Escriba su nombre",
-			apellido: "Escriba su apellido",
-			rif: {
+	    	rif: {
 				required: "Ingrese el RIF de su tienda",
 				regex: "Formato de RIF inválido"
 			},

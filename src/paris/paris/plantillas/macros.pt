@@ -38,7 +38,7 @@
 	    					<div class="span4">
 	    						<a href="${enlace}" tal:omit-tag="not enlace">
 			        				<div class="thumbnail" tal:define="foto view.obtener_foto('producto', item.producto_id, 'pequenas')">
-			        					<img src="http://placehold.it/70x70" tal:condition="not foto" />
+			        					<img src="http://placehold.it/160x160" tal:condition="not foto" />
 			        					<img src="/estatico/${foto.ruta_de_foto}" tal:condition="foto" />
 			        				</div>
 			        			</a>
@@ -92,7 +92,7 @@
 	    					<div class="span4">
 	    						<a href="${enlace}" tal:omit-tag="not enlace">
 			        				<div class="thumbnail" tal:define="foto view.obtener_foto('tienda', item.tienda_id, 'pequenas')">
-			    						<img src="http://placehold.it/70x70" alt="cliente.nombre_comun" tal:condition="not foto" />
+			    						<img src="http://placehold.it/160x160" alt="cliente.nombre_comun" tal:condition="not foto" />
 			    						<img src="/estatico/${foto.ruta_de_foto}" alt="cliente.nombre_comun" tal:condition="foto" />
 			        				</div>
 			        			</a>
@@ -158,7 +158,7 @@
             	</tal:block>
             	<div tal:condition="len(fotos) == 0" class="item active">
     				<div class="thumbnail">
-    					<img src="http://placehold.it/300x300" alt="Foto" />
+    					<img src="http://placehold.it/500x500" alt="Foto" />
     				</div>
     			</div>
 			</div>
@@ -373,15 +373,15 @@
 							</a><br />
 							<span tal:condition="cliente">${cliente.nombre_legal}</span>
 							<p>
-								<span class="label label-success" tal:condition="tienda.abierto">Abierta</span>
-								<span class="label label-important" tal:condition="not tienda.abierto">Cerrada</span>
+								<span class="label label-success" tal:condition="tienda.abierto">Conectada</span>
+								<span class="label label-important" tal:condition="not tienda.abierto">Desconectada</span>
 								<br />
 								<em tal:condition="cliente">${cliente.rif}</em><br />
 								<strong>Categoria</strong>
 								<tal:block tal:condition="cliente">
 									<span tal:define="categoria_item view.obtener_categoria(cliente.categoria)" tal:condition="categoria_item">
 										${categoria_item.nombre}
-									</span><br />	
+									</span><br />
 								</tal:block>
 								<input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
 							</p>
@@ -429,7 +429,15 @@
 		<table class="table">
   			<thead>
     			<tr>
-      				<th>Propiedades</th>
+      				<td>
+      					<strong>Propiedades</strong>
+      					<span class="pull-right" tal:condition="editar">
+      						<a tal:attributes="href view.peticion.route_url('registro_tienda')">
+								<i class="icon-plus"></i>
+								Agregar tienda
+							</a>
+						</span>
+      				</td>
     			</tr>
   			</thead>
   			<tbody>
@@ -439,7 +447,7 @@
 	    					<div class="span4">
 	    						<a href="${item.enlace}">
 			        				<div class="thumbnail" tal:define="foto view.obtener_foto(item.tipo, item.tipo_id, 'pequenas')">
-			    						<img src="http://placehold.it/150x150" alt="${item.nombre_comun}" tal:condition="not foto" />
+			    						<img src="http://placehold.it/160x160" alt="${item.nombre_comun}" tal:condition="not foto" />
 			    						<img src="/estatico/${foto.ruta_de_foto}" alt="${item.nombre_comun}" tal:condition="foto" />
 			        				</div>
 			        			</a>

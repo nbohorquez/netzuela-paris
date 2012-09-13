@@ -14,7 +14,7 @@ import bcrypt, transaction
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 
-# Codigo tomado de: 
+# Codigo tomado de:
 # http://danielkaes.wordpress.com/2009/07/30/create-new-classes-with-python-at-runtime/    
 def __mixIn(classname, parentclasses):
     if len(parentclasses) > 0:
@@ -25,7 +25,7 @@ def __mixIn(classname, parentclasses):
     exec createclass
     globals()[classname] = eval(classname)
             
-creador = 1
+root = 1
 acciones = { 
     'Insertar': 'agrego',
     'Abrir': 'abrio',
@@ -251,8 +251,8 @@ def crear_usuario(parametros):
         )])
         
         DBSession.execute('begin')
-        usuario = DBSession.execute(sql, params=dict(
-            a_creador = creador,
+        usr = DBSession.execute(sql, params=dict(
+            a_creador = root,
             a_nombre = valido['nombre'], 
             a_apellido = valido['apellido'],
             a_estatus = 'Activo',
@@ -267,7 +267,7 @@ def crear_usuario(parametros):
         else None
                                                 
         resultado['error'] = error
-        resultado['usuario'] = usuario
+        resultado['usuario'] = int(usr)
         
     return resultado
    
@@ -281,29 +281,29 @@ def crear_tienda(parametros, propietario):
         resultado['tienda'] = -1
     else:
         sql = select([func.InsertarTienda(
-            bindparam('a_propietario'), 
-            bindparam('a_ubicacion'), 
+            bindparam('a_propietario'),
+            bindparam('a_ubicacion'),
             bindparam('a_rif'),
             bindparam('a_categoria'),
             bindparam('a_estatus'),
             bindparam('a_nombre_legal'),
             bindparam('a_nombre_comun'),
-            bindparam('a_telefono'), 
+            bindparam('a_telefono'),
             bindparam('a_edificio_cc'), 
             bindparam('a_piso'),
             bindparam('a_apartamento'),
             bindparam('a_local'),
             bindparam('a_casa'),
             bindparam('a_calle'),
-            bindparam('a_sector_urb_barrio'), 
-            bindparam('a_pagina_web'), 
+            bindparam('a_sector_urb_barrio'),
+            bindparam('a_pagina_web'),
             bindparam('a_facebook'),
             bindparam('a_twitter'),
             bindparam('a_correo_electronico_publico')
         )])
         
         DBSession.execute('begin')
-        tienda = DBSession.execute(sql, params=dict(
+        tnd = DBSession.execute(sql, params=dict(
             a_propietario = propietario, 
             a_ubicacion = valido['ubicacion'], 
             a_rif = valido['rif'].replace('-',''),
@@ -312,7 +312,7 @@ def crear_tienda(parametros, propietario):
             a_nombre_legal = valido['nombre_legal'],
             a_nombre_comun = valido['nombre_comun'],
             a_telefono = valido['telefono'].replace('-',''), 
-            a_edificio_cc = valido['edificio_cc'], 
+            a_edificio_cc = valido['edificio'], 
             a_piso = valido['piso'],
             a_apartamento = valido['apartamento'],
             a_local = valido['local_no'],
@@ -327,11 +327,11 @@ def crear_tienda(parametros, propietario):
         DBSession.execute('commit')
         
         error = 'Registro de tienda no exitoso.' \
-        if tienda == -1048 or tienda == -1452 or tienda == -1062 \
+        if tnd == -1048 or tnd == -1452 or tnd == -1062 \
         else None
                             
         resultado['error'] = error
-        resultado['tienda'] = tienda
+        resultado['tienda'] = int(tnd)
         
     return resultado
 
@@ -372,8 +372,8 @@ def crear_consumidor(parametros):
         fecha_string = formatear_fecha_para_mysql(str(valido['fecha_de_nacimiento']))
         
         DBSession.execute('begin')
-        consumidor = DBSession.execute(sql, params=dict(
-            a_creador = creador,
+        con = DBSession.execute(sql, params=dict(
+            a_creador = root,
             a_nombre = valido['nombre'],
             a_apellido = valido['apellido'],
             a_estatus = 'Activo',
@@ -388,11 +388,11 @@ def crear_consumidor(parametros):
         DBSession.execute('commit')
         
         error = 'Registro de consumidor no exitoso' \
-        if consumidor == -1048 or consumidor == -1452 or consumidor == -1062 \
+        if con == -1048 or con == -1452 or con == -1062 \
         else None
         
         resultado['error'] = error
-        resultado['consumidor'] = consumidor
+        resultado['consumidor'] = int(con)
         
     return resultado
 
@@ -405,6 +405,7 @@ def crear_horario_de_trabajo(parametros, tienda_dia):
         resultado['error'] = e.msg
         resultado['horario_de_trabajo'] = -1 
     else:
+        laborable = True if valido['laborable'] == 'Abierto' else False
         sql = select([func.InsertarHorarioDeTrabajo(
             bindparam('a_tienda_id'),
             bindparam('a_dia'),
@@ -415,7 +416,7 @@ def crear_horario_de_trabajo(parametros, tienda_dia):
         horario = DBSession.execute(sql, params=dict(
             a_tienda_id = tienda_dia['tienda_id'],
             a_dia = tienda_dia['dia'],
-            a_laborable = valido['laborable']
+            a_laborable = laborable
         )).scalar()
         DBSession.execute('commit')
         
@@ -464,6 +465,118 @@ def crear_turno(parametros, tienda_dia):
         resultado['turno'] = trn
         
     return resultado 
+
+def crear_horarios_y_turnos(parametros, tienda_id):
+    def agregar_a_lista(lista, dato):
+        if not isinstance(lista, list):
+            lista = []
+        lista.append(dato)        
+    """
+    Estoy recibiendo claves de la forma:
+    Lunes
+    Lunes.hora_de_apertura.0
+    Lunes.hora_de_cierre.0
+    Lunes.hora_de_apertura.1
+    Lunes.hora_de_cierre.1
+    Martes
+    Martes.hora_de_apertura.0
+    Martes.hora_de_cierre.0
+    ...
+    """
+    error = None
+    
+    claves = parametros.keys()
+    dias = [x.valor for x in DBSession.query(dia).all()]
+    
+    # Procesamos cada dia de la semana
+    for d in dias:
+        hdt = DBSession.query(horario_de_trabajo).\
+        filter(and_(
+            horario_de_trabajo.tienda_id == tienda_id,
+            horario_de_trabajo.dia == d
+        )).first()
+        
+        tienda_dia = {'tienda_id': tienda_id, 'dia': d}
+        laborable = {'laborable': parametros[d]}
+        
+        # Si la tienda no tiene un horario_de_trabajo para ese dia, se
+        # crea uno. De lo contrario se edita el que ya existe
+        res = crear_horario_de_trabajo(laborable, tienda_dia) \
+        if hdt is None \
+        else editar_horario_de_trabajo(laborable, tienda_dia)
+            
+        if res is not None:
+            if isinstance(res, dict) and res['error'] is not None:
+                agregar_a_lista(error, res['error'])
+            else:
+                agregar_a_lista(error, res)
+    
+        turnos_del_dia = DBSession.query(turno).\
+        filter(and_(turno.tienda_id == tienda_id, turno.dia == d)).\
+        all()
+        
+        # Borramos todos los turnos de ese dia
+        for turn in turnos_del_dia:
+            DBSession.delete(turn)
+            transaction.commit()
+        
+        # El formato del dia es '<Dia>.' Ej: 'Lunes.', 'Martes.', etc    
+        formato_del_dia = '{}.'.format(d)
+        # Estas son las claves de cada dia. De la forma:
+        # ['Lunes.hora_de_apertura.0', 'Lunes.hora_de_apertura.1', ...]
+        claves_del_dia = [x for x in claves if formato_del_dia in x]
+        # En turnos esta el indice mas alto de las claves del dia.
+        # En el ejemplo anterior seria 1
+        turnos = max([int(x.split('.')[2]) for x in claves_del_dia])
+                    
+        # Creamos nuevos turnos con la informacion que pasa el cliente
+        for turn in range(0, turnos + 1):
+            horas = {
+                'hora_de_apertura': parametros['{}.hora_de_apertura.{}'.format(d, turn)], 
+                'hora_de_cierre': parametros['{}.hora_de_cierre.{}'.format(d, turn)]
+            } if parametros[d] == 'Abierto' \
+            else {
+                'hora_de_apertura': '00:00:00', 
+                'hora_de_cierre': '00:00:00'
+            }
+            
+            res = crear_turno(horas, tienda_dia)
+            if res['error'] is not None:
+                agregar_a_lista(error, res['error'])
+
+    return error
+
+def crear_descripcion(parametros, creador, describible):
+    from paris.formularios import TextoValido
+    resultado = {}
+    try:
+        valido = TextoValido.to_python(parametros['contenido'])
+    except Invalid as e:
+        resultado['error'] = e.msg
+        resultado['descripcion'] = -1
+    else:
+        sql = select([func.InsertarDescripcion(
+            bindparam('a_creador'),
+            bindparam('a_describible'),
+            bindparam('a_contenido')
+        )])
+
+        DBSession.execute('begin')
+        des = DBSession.execute(sql, params=dict(
+            a_creador = creador,
+            a_describible = describible,
+            a_contenido = valido
+        )).scalar()
+        DBSession.execute('commit')
+                    
+        error = 'Registro de descripcion no exitoso' \
+        if des == -1048 or des == -1452 or des == -1062 \
+        else None
+        
+        resultado['error'] = error
+        resultado['descripcion'] = int(des)
+        
+    return resultado
     
 def editar_usuario(parametros, _id):
     from paris.formularios import FormularioEditarUsuario
@@ -471,31 +584,34 @@ def editar_usuario(parametros, _id):
     try:
         valido = FormularioEditarUsuario.to_python(parametros)
         
-        usu = DBSession.query(usuario).filter_by(usuario_id = _id).first()
-        usu.nombre = valido['nombre'] if usu.nombre != valido['nombre'] else usu.nombre
+        usr = DBSession.query(usuario).filter_by(usuario_id = _id).first()
         
-        usu.apellido = valido['apellido'] \
-        if usu.apellido != valido['apellido'] \
-        else usu.apellido
+        usr.nombre = valido['nombre'] \
+        if usr.nombre != valido['nombre'] else usr.nombre
         
-        usu.ubicacion = valido['ubicacion'] \
-        if usu.ubicacion != valido['ubicacion'] \
-        else usu.ubicacion
+        usr.apellido = valido['apellido'] \
+        if usr.apellido != valido['apellido'] \
+        else usr.apellido
+        
+        usr.ubicacion = valido['ubicacion'] \
+        if usr.ubicacion != valido['ubicacion'] \
+        else usr.ubicacion
         """
-        Aqui hay una buena explicacion de por que tengo que hacer transaction.commit() 
-        y no DBSession.commit() 
+        Aqui hay una buena explicacion de por que tengo que hacer 
+        transaction.commit() y no DBSession.commit() 
         http://turbogears.org/2.0/docs/main/Wiki20/wiki20.html#initializing-the-tables
         """
         transaction.commit()
         
-        # Si ya hay un consumidor asociado a este usuario lo editamos, sino, lo creamos
+        # Si ya hay un consumidor asociado a este usuario lo editamos, sino, 
+        # lo creamos
         if 'sexo' in parametros \
         or 'fecha_de_nacimiento' in parametros \
         or 'grado_de_instruccion' in parametros:
             con = DBSession.query(consumidor).filter_by(usuario_p = _id).first()
-            # Tengo que guardar con_id aqui porque DBSession hace un cambio de contexto 
-            # cuando llamo a una funcion y pierde la referencia cuando vuelve otra vez 
-            # aqui
+            # Tengo que guardar con_id aqui porque DBSession hace un cambio de 
+            # contexto cuando llamo a una funcion y pierde la referencia cuando 
+            # vuelve otra vez aqui
             con_id = con.consumidor_id if con is not None else None
             
             tmp = editar_consumidor(parametros, con.consumidor_id) \
@@ -508,7 +624,7 @@ def editar_usuario(parametros, _id):
                 resultado['error'] = tmp['error']
             else:
                 resultado['error'] = tmp
-                resultado['consumidor'] = con_id
+                resultado['consumidor'] = int(con_id)
             
     except Invalid as e:
         resultado['error'] = e.msg
@@ -559,7 +675,9 @@ def editar_producto(parametros, _id):
         if 'fabricante' in parametros:
             valido = FormularioEditarProducto.to_python(parametros)
             """
-            fecha_string = __formatear_fecha_para_mysql(str(valido['debut_en_el_mercado']))
+            fecha_string = __formatear_fecha_para_mysql(
+                str(valido['debut_en_el_mercado'])
+            )
             """
             pro.fabricante = valido['fabricante'] \
             if pro.fabricante != valido['fabricante'] else pro.fabricante
@@ -574,13 +692,21 @@ def editar_producto(parametros, _id):
             if pro.debut_en_el_mercado != valido['debut_en_el_mercado'] \
             else pro.debut_en_el_mercado
             
-            pro.largo = valido['largo'] if pro.largo != valido['largo'] else pro.largo
-            pro.ancho = valido['ancho'] if pro.ancho != valido['ancho'] else pro.ancho
-            pro.alto = valido['alto'] if pro.alto != valido['alto'] else pro.alto
-            pro.peso = valido['peso'] if pro.peso != valido['peso'] else pro.peso
+            pro.largo = valido['largo'] \
+            if pro.largo != valido['largo'] else pro.largo
+            
+            pro.ancho = valido['ancho'] \
+            if pro.ancho != valido['ancho'] else pro.ancho
+            
+            pro.alto = valido['alto'] \
+            if pro.alto != valido['alto'] else pro.alto
+            
+            pro.peso = valido['peso'] \
+            if pro.peso != valido['peso'] else pro.peso
             
             pro.pais_de_origen = valido['pais_de_origen'] \
-            if pro.pais_de_origen != valido['pais_de_origen'] else pro.pais_de_origen
+            if pro.pais_de_origen != valido['pais_de_origen'] \
+            else pro.pais_de_origen
             
             transaction.commit()
         elif 'categoria' in parametros:
@@ -589,7 +715,8 @@ def editar_producto(parametros, _id):
             transaction.commit()
         elif 'descripcion' in parametros:
             error = editar_descripcion(
-                {'contenido': parametros['descripcion']}, parametros['descripcion_id']
+                {'contenido': parametros['descripcion']}, 
+                parametros['descripcion_id']
             )
     except Invalid as e:
         error = e.msg
@@ -603,7 +730,9 @@ def editar_descripcion(parametros, _id):
     error = None
     try:
         valido = TextoValido.to_python(parametros['contenido'])
-        des = DBSession.query(descripcion).filter_by(descripcion_id = _id).first()
+        des = DBSession.query(descripcion).\
+        filter_by(descripcion_id = _id).first()
+        
         des.contenido = valido if des.contenido != valido else des.contenido
         transaction.commit()
     except Invalid as e:
@@ -628,7 +757,8 @@ def editar_tienda(parametros, _id):
             tie.edificio_cc = valido['edificio'] \
             if tie.edificio_cc != valido['edificio'] else tie.edificio_cc
             
-            tie.piso = valido['piso'] if tie.piso != valido['piso'] else tie.piso
+            tie.piso = valido['piso'] \
+            if tie.piso != valido['piso'] else tie.piso
             
             tie.apartamento = valido['apartamento'] \
             if tie.apartamento != valido['apartamento'] else tie.apartamento
@@ -636,8 +766,11 @@ def editar_tienda(parametros, _id):
             tie.local_no = valido['local_no'] \
             if tie.local_no != valido['local_no'] else tie.local_no
             
-            tie.casa = valido['casa'] if tie.casa != valido['casa'] else tie.casa
-            tie.calle = valido['calle'] if tie.calle != valido['calle'] else tie.calle
+            tie.casa = valido['casa'] \
+            if tie.casa != valido['casa'] else tie.casa
+            
+            tie.calle = valido['calle'] \
+            if tie.calle != valido['calle'] else tie.calle
             
             tie.sector_urb_barrio = valido['urbanizacion'] \
             if tie.sector_urb_barrio != valido['urbanizacion'] \
@@ -655,85 +788,12 @@ def editar_tienda(parametros, _id):
         elif 'descripcion' in parametros:
             # Editamos descripcion
             error = editar_descripcion(
-                {'contenido': parametros['descripcion']}, parametros['descripcion_id']
+                {'contenido': parametros['descripcion']}, 
+                parametros['descripcion_id']
             )
         elif 'Lunes' in parametros:
             # Editamos horario
-            """
-            Estoy recibiendo claves de la forma:
-            Lunes
-            Lunes.hora_de_apertura.0
-            Lunes.hora_de_cierre.0
-            Lunes.hora_de_apertura.1
-            Lunes.hora_de_cierre.1
-            Martes
-            Martes.hora_de_apertura.0
-            Martes.hora_de_cierre.0
-            ...
-            """
-            claves = parametros.keys()
-            dias = [x.valor for x in DBSession.query(dia).all()]
-            
-            # Procesamos cada dia de la semana
-            for d in dias:
-                hdt = DBSession.query(horario_de_trabajo).\
-                filter(and_(
-                    horario_de_trabajo.tienda_id == _id,
-                    horario_de_trabajo.dia == d
-                )).first()
-                
-                tienda_dia = {'tienda_id': _id, 'dia': d}
-                laborable = {'laborable': parametros[d]}
-                
-                # Si la tienda no tiene un horario_de_trabajo para ese dia, se crea uno.
-                # De lo contrario se edita el que ya existe
-                res = crear_horario_de_trabajo(laborable, tienda_dia) \
-                if hdt is None \
-                else editar_horario_de_trabajo(laborable, tienda_dia)
-                    
-                if res is not None:
-                    if isinstance(res, dict) and res['error'] is not None:
-                        if not isinstance(error, list):
-                            error = []
-                        error.append(res['error'])
-                    else:
-                        if not isinstance(error, list):
-                            error = []
-                        error.append(res)
-                            
-                formato_del_dia = '{}.'.format(d)
-                # Estas son las claves de cada dia. De la forma:
-                # ['Lunes.hora_de_apertura.0', 'Lunes.hora_de_apertura.1', ...]
-                claves_del_dia = [x for x in claves if formato_del_dia in x]
-                # En turnos esta el indice mas alto de las claves del dia.
-                # En el ejemplo anterior seria 1
-                turnos = max([int(x.split('.')[2]) for x in claves_del_dia])
-                
-                turnos_del_dia = DBSession.query(turno).\
-                filter(and_(turno.tienda_id == _id, turno.dia == d)).\
-                all()
-                
-                # Borramos todos los turnos de ese dia
-                for turn in turnos_del_dia:
-                    DBSession.delete(turn)
-                    transaction.commit()
-                
-                # Creamos nuevos turnos con la informacion que pasa el cliente
-                for turn in range(0, turnos + 1):
-                    horas = {
-                        'hora_de_apertura': parametros['{}.hora_de_apertura.{}'.format(d, turn)], 
-                        'hora_de_cierre': parametros['{}.hora_de_cierre.{}'.format(d, turn)]
-                    } if parametros[d] == 'Abierto' \
-                    else {
-                        'hora_de_apertura': '00:00:00', 
-                        'hora_de_cierre': '00:00:00'
-                    } 
-                    
-                    res = crear_turno(horas, tienda_dia)
-                    if res['error'] is not None:
-                        if not isinstance(error, list):
-                            error = []
-                        error.append(res['error'])
+            error = crear_horarios_y_turnos(parametros, _id)    
     except Invalid as e:
         error = e.msg
     except AttributeError as e:
@@ -754,7 +814,9 @@ def editar_horario_de_trabajo(parametros, _id):
             horario_de_trabajo.dia == _id['dia']
         )).first()
         
-        hdt.laborable = laborable if hdt.laborable != laborable else hdt.laborable 
+        hdt.laborable = laborable \
+        if hdt.laborable != laborable else hdt.laborable
+         
         transaction.commit()
     except Invalid as e:
         error = e.msg

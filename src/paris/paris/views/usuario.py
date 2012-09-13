@@ -70,16 +70,23 @@ class UsuarioView(Diagramas, Comunes):
         
         resultado = []
         for reg in DBSession.query(registro).\
-        join(r, or_(registro.actor_activo == r.rastreable_id, registro.actor_pasivo == r.rastreable_id)).\
+        join(r, or_(
+            registro.actor_activo == r.rastreable_id, 
+            registro.actor_pasivo == r.rastreable_id
+        )).\
         join(u, r.rastreable_id == u.rastreable_p).\
-        filter(u.usuario_id == self.usuario_id).order_by(registro.fecha_hora.desc()).all():
-            resultado.append(formatear_entrada_registro(reg, self.peticion, self.tipo_de_rastreable))
+        filter(u.usuario_id == self.usuario_id).\
+        order_by(registro.fecha_hora.desc()).all():
+            resultado.append(formatear_entrada_registro(
+                reg, self.peticion, self.tipo_de_rastreable
+            ))
 
         return resultado
     
     @reify
     def consumidor_asociado(self):
-        return DBSession.query(consumidor).filter_by(usuario_p = self.usuario_id).first()
+        return DBSession.query(consumidor).\
+        filter_by(usuario_p = self.usuario_id).first()
     
     @reify
     def fecha_de_nacimiento(self):
@@ -90,22 +97,31 @@ class UsuarioView(Diagramas, Comunes):
     @reify
     def clientes_asociados(self):
         resultado = []
-        for cli, tipo, _id in DBSession.query(cliente, case([
-                (cliente.rif == tienda.cliente_p, 'tienda'),
-                (cliente.rif == patrocinante.cliente_p, 'patrocinante'),
-            ]),
-            case([
-                (cliente.rif == tienda.cliente_p, tienda.tienda_id),
-                (cliente.rif == patrocinante.cliente_p, patrocinante.patrocinante_id),
-            ])).\
-            filter(and_(
-                or_(
-                    cliente.rif == tienda.cliente_p, 
-                    cliente.rif == patrocinante.cliente_p
-                ),
-                cliente.propietario == self.usuario_id, 
-            )).all():
-            
+        
+        x1 = DBSession.query(cliente, case([
+            (cliente.rif == tienda.cliente_p, 'tienda')
+        ]),
+        case([
+            (cliente.rif == tienda.cliente_p, tienda.tienda_id)
+        ])).\
+        filter(and_(
+            cliente.rif == tienda.cliente_p, 
+            cliente.propietario == self.usuario_id
+        ))
+        
+        x2 = DBSession.query(cliente, case([
+            (cliente.rif == patrocinante.cliente_p, 'patrocinante')
+        ]),
+        case([
+            (cliente.rif == patrocinante.cliente_p, patrocinante.patrocinante_id)
+        ])).\
+        filter(and_(
+            cliente.rif == patrocinante.cliente_p, 
+            cliente.propietario == self.usuario_id
+        ))
+        
+        tmp = x1.union(x2).all()
+        for cli, tipo, _id in tmp:
             enlace = {
                 'tienda': lambda x: self.peticion.route_url('tienda', tienda_id = x),
                 'patrocinante': lambda x: self.peticion.route_url('patrocinante', patrocinante_id = x)

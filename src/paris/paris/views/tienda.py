@@ -107,11 +107,17 @@ class TiendaView(Diagramas, Comunes):
         
         resultado = []
         for reg in DBSession.query(registro).\
-        join(r, or_(registro.actor_activo == r.rastreable_id, registro.actor_pasivo == r.rastreable_id)).\
+        join(r, or_(
+            registro.actor_activo == r.rastreable_id, 
+            registro.actor_pasivo == r.rastreable_id
+        )).\
         join(c, r.rastreable_id == c.rastreable_p).\
         join(t, c.rif == t.cliente_p).\
-        filter(t.tienda_id == self.tienda_id).order_by(registro.fecha_hora.desc()).all():
-            resultado.append(formatear_entrada_registro(reg, self.peticion, self.tipo_de_rastreable))
+        filter(t.tienda_id == self.tienda_id).\
+        order_by(registro.fecha_hora.desc()).all():
+            resultado.append(formatear_entrada_registro(
+                reg, self.peticion, self.tipo_de_rastreable
+            ))
         return resultado
         
     @reify

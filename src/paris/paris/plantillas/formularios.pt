@@ -14,13 +14,22 @@
 		<h3>Edición</h3>
    </metal:encabezado_edicion>
    
-	<!-- Botones: pie de pagina
+	<!-- Botones: pie de modal
 	================================================== -->
-	<metal:botones_pie_de_pagina define-macro="botones_pie_de_pagina">
+	<metal:botones_pie_de_modal define-macro="botones_pie_de_modal">
 		<div class="form-actions">
       		<button class="btn btn-primary" type="submit" name="guardar" id="guardar">Guardar cambios</button>
         	<a class="btn" href="#" data-dismiss="modal">Cancelar</a>
       	</div>
+    </metal:botones_pie_de_modal>
+    
+    <!-- Botones: pie de pagina
+	================================================== -->
+	<metal:botones_pie_de_pagina define-macro="botones_pie_de_pagina">
+		<div class="form-actions">
+      		<button class="btn btn-primary" type="submit" name="enviar" id="enviar">Enviar</button>
+		    <button class="btn" type="submit" name="cancelar" id="cancelar">Cancelar</button>
+		</div>
    </metal:botones_pie_de_pagina>	
 	
 	<!-- Campo: correo electronico
@@ -477,7 +486,7 @@
 	        	<form class="form-horizontal" id="formulario_editar_descripcion" method="post" accept-charset="UTF-8">
 					<fieldset>
 						<div metal:use-macro="view.formularios['campo_descripcion']"></div>
-			          	<div metal:use-macro="view.formularios['botones_pie_de_pagina']"></div>
+			          	<div metal:use-macro="view.formularios['botones_pie_de_modal']"></div>
 			        </fieldset>
 				</form>
 	        </div>
@@ -508,7 +517,7 @@
 				      	<div metal:use-macro="view.formularios['campo_calle']"></div>
 				      	<div metal:use-macro="view.formularios['campo_urbanizacion']"></div>
 				      	<div metal:use-macro="view.formularios['campo_ubicacion']"></div>
-			          	<div metal:use-macro="view.formularios['botones_pie_de_pagina']"></div>
+			          	<div metal:use-macro="view.formularios['botones_pie_de_modal']"></div>
 			        </fieldset>
 				</form>
 	        </div>
@@ -538,7 +547,7 @@
 							</tal:block>
 							<hr />
 						</tal:block>
-			          	<div metal:use-macro="view.formularios['botones_pie_de_pagina']"></div>
+			          	<div metal:use-macro="view.formularios['botones_pie_de_modal']"></div>
 			        </fieldset>
 				</form>
 	        </div>
@@ -572,7 +581,7 @@
 				      	<div metal:use-macro="view.formularios['campo_alto']"></div>
 				      	<div metal:use-macro="view.formularios['campo_peso']"></div>				      	
 				      	<div metal:use-macro="view.formularios['campo_pais_de_origen']"></div>
-			          	<div metal:use-macro="view.formularios['botones_pie_de_pagina']"></div>
+			          	<div metal:use-macro="view.formularios['botones_pie_de_modal']"></div>
 			        </fieldset>
 				</form>
 	        </div>
@@ -606,7 +615,7 @@
 		  					<div metal:use-macro="view.formularios['campo_fecha_de_nacimiento']"></div>
 		  				</tal:block>
       					<div metal:use-macro="view.formularios['campo_grado_de_instruccion']"></div>
-			          	<div metal:use-macro="view.formularios['botones_pie_de_pagina']"></div>
+			          	<div metal:use-macro="view.formularios['botones_pie_de_modal']"></div>
 			        </fieldset>
 				</form>
 	        </div>
@@ -630,7 +639,7 @@
 	        	<form class="form-horizontal" id="formulario_editar_categoria" method="post" accept-charset="UTF-8">
 					<fieldset>
 						<div metal:use-macro="view.formularios['campo_categoria']"></div>
-			          	<div metal:use-macro="view.formularios['botones_pie_de_pagina']"></div>
+			          	<div metal:use-macro="view.formularios['botones_pie_de_modal']"></div>
 			        </fieldset>
 				</form>
 	        </div>

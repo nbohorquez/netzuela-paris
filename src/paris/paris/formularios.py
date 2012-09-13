@@ -39,7 +39,9 @@ class ContrasenaSegura(validators.FancyValidator):
     def validate_python(self, valor, estado):
         # Chequeamos la longitud de la contraseña
         if len(valor) < self.minimo:
-            raise Invalid(self.message("corto", estado, minimo=self.minimo), valor, estado)
+            raise Invalid(self.message(
+                "corto", estado, minimo=self.minimo), valor, estado
+            )
         
         # Chequeamos que no sea una palabra facil de ubicar en un diccionario
         f = open(self.diccionario)
@@ -51,7 +53,10 @@ class ContrasenaSegura(validators.FancyValidator):
         # Chequeamos que tenga por lo menos dos caracteres que no sean letras
         no_letras = self.letras.sub('', valor)
         if len(no_letras) < self.minimo_no_letras:
-            raise Invalid(self.message("solo_letras", estado, minimo_no_letras=self.minimo_no_letras), valor, estado)
+            raise Invalid(self.message(
+                "solo_letras", estado, minimo_no_letras=self.minimo_no_letras), 
+                valor, estado
+            )
 
 class UsuarioUnico(validators.FancyValidator):
     mensaje = unicode('El usuario especificado ya existe en la base de datos', 'utf-8')
@@ -60,7 +65,8 @@ class UsuarioUnico(validators.FancyValidator):
         return valor.strip()
     
     def validate_python(self, valor, estado):
-        existe = DBSession.query(acceso).filter_by(correo_electronico = valor).first()
+        existe = DBSession.query(acceso).\
+        filter_by(correo_electronico = valor).first()
         if existe is not None:
             raise Invalid(self.mensaje, valor, estado)
     
@@ -71,7 +77,8 @@ class GradoDeInstruccionValido(validators.FancyValidator):
         return valor.strip()
     
     def validate_python(self, valor, estado):
-        grados = DBSession.query(grado_de_instruccion).filter(grado_de_instruccion.valor == valor).first()
+        grados = DBSession.query(grado_de_instruccion).\
+        filter(grado_de_instruccion.valor == valor).first()
         if grados is None:
             raise Invalid(self.mensaje, valor, estado)
         
@@ -82,7 +89,8 @@ class CategoriaValida(validators.FancyValidator):
         return valor.strip()
     
     def validate_python(self, valor, estado):
-        categorias = DBSession.query(categoria).filter(categoria.categoria_id == valor).first()
+        categorias = DBSession.query(categoria).\
+        filter(categoria.categoria_id == valor).first()
         if categorias is None:
             raise Invalid(self.mensaje, valor, estado)
 
@@ -114,7 +122,8 @@ class TipoDeCodigoValido(validators.FancyValidator):
         return valor.strip()
     
     def validate_python(self, valor, estado):
-        tipos = DBSession.query(tipo_de_codigo).filter(tipo_de_codigo.valor == valor).first()
+        tipos = DBSession.query(tipo_de_codigo).\
+        filter(tipo_de_codigo.valor == valor).first()
         if tipos is None:
             raise Invalid(self.mensaje, valor, estado)
 
@@ -125,7 +134,8 @@ class UbicacionExistente(validators.FancyValidator):
         return valor.strip()
     
     def validate_python(self, valor, estado):
-        resultado = DBSession.query(territorio.nombre).filter_by(territorio_id = valor).first()
+        resultado = DBSession.query(territorio.nombre).\
+        filter_by(territorio_id = valor).first()
         if resultado is None:
             raise Invalid(self.mensaje, valor, estado)
 
@@ -137,13 +147,16 @@ class PaisExistente(validators.FancyValidator):
     
     def validate_python(self, valor, estado):
         resultado = DBSession.query(territorio.nombre).\
-        filter(and_(territorio.territorio_id == valor, territorio.nivel == 1)).first()
+        filter(and_(territorio.territorio_id == valor, territorio.nivel == 1)).\
+        first()
         if resultado is None:
             raise Invalid(self.mensaje, valor, estado)
         
 class EdadValida(validators.FancyValidator):
     convertidor = validators.DateConverter(month_style='dd/mm/yyyy')
-    validador = validators.DateValidator(latest_date=date.today()-timedelta(days=EDAD_MINIMA*365.24))
+    validador = validators.DateValidator(
+        latest_date=date.today()-timedelta(days=EDAD_MINIMA*365.24)
+    )
     
     def _to_python(self, valor, estado):
         return valor.strip()

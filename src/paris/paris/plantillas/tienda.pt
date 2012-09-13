@@ -14,7 +14,7 @@
 					<a data-toggle="modal" href="#fotos_tienda">
 						<div class="thumbnail" tal:define="foto view.obtener_foto('tienda', tienda.tienda_id, 'medianas')">
 							<img src="/estatico/${foto.ruta_de_foto}" alt="Foto" tal:condition="foto" />
-							<img src="http://placehold.it/70x70" alt="Foto" tal:condition="not foto" />
+							<img src="http://placehold.it/300x300" alt="Foto" tal:condition="not foto" />
 						</div>
 					</a>
 					<div id="fotos_tienda" class="modal hide fade">
@@ -120,7 +120,7 @@
 					</div>
 				</div>
           		<div class="row-fluid">
-          			<div class="span12 editable">
+          			<div class="span12">
           				<table class="table">
 				  			<thead>
 				    			<tr>
@@ -130,12 +130,14 @@
 				  			<tbody>
 					    		<tr tal:repeat="descripcion view.descripciones">
 					    			<td>
-					    				<p>${descripcion.contenido}</p>
+					    				<div class="editable">
+					    					<p>${descripcion.contenido}</p>
+					    					<div tal:condition="editar" metal:use-macro="view.formularios['editar_descripcion']" tal:define="campo_descripcion descripcion"></div>
+					    				</div>
 					    			</td>
 				  				</tr>
 				  			</tbody>
 						</table>
-						<div tal:condition="editar" metal:use-macro="view.formularios['editar_descripcion']" tal:define="campo_descripcion view.descripciones[0]"></div>
           			</div>
 				</div>
 				<div class="row-fluid">

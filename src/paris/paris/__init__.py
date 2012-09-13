@@ -52,7 +52,6 @@ def main(global_config, **settings):
 	config.add_route('ingresar', '/ingresar')
 	config.add_route('salir', '/salir')
 	config.add_route('registro', '/registro')
-	config.add_route('registro_consumidor', '/registro_consumidor')
 	config.add_route('registro_tienda', '/registro_tienda')
 	config.add_route('configuracion', '/')
 	config.scan()

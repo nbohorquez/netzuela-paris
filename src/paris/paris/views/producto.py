@@ -19,7 +19,7 @@ from paris.models.spuria import (
     categoria,
     cliente,
     consumidor,
-    creador,
+    root,
     croquis,
     DBSession,
     describible,
@@ -102,10 +102,16 @@ class ProductoView(Diagramas, Comunes):
         
         resultado = []
         for reg in DBSession.query(registro).\
-        join(r, or_(registro.actor_activo == r.rastreable_id, registro.actor_pasivo == r.rastreable_id)).\
+        join(r, or_(
+            registro.actor_activo == r.rastreable_id, 
+            registro.actor_pasivo == r.rastreable_id
+        )).\
         join(p, r.rastreable_id == p.rastreable_p).\
-        filter(p.producto_id == self.producto_id).order_by(registro.fecha_hora.desc()).all():
-            resultado.append(formatear_entrada_registro(reg, self.peticion, self.tipo_de_rastreable))
+        filter(p.producto_id == self.producto_id).\
+        order_by(registro.fecha_hora.desc()).all():
+            resultado.append(formatear_entrada_registro(
+                reg, self.peticion, self.tipo_de_rastreable
+            ))
 
         return resultado
     
@@ -144,7 +150,7 @@ class ProductoView(Diagramas, Comunes):
         
         if autentificado:
             usuario_autentificado = self.obtener_usuario('correo_electronico', autentificado)
-            editar = True if usuario_autentificado.usuario_id == creador else False
+            editar = True if usuario_autentificado.usuario_id == root else False
                         
             if editar and ('guardar' in self.peticion.POST):
                 error = editar_producto(dict(self.peticion.POST), self.producto_id)
