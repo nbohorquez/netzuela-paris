@@ -1,11 +1,11 @@
 html 
 { 
-	height: 100%; 
+    height: 100%; 
 }
 body 
 { 
-	height: 100%;
-	padding-top: 60px;
+    height: 100%;
+    padding-top: 60px;
 }
 .titular-noticia
 {
@@ -15,20 +15,20 @@ a.popover-aqui
 }
 div.popover-contenido
 {
-	display: none;
+    display: none;
 }
 div.editable
 {
-	position: relative;
+    position: relative;
 }
 div.boton-editar-contenido
 {
-	display: none;
-	position: absolute; 
-	right: 0; 
-	bottom: 0;
+    display: none;
+    position: absolute; 
+    right: 0; 
+    bottom: 0;
 }
 div.boton-editar-breadcum
 {
-	display: none;
+    display: none;
 }

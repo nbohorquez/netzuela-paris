@@ -1,107 +1,107 @@
 <!DOCTYPE HTML>
 <div metal:use-macro="view.diagrama_global">
-	<div metal:fill-slot="extra_meta_datos">
-		<input type="hidden" name="usuario_id" value="${usuario.usuario_id}" />
-		<input type="hidden" name="usuario_ubicacion" value="${usuario.ubicacion}" />
-	</div>
-	<div metal:fill-slot="contenido">
-		
-		<!-- Encabezado
-		================================================== -->	
-		<div metal:use-macro="view.macros['resultado_de_operacion']"></div>
-		<div class="page-header">
-			<div class="row-fluid">
-				<div class="span3">
-					<a data-toggle="modal" href="#fotos_usuario">
-						<div class="thumbnail" tal:define="foto view.obtener_foto('usuario', usuario.usuario_id, 'medianas')">
-							<img src="/estatico/${foto.ruta_de_foto}" alt="Foto" tal:condition="foto" />
-							<img src="http://placehold.it/220x220" alt="Foto" tal:condition="not foto" />
-						</div>
-					</a>
-					<div id="fotos_usuario" class="modal hide fade">
-			            <div metal:use-macro="view.macros['carrusel_fotos']" tal:define="fotos view.fotos_grandes"></div>
-					</div>
-				</div>
-				<div class="span9">
-					<h1>${usuario.nombre} ${usuario.apellido}</h1>
-					<div class="row-fluid">
-						<div class="span5 editable" tal:define="consumidor view.consumidor_asociado; territorio view.obtener_territorio(usuario.ubicacion)">
-							<table class="table">
-								<thead>
-					    			<tr>
-					      				<th></th>
-					    			</tr>
-					  			</thead>
-					  			<tbody>
-						    		<tr>
-						    			<td>
-						    				<p>
-						    					Nombre<br />
-						    					Apellido<br />
-						    					Ubicación<br />
-						    					Sexo<br />
-						    					Fecha de nacimiento<br />
-						    					Grado de instrucción<br />
-						    				</p>
-						    			</td>
-					  					<td>
-					  						<p>
-					  							${usuario.nombre}<br />
-					  							${usuario.apellido}<br />
-					  							<span tal:condition="territorio">
-					  								${territorio.nombre}<br />
-					  							</span>
-					  							<span tal:condition="consumidor">
-													${consumidor.sexo}<br />
-					  								<span tal:content="view.fecha_de_nacimiento"></span><br />
-					  								${consumidor.grado_de_instruccion}					  								
-					  							</span>
-					  						</p>
-					  					</td>
-					  				</tr>
-					  			</tbody>
-							</table>
-							<div tal:condition="editar" metal:use-macro="view.formularios['editar_usuario']"
-								tal:define="campo_nombre usuario.nombre; campo_apellido usuario.apellido; campo_ubicacion territorio; campo_grado_de_instruccion python:consumidor.grado_de_instruccion if consumidor else None; campo_sexo python:consumidor.sexo if consumidor else None; campo_fecha_de_nacimiento view.fecha_de_nacimiento; consumidor_asociado consumidor"></div>
-						</div>
-						<div class="span7"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<!-- Contenido
-		================================================== -->	
-		<div id="contenido_pestanas" class="tab-content">
-        	
-        	<!-- Informacion
-			================================================== -->	
-        	<div class="tab-pane active" id="informacion">
-        		<div class="row-fluid">
-        			<div class="span6">
-		        		<div metal:use-macro="view.macros['noticias']" tal:define="registros view.registro"></div>
-		        	</div>
-		        	<div class="span6">
-		        		<div metal:use-macro="view.macros['listado_clientes']" tal:define="lista view.clientes_asociados"></div>
-		        	</div>
-        		</div>
-        	</div>
-        	
-            <!-- Comentarios (calificaciones y reseñas)
-			================================================== -->	
-            <div class="tab-pane" id="comentarios" tal:define="comentarios view.calificaciones_resenas">
-            	<div metal:use-macro="view.macros['comentarios']"></div>
+    <div metal:fill-slot="extra_meta_datos">
+        <input type="hidden" name="usuario_id" value="${usuario.usuario_id}" />
+        <input type="hidden" name="usuario_ubicacion" value="${usuario.ubicacion}" />
+    </div>
+    <div metal:fill-slot="contenido">
+        
+        <!-- Encabezado
+        ================================================== -->    
+        <div metal:use-macro="view.macros['resultado_de_operacion']"></div>
+        <div class="page-header">
+            <div class="row-fluid">
+                <div class="span3">
+                    <a data-toggle="modal" href="#fotos_usuario">
+                        <div class="thumbnail" tal:define="foto view.obtener_foto('usuario', usuario.usuario_id, 'medianas')">
+                            <img src="/estatico/${foto.ruta_de_foto}" alt="Foto" tal:condition="foto" />
+                            <img src="http://placehold.it/220x220" alt="Foto" tal:condition="not foto" />
+                        </div>
+                    </a>
+                    <div id="fotos_usuario" class="modal hide fade">
+                        <div metal:use-macro="view.macros['carrusel_fotos']" tal:define="fotos view.fotos_grandes"></div>
+                    </div>
+                </div>
+                <div class="span9">
+                    <h1>${usuario.nombre} ${usuario.apellido}</h1>
+                    <div class="row-fluid">
+                        <div class="span5 editable" tal:define="consumidor view.consumidor_asociado; territorio view.obtener_territorio(usuario.ubicacion)">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <p>
+                                                Nombre<br />
+                                                Apellido<br />
+                                                Ubicación<br />
+                                                Sexo<br />
+                                                Fecha de nacimiento<br />
+                                                Grado de instrucción<br />
+                                            </p>
+                                        </td>
+                                        <td>
+                                            <p>
+                                                ${usuario.nombre}<br />
+                                                ${usuario.apellido}<br />
+                                                <span tal:condition="territorio">
+                                                    ${territorio.nombre}<br />
+                                                </span>
+                                                <span tal:condition="consumidor">
+                                                    ${consumidor.sexo}<br />
+                                                    <span tal:content="view.fecha_de_nacimiento"></span><br />
+                                                    ${consumidor.grado_de_instruccion}                                                      
+                                                </span>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div tal:condition="editar" metal:use-macro="view.formularios['editar_usuario']"
+                                tal:define="campo_nombre usuario.nombre; campo_apellido usuario.apellido; campo_ubicacion territorio; campo_grado_de_instruccion python:consumidor.grado_de_instruccion if consumidor else None; campo_sexo python:consumidor.sexo if consumidor else None; campo_fecha_de_nacimiento view.fecha_de_nacimiento; consumidor_asociado consumidor"></div>
+                        </div>
+                        <div class="span7"></div>
+                    </div>
+                </div>
             </div>
-      	</div>
-	</div>
-	<div metal:fill-slot="scripts_extra">
-		<script type="text/javascript" src="/estatico/js/bootstrap-datepicker.js"></script>
-		<script type="text/javascript" src="/estatico/js/bootstrap-tooltip.js"></script>
-		<script type="text/javascript" src="/estatico/js/bootstrap-carousel.js"></script>
-		<script type="text/javascript" src="/estatico/js/bootstrap-popover.js"></script>
-		<script type="text/javascript" src="/estatico/js/bootstrap-alert.js"></script>
-		<script type="text/javascript" src="/estatico/js/bootstrap-modal.js"></script>
-		<script type="text/javascript" src="/estatico/js/noticias.js"></script>
-		<script type="text/javascript" src="/estatico/js/usuario.js"></script>
-	</div>
+        </div>
+        
+        <!-- Contenido
+        ================================================== -->    
+        <div id="contenido_pestanas" class="tab-content">
+            
+            <!-- Informacion
+            ================================================== -->    
+            <div class="tab-pane active" id="informacion">
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div metal:use-macro="view.macros['noticias']" tal:define="registros view.registro"></div>
+                    </div>
+                    <div class="span6">
+                        <div metal:use-macro="view.macros['listado_clientes']" tal:define="lista view.clientes_asociados"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Comentarios (calificaciones y reseñas)
+            ================================================== -->    
+            <div class="tab-pane" id="comentarios" tal:define="comentarios view.calificaciones_resenas">
+                <div metal:use-macro="view.macros['comentarios']"></div>
+            </div>
+          </div>
+    </div>
+    <div metal:fill-slot="scripts_extra">
+        <script type="text/javascript" src="/estatico/js/bootstrap-datepicker.js"></script>
+        <script type="text/javascript" src="/estatico/js/bootstrap-tooltip.js"></script>
+        <script type="text/javascript" src="/estatico/js/bootstrap-carousel.js"></script>
+        <script type="text/javascript" src="/estatico/js/bootstrap-popover.js"></script>
+        <script type="text/javascript" src="/estatico/js/bootstrap-alert.js"></script>
+        <script type="text/javascript" src="/estatico/js/bootstrap-modal.js"></script>
+        <script type="text/javascript" src="/estatico/js/noticias.js"></script>
+        <script type="text/javascript" src="/estatico/js/usuario.js"></script>
+    </div>
 </div>

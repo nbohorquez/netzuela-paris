@@ -55,9 +55,9 @@ from sqlalchemy import and_, or_
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import asc
 
-# Aptana siempre va a decir que las clases de spuria (tienda, producto, etc) no estan 
-# definidas explicitamente en ninguna parte. Lo que ocurre es que yo las cargo de forma 
-# dinamica cuando inicia la aplicacion.
+# Aptana siempre va a decir que las clases de spuria (tienda, producto, etc) no 
+# estan definidas explicitamente en ninguna parte. Lo que ocurre es que yo las 
+# cargo de forma dinamica cuando inicia la aplicacion.
 
 class TiendaView(Diagramas, Comunes):
     def __init__(self, peticion):
@@ -101,7 +101,7 @@ class TiendaView(Diagramas, Comunes):
 
     @reify
     def registro(self):
-        r = aliased(rastreable)                
+        r = aliased(rastreable)
         c = aliased(cliente)
         t = aliased(tienda)
         
@@ -161,7 +161,8 @@ class TiendaView(Diagramas, Comunes):
     def horarios(self):
         var_horario = DBSession.query(horario_de_trabajo).\
         join(dia).\
-        filter(horario_de_trabajo.tienda_id == self.tienda_id).order_by(asc(dia.orden)).all()
+        filter(horario_de_trabajo.tienda_id == self.tienda_id).\
+        order_by(asc(dia.orden)).all()
         
         if var_horario is not None:
             resultado = []
@@ -170,7 +171,10 @@ class TiendaView(Diagramas, Comunes):
                 horario['dia'] = jornada.dia
                 horario['laborable'] = jornada.laborable
                 turnos = DBSession.query(turno).\
-                filter(and_(turno.tienda_id == self.tienda_id, turno.dia == jornada.dia)).all()
+                filter(and_(
+                    turno.tienda_id == self.tienda_id, 
+                    turno.dia == jornada.dia
+                )).all()
                 #horario['turnos'] = [{'apertura': str(t.hora_de_apertura), 'cierre': str(t.hora_de_cierre)} for t in turnos]
                 horario['turnos'] = turnos
                 resultado.append(horario)
@@ -199,8 +203,10 @@ class TiendaView(Diagramas, Comunes):
         filter(tienda.tienda_id == self.peticion_id).first()[0]        
         return self.obtener_ruta_categoria(cat_padre)
     
-    @view_config(route_name='tienda', renderer='../plantillas/tienda.pt', request_method='GET')
-    @view_config(route_name='tienda', renderer='../plantillas/tienda.pt', request_method='POST')
+    @view_config(route_name='tienda', renderer='../plantillas/tienda.pt', 
+                 request_method='GET')
+    @view_config(route_name='tienda', renderer='../plantillas/tienda.pt', 
+                 request_method='POST')
     def tienda_view(self):
         editar = False
         aviso = None
@@ -211,15 +217,24 @@ class TiendaView(Diagramas, Comunes):
         autentificado = authenticated_userid(self.peticion)
         
         if autentificado:
-            usuario_autentificado = self.obtener_usuario('correo_electronico', autentificado)
-            propietario = self.obtener_usuario('id', self.cliente_padre.propietario)
-            editar = True if usuario_autentificado.usuario_id == propietario.usuario_id else False
+            usuario_autentificado = self.obtener_usuario(
+                'correo_electronico', autentificado
+            )
+            propietario = self.obtener_usuario(
+                'id', self.cliente_padre.propietario
+            )
+            editar = True \
+            if usuario_autentificado.usuario_id == propietario.usuario_id \
+            else False
         
             if editar and ('guardar' in self.peticion.POST):
                 error = editar_tienda(dict(self.peticion.POST), self.tienda_id)
                 aviso = { 'error': 'Error', 'mensaje': error } \
                 if (error is not None) \
-                else { 'error': 'OK', 'mensaje': 'Datos actualizados correctamente' }
+                else { 
+                    'error': 'OK', 
+                    'mensaje': 'Datos actualizados correctamente' 
+                }
         
         return {
             'pagina': 'Tienda', 
@@ -234,14 +249,18 @@ class TiendaView(Diagramas, Comunes):
         var_dia = self.peticion.params['dia']
         
         turnos = []
-        for apertura, cierre in DBSession.query(turno.hora_de_apertura, turno.hora_de_cierre).\
-        filter(and_(
+        for apertura, cierre in DBSession.query(
+            turno.hora_de_apertura, turno.hora_de_cierre
+        ).filter(and_(
             turno.tienda_id == self.tienda_id, 
             turno.dia == var_dia)
         ).all():
-            _turno = {'apertura': "{0}".format(str(apertura)), 'cierre': "{0}".format(str(cierre))} 
+            _turno = {
+                'apertura': "{0}".format(str(apertura)), 
+                'cierre': "{0}".format(str(cierre))
+            } 
             turnos.append(_turno)
-                    
+            
         return turnos
         
     @view_config(route_name="tienda_coordenadas", renderer="json")
@@ -254,7 +273,10 @@ class TiendaView(Diagramas, Comunes):
         join(dibujable).\
         join(tienda).\
         filter_by(tienda_id = self.tienda_id).all():
-            pto = {'latitud': "{0}".format(str(lat)), 'longitud': "{0}".format(str(lng))}
+            pto = {
+                'latitud': "{0}".format(str(lat)), 
+                'longitud': "{0}".format(str(lng))
+            }
             puntos.append(pto)
         
         return { 'puntos': puntos }

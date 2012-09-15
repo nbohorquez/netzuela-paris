@@ -15,168 +15,169 @@ EOF
 "
 apache_paris="cat > /etc/apache2/sites-available/paris << EOF
 <VirtualHost *:80>
-	ServerName www.netzuela.com
-	ServerAdmin tca7410nb@gmail.com
+        ServerName www.netzuela.com
+        ServerAdmin tca7410nb@gmail.com
 
-	WSGIDaemonProcess pyramid processes=1 threads=4 python-path=/var/www/paris/lib/python2.7/site-packages
-   	WSGIScriptAlias / /var/www/paris/pyramid.wsgi
+        WSGIDaemonProcess pyramid processes=1 threads=4 python-path=/var/www/paris/lib/python2.7/site-packages
+        WSGIScriptAlias / /var/www/paris/pyramid.wsgi
 
-	<Directory /var/www/paris>
-		WSGIProcessGroup pyramid
-		Order allow,deny
- 		Allow from all
-	</Directory>
+        <Directory /var/www/paris>
+                WSGIProcessGroup pyramid
+                Order allow,deny
+                Allow from all
+        </Directory>
 
-	#ErrorLog ${APACHE_LOG_DIR}/paris_error.log
-	ErrorLog /var/log/netzuela/paris_error.log
-	# Possible values include: debug, info, notice, warn, error, crit,
-	# alert, emerg.
-	LogLevel warn
+        #ErrorLog ${APACHE_LOG_DIR}/paris_error.log
+        ErrorLog /var/log/netzuela/paris_error.log
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
 
-	#CustomLog ${APACHE_LOG_DIR}/paris_access.log combined
-	CustomLog /var/log/netzuela/paris_access.log combined
+        #CustomLog ${APACHE_LOG_DIR}/paris_access.log combined
+        CustomLog /var/log/netzuela/paris_access.log combined
 </VirtualHost>
 EOF
 "
 apache_redireccion="cat > /etc/apache2/sites-available/redireccion << EOF
 <VirtualHost *:80>
-	ServerName redireccion.netzuela.com
-	ServerAlias netzuela.com
-	Redirect / http://www.netzuela.com/
+        ServerName redireccion.netzuela.com
+        ServerAlias netzuela.com
+        Redirect / http://www.netzuela.com/
 </VirtualHost>
 EOF
 "
 
 crear_env() {
-	virtualenv --no-site-packages --distribute env
-	rm *.tar.gz
-	source env/bin/activate
-	cd ../src/paris
-	pip install pyramid
-	python setup.py develop
-	deactivate
-	cd ../../bin
+        virtualenv --no-site-packages --distribute env
+        rm *.tar.gz
+        source env/bin/activate
+        cd ../src/paris
+        pip install pyramid
+        python setup.py develop
+        deactivate
+        cd ../../bin
 }
 
 instalar_mod_wsgi() {
-	dir=`pwd`
-	cd /tmp
-	wget https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz
-	tar -xvf mod_wsgi-3.4.tar.gz
-	cd mod_wsgi-3.4
-	./configure
-	make
-	make install
-	cd ..
-	rm mod_wsgi-3.4.tar.gz
-	rm -rf mod_wsgi-3.4
-	cd "$dir"
+        dir=`pwd`
+        cd /tmp
+        wget https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz
+        tar -xvf mod_wsgi-3.4.tar.gz
+        cd mod_wsgi-3.4
+        ./configure
+        make
+        make install
+        cd ..
+        rm mod_wsgi-3.4.tar.gz
+        rm -rf mod_wsgi-3.4
+        cd "$dir"
 }
 
 crear_archivo_wsgi_load() {
-	if [ ! -f /etc/apache2/mods-available/wsgi.load ]; then
-		bash -c "$wsgi_load"
-	fi
-	ln -s /etc/apache2/mods-available/wsgi.load /etc/apache2/mods-enabled/wsgi.load
+        if [ ! -f /etc/apache2/mods-available/wsgi.load ]; then
+                bash -c "$wsgi_load"
+        fi
+        ln -s /etc/apache2/mods-available/wsgi.load /etc/apache2/mods-enabled/wsgi.load
 }
 
 crear_archivo_wsgi_conf() {
-	if [ ! -f /etc/apache2/mods-available/wsgi.conf ]; then
-		bash -c "$wsgi_conf"
-	fi
-	ln -s /etc/apache2/mods-available/wsgi.conf /etc/apache2/mods-enabled/wsgi.conf
+        if [ ! -f /etc/apache2/mods-available/wsgi.conf ]; then
+                bash -c "$wsgi_conf"
+        fi
+        ln -s /etc/apache2/mods-available/wsgi.conf /etc/apache2/mods-enabled/wsgi.conf
 }
 crear_archivo_pyramid_wsgi() {
-	bash -c "$pyramid_wsgi"
-	chmod 755 env/pyramid.wsgi
+        bash -c "$pyramid_wsgi"
+        chmod 755 env/pyramid.wsgi
 }
 
 crear_production_ini() {
-	ln -s `pwd`/../src/paris/production.ini env/production.ini
+        ln -s `pwd`/../src/paris/production.ini env/production.ini
 }
 
 crear_archivo_apache() {
-	if [ ! -f /etc/apache2/sites-available/redireccion ]; then
-		bash -c "$apache_paris"
-	fi
-	ln -s /etc/apache2/sites-available/paris /etc/apache2/sites-enabled/paris
+        if [ ! -f /etc/apache2/sites-available/redireccion ]; then
+                bash -c "$apache_paris"
+        fi
+        ln -s /etc/apache2/sites-available/paris /etc/apache2/sites-enabled/paris
 }
 
 crear_archivo_redireccion() {
-	if [ ! -f /etc/apache2/sites-available/redireccion ]; then
-		bash -c "$apache_redireccion"
-	fi
-	ln -s /etc/apache2/sites-available/redireccion /etc/apache2/sites-enabled/redireccion
+        if [ ! -f /etc/apache2/sites-available/redireccion ]; then
+                bash -c "$apache_redireccion"
+        fi
+        ln -s /etc/apache2/sites-available/redireccion /etc/apache2/sites-enabled/redireccion
 }
 
 configurar_var_www() {
-	ln -s `pwd`/env/ /var/www/paris
+        ln -s `pwd`/env/ /var/www/paris
 }
 
 if [ "$USER" != "root" ]; then
-	echo "Error: Debe correr este script como root"
-	exit 1;
+        echo "Error: Debe correr este script como root"
+        exit 1;
 fi
 echo "Ejecutando script como root"
 
 if [ ! -f env/bin/python ]; then
-	echo "No existe el ambiente virtual, creandolo..."
-	crear_env
+        echo "No existe el ambiente virtual, creandolo..."
+        crear_env
 fi
 echo "Ambiente virtual creado"
 
 if [ ! -f /usr/lib/apache2/modules/mod_wsgi.so ]; then
-	echo "mod_wsgi no esta instalado, instalando..."
-	instalar_mod_wsgi
+        echo "mod_wsgi no esta instalado, instalando..."
+        instalar_mod_wsgi
 fi
 echo "mod_wsgi instalado"
 
 if [ ! -f /etc/apache2/mods-enabled/wsgi.load ]; then
-	echo "El archivo wsgi.load no existe, creandolo..."
-	crear_archivo_wsgi_load
+        echo "El archivo wsgi.load no existe, creandolo..."
+        crear_archivo_wsgi_load
 fi
 echo "wsgi.load creado"
 
 if [ ! -f /etc/apache2/mods-enabled/wsgi.conf ]; then
-	echo "El archivo wsgi.conf no existe, creandolo..."
-	crear_archivo_wsgi_conf
+        echo "El archivo wsgi.conf no existe, creandolo..."
+        crear_archivo_wsgi_conf
 fi
 echo "wsgi.conf creado"
 
 if [ ! -f env/pyramid.wsgi ]; then
-	echo "El archivo pyramid.wsgi no existe, creandolo..."
-	crear_archivo_pyramid_wsgi
+        echo "El archivo pyramid.wsgi no existe, creandolo..."
+        crear_archivo_pyramid_wsgi
 fi
 echo "pyramid.wsgi creado"
 
 if [ ! -f env/production.ini ]; then
-	echo "El archivo production.ini no existe, creandolo..."
-	crear_production_ini
+        echo "El archivo production.ini no existe, creandolo..."
+        crear_production_ini
 fi
 echo "production.ini creado"
 
 if [ -f /etc/apache2/sites-enabled/000-default ]; then
-	echo "El archivo 000-default existe, borrandolo..."
-	rm /etc/apache2/sites-enabled/000-default
+        echo "El archivo 000-default existe, borrandolo..."
+        rm /etc/apache2/sites-enabled/000-default
 fi
 echo "000-default borrado"
 
 if [ ! -f /etc/apache2/sites-enabled/paris ]; then
-	echo "El archivo paris no existe, creandolo..."
-	crear_archivo_apache
+        echo "El archivo paris no existe, creandolo..."
+        crear_archivo_apache
 fi
 echo "paris creado"
 
 if [ ! -f /etc/apache2/sites-enabled/redireccion ]; then
-	echo "El archivo redireccion no existe, creandolo..."
-	crear_archivo_redireccion
+        echo "El archivo redireccion no existe, creandolo..."
+        crear_archivo_redireccion
 fi
 echo "redireccion creado"
 
 if [ ! -L /var/www/paris ]; then
-	echo "El directorio /var/www/ no esta configurado, trabajando..."
-	configurar_var_www
+        echo "El directorio /var/www/ no esta configurado, trabajando..."
+        configurar_var_www
 fi
 echo "Directorio /var/www/ configurado"
 
 sudo service apache2 restart
+exit 0

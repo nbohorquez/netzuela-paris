@@ -15,14 +15,14 @@ from paris.constantes import MENSAJE_DE_ERROR
 from paris.diagramas import Diagramas
 from paris.models.spuria import (
     calificacion_resena,
-    cliente, 
+    cliente,
     consumidor,
     DBSession,
-    editar_usuario, 
-    patrocinante, 
-    rastreable, 
+    editar_usuario,
+    patrocinante,
+    rastreable,
     registro,
-    tienda, 
+    tienda,
     usuario
 )
 from pyramid.decorator import reify
@@ -38,36 +38,36 @@ class UsuarioView(Diagramas, Comunes):
         self.pagina_actual = peticion.url
         if 'usuario_id' in self.peticion.matchdict:
             self.usuario_id = self.peticion.matchdict['usuario_id']
-            
+
     @reify
     def peticion(self):
         return self.peticion
-    
+
     @reify
     def pagina_actual(self):
         return self.pagina_actual
-    
+
     @reify
     def tipo_de_peticion(self):
         return 'usuario'
-    
+
     @reify
     def tipo_de_rastreable(self):
         return 'usuario'
-    
+
     @reify
     def peticion_id(self):
         return self.usuario_id
-    
+
     @property
     def usuario(self):
         return self.obtener_usuario('id', self.usuario_id)
-    
+
     @reify
     def registro(self):
         r = aliased(rastreable)
         u = aliased(usuario)
-        
+
         resultado = []
         for reg in DBSession.query(registro).\
         join(r, or_(
@@ -82,22 +82,22 @@ class UsuarioView(Diagramas, Comunes):
             ))
 
         return resultado
-    
+
     @reify
     def consumidor_asociado(self):
         return DBSession.query(consumidor).\
         filter_by(usuario_p = self.usuario_id).first()
-    
+
     @reify
     def fecha_de_nacimiento(self):
         return formatear_fecha_para_paris(str(self.consumidor_asociado.fecha_de_nacimiento)) \
         if self.consumidor_asociado is not None \
         else None
-        
+
     @reify
     def clientes_asociados(self):
         resultado = []
-        
+
         x1 = DBSession.query(cliente, case([
             (cliente.rif == tienda.cliente_p, 'tienda')
         ]),
@@ -108,7 +108,7 @@ class UsuarioView(Diagramas, Comunes):
             cliente.rif == tienda.cliente_p, 
             cliente.propietario == self.usuario_id
         ))
-        
+
         x2 = DBSession.query(cliente, case([
             (cliente.rif == patrocinante.cliente_p, 'patrocinante')
         ]),
@@ -119,7 +119,7 @@ class UsuarioView(Diagramas, Comunes):
             cliente.rif == patrocinante.cliente_p, 
             cliente.propietario == self.usuario_id
         ))
-        
+
         tmp = x1.union(x2).all()
         for cli, tipo, _id in tmp:
             enlace = {
@@ -139,33 +139,33 @@ class UsuarioView(Diagramas, Comunes):
         return DBSession.query(tienda).\
         join(cliente).\
         filter(cliente.propietario == self.usuario_id).all()
-        
+
     @reify
     def patrocinantes_asociados(self):
         return DBSession.query(patrocinante).\
         join(cliente).\
         filter(cliente.propietario == self.usuario_id).all()
-        
+
     @reify
     def calificaciones_resenas(self):
         var_comentarios = DBSession.query(calificacion_resena).\
         join(consumidor).\
         join(usuario).\
         filter(usuario.usuario_id == self.usuario_id).all()
-        
+
         return formatear_comentarios(var_comentarios)
-       
+
     @view_config(route_name='usuario', renderer='../plantillas/usuario.pt', request_method='GET')
     @view_config(route_name='usuario', renderer='../plantillas/usuario.pt', request_method='POST')
     def usuario_view(self):
         editar = False
         aviso = None
-        
+
         if self.usuario is None:
             return HTTPNotFound(MENSAJE_DE_ERROR)
-        
+
         autentificado = authenticated_userid(self.peticion)
-        
+
         if autentificado:
             usuario_autentificado = self.obtener_usuario('correo_electronico', autentificado)
             editar = True if usuario_autentificado.usuario_id == self.usuario.usuario_id else False
@@ -175,7 +175,7 @@ class UsuarioView(Diagramas, Comunes):
                 aviso = { 'error': 'Error', 'mensaje': resultado['error'] } \
                 if (resultado['error'] is not None) \
                 else { 'error': 'OK', 'mensaje': 'Datos actualizados correctamente' }
-        
+
         return {
             'pagina': 'Usuario', 
             'usuario': self.usuario, 

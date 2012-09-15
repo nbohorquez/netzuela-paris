@@ -1,470 +1,470 @@
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xmlns:tal="http://xml.zope.org/namespaces/tal">
+        xmlns:metal="http://xml.zope.org/namespaces/metal"
+        xmlns:tal="http://xml.zope.org/namespaces/tal">
 <head>
     <title>Macros</title>
 </head>
 <body>
-	
-	<!-- Resultado de operacion
-	================================================== -->
-	<metal:resultado_de_operacion define-macro="resultado_de_operacion">
-		<tal:block tal:condition="aviso" tal:switch="aviso.error">
-			<div tal:case="'Error'" class="alert alert-error">
-				<button type="button" class="close" data-dismiss="alert">&times;</button>
-				<strong>Error</strong> <span tal:content="aviso.mensaje"></span>
-			</div>
-			<div tal:case="'OK'" class="alert alert-success">
-				<button type="button" class="close" data-dismiss="alert">&times;</button>
-				<strong>OK</strong> <span tal:content="aviso.mensaje"></span>
-			</div>
-		</tal:block>
-	</metal:resultado_de_operacion>
-	
-	<!-- Inventario de productos
-	================================================== -->	
-	<metal:inventario_de_productos define-macro="inventario_de_productos">
-		<table class="table">
-  			<thead>
-    			<tr>
-      				<th>Productos</th>
-    			</tr>
-  			</thead>
-  			<tbody>
-  				<tr tal:repeat="item lista">
-	    			<td tal:define="enlace view.peticion.route_url('producto', producto_id = item.producto_id)">
-	    				<div class="row-fluid">
-	    					<div class="span4">
-	    						<a href="${enlace}" tal:omit-tag="not enlace">
-			        				<div class="thumbnail" tal:define="foto view.obtener_foto('producto', item.producto_id, 'pequenas')">
-			        					<img src="http://placehold.it/160x160" tal:condition="not foto" />
-			        					<img src="/estatico/${foto.ruta_de_foto}" tal:condition="foto" />
-			        				</div>
-			        			</a>
-	    					</div>
-	    					<div class="span8">
-	    						<tal:block tal:define="producto view.obtener_producto(item.producto_id)">
-									<a href="${enlace}" tal:omit-tag="not enlace" tal:condition="producto">${producto.nombre}</a>
-									<p>
-										<em tal:condition="producto">${producto.codigo}</em><br />
-										${item.descripcion}<br />
-										<strong>Categoria</strong>
-										<tal:block tal:condition="producto">
-											<span tal:define="categoria_item view.obtener_categoria(producto.categoria)" tal:condition="categoria_item">
-												${categoria_item.nombre}
-											</span><br />	
-										</tal:block>
-										<strong>SKU</strong> ${item.codigo}<br />
-										<strong>Precio</strong> ${item.precio}<br />
-										<strong>Cantidad</strong> ${item.cantidad}
-									</p>
-								</tal:block>
-	    					</div>
-	    				</div>
-	    			</td>
-	    		</tr>
-  			</tbody>
-  		</table>
-  		<p class="pull-right" tal:condition="tamano">
-			<abbr title="Numero total de productos">N:</abbr>
-			<span>${tamano.numero_total_de_productos}</span>
-			<abbr title="Cantidad total de productos">C:</abbr>
-			<span>${tamano.cantidad_total_de_productos}</span>
-			<abbr title="Tamano del inventario">T:</abbr>
-			<span>${tamano.valor}</span>
-		</p>
-	</metal:inventario_de_productos>
-	
-	<!-- Inventario de tiendas
-	================================================== -->	
-	<metal:inventario_de_tiendas define-macro="inventario_de_tiendas">
-		<table class="table">
-  			<thead>
-    			<tr>
-      				<th>Vendedores</th>
-    			</tr>
-  			</thead>
-  			<tbody>
-	    		<tr tal:repeat="item lista">
-	    			<td tal:define="enlace view.peticion.route_url('tienda', tienda_id = item.tienda_id)">
-	    				<div class="row-fluid">
-	    					<div class="span4">
-	    						<a href="${enlace}" tal:omit-tag="not enlace">
-			        				<div class="thumbnail" tal:define="foto view.obtener_foto('tienda', item.tienda_id, 'pequenas')">
-			    						<img src="http://placehold.it/160x160" alt="cliente.nombre_comun" tal:condition="not foto" />
-			    						<img src="/estatico/${foto.ruta_de_foto}" alt="cliente.nombre_comun" tal:condition="foto" />
-			        				</div>
-			        			</a>
-	    					</div>
-	    					<div class="span6">
-	    						<tal:block tal:define="cliente view.obtener_cliente_padre('tienda', item.tienda_id)">
-									<a href="${enlace}" tal:omit-tag="not enlace" tal:condition="cliente">${cliente.nombre_comun}</a>
-									<p>
-										<span tal:condition="cliente">${cliente.nombre_legal}</span><br />
-										<strong>Ubicación</strong> <span tal:condition="cliente">${cliente.ubicacion}</span><br />
-										<strong>Precio</strong> ${item.precio}<br />
-										<strong>Cantidad</strong> ${item.cantidad}<br />
-										<input type="hidden" name="tienda_id" value="${item.tienda_id}" />
-									</p>
-								</tal:block>
-	    					</div>
-	    					<div class="span2">
-	    						<tal:block tal:define="tienda view.obtener_tienda(item.tienda_id)" tal:condition="tienda">
-	    							<p class="label label-success" tal:condition="tienda.abierto">Conectada</p>
-									<p class="label label-important" tal:condition="not tienda.abierto">Desconectada</p>
-	    						</tal:block>	    						
-	    					</div>
-	    				</div>
-  					</td>
-  				</tr>
-  			</tbody>
-		</table>
-	</metal:inventario_de_tiendas>
-	
-	<!-- Comentarios (calificaciones y reseñas)
-	================================================== -->	
-	<metal:comentarios define-macro="comentarios">
-		<blockquote tal:repeat="comentario comentarios">
-			<p>${comentario.resena}</p>
-			<small>
-				<a tal:condition="comentario.consumidor" tal:attributes="href view.peticion.route_url('usuario', usuario_id = comentario.consumidor.usuario_id)">
-					${comentario.consumidor.nombre} ${comentario.consumidor.apellido}
-				</a> el ${comentario.fecha}
-				<tal:block tal:switch="comentario.calificacion">
-					<span tal:case="'Bien'"><i class="icon-thumbs-up"></i></span>
-					<span tal:case="'Mal'"><i class="icon-thumbs-down"></i></span>									
-    			</tal:block>
-			</small>
-		</blockquote>
-	</metal:comentarios>
-	
-	<!-- Carrusel de fotos
-	================================================== -->	
-	<metal:carrusel_fotos define-macro="carrusel_fotos">
-		<div id="carrusel" class="carousel slide">
+    
+    <!-- Resultado de operacion
+    ================================================== -->
+    <metal:resultado_de_operacion define-macro="resultado_de_operacion">
+        <tal:block tal:condition="aviso" tal:switch="aviso.error">
+            <div tal:case="'Error'" class="alert alert-error">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Error</strong> <span tal:content="aviso.mensaje"></span>
+            </div>
+            <div tal:case="'OK'" class="alert alert-success">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>OK</strong> <span tal:content="aviso.mensaje"></span>
+            </div>
+        </tal:block>
+    </metal:resultado_de_operacion>
+    
+    <!-- Inventario de productos
+    ================================================== -->    
+    <metal:inventario_de_productos define-macro="inventario_de_productos">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Productos</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr tal:repeat="item lista">
+                    <td tal:define="enlace view.peticion.route_url('producto', producto_id = item.producto_id)">
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <a href="${enlace}" tal:omit-tag="not enlace">
+                                    <div class="thumbnail" tal:define="foto view.obtener_foto('producto', item.producto_id, 'pequenas')">
+                                        <img src="http://placehold.it/160x160" tal:condition="not foto" />
+                                        <img src="/estatico/${foto.ruta_de_foto}" tal:condition="foto" />
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="span8">
+                                <tal:block tal:define="producto view.obtener_producto(item.producto_id)">
+                                    <a href="${enlace}" tal:omit-tag="not enlace" tal:condition="producto">${producto.nombre}</a>
+                                    <p>
+                                        <em tal:condition="producto">${producto.codigo}</em><br />
+                                        ${item.descripcion}<br />
+                                        <strong>Categoria</strong>
+                                        <tal:block tal:condition="producto">
+                                            <span tal:define="categoria_item view.obtener_categoria(producto.categoria)" tal:condition="categoria_item">
+                                                ${categoria_item.nombre}
+                                            </span><br />    
+                                        </tal:block>
+                                        <strong>SKU</strong> ${item.codigo}<br />
+                                        <strong>Precio</strong> ${item.precio}<br />
+                                        <strong>Cantidad</strong> ${item.cantidad}
+                                    </p>
+                                </tal:block>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="pull-right" tal:condition="tamano">
+            <abbr title="Numero total de productos">N:</abbr>
+            <span>${tamano.numero_total_de_productos}</span>
+            <abbr title="Cantidad total de productos">C:</abbr>
+            <span>${tamano.cantidad_total_de_productos}</span>
+            <abbr title="Tamano del inventario">T:</abbr>
+            <span>${tamano.valor}</span>
+        </p>
+    </metal:inventario_de_productos>
+    
+    <!-- Inventario de tiendas
+    ================================================== -->    
+    <metal:inventario_de_tiendas define-macro="inventario_de_tiendas">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Vendedores</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr tal:repeat="item lista">
+                    <td tal:define="enlace view.peticion.route_url('tienda', tienda_id = item.tienda_id)">
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <a href="${enlace}" tal:omit-tag="not enlace">
+                                    <div class="thumbnail" tal:define="foto view.obtener_foto('tienda', item.tienda_id, 'pequenas')">
+                                        <img src="http://placehold.it/160x160" alt="cliente.nombre_comun" tal:condition="not foto" />
+                                        <img src="/estatico/${foto.ruta_de_foto}" alt="cliente.nombre_comun" tal:condition="foto" />
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="span6">
+                                <tal:block tal:define="cliente view.obtener_cliente_padre('tienda', item.tienda_id)">
+                                    <a href="${enlace}" tal:omit-tag="not enlace" tal:condition="cliente">${cliente.nombre_comun}</a>
+                                    <p>
+                                        <span tal:condition="cliente">${cliente.nombre_legal}</span><br />
+                                        <strong>Ubicación</strong> <span tal:condition="cliente">${cliente.ubicacion}</span><br />
+                                        <strong>Precio</strong> ${item.precio}<br />
+                                        <strong>Cantidad</strong> ${item.cantidad}<br />
+                                        <input type="hidden" name="tienda_id" value="${item.tienda_id}" />
+                                    </p>
+                                </tal:block>
+                            </div>
+                            <div class="span2">
+                                <tal:block tal:define="tienda view.obtener_tienda(item.tienda_id)" tal:condition="tienda">
+                                    <p class="label label-success" tal:condition="tienda.abierto">Conectada</p>
+                                    <p class="label label-important" tal:condition="not tienda.abierto">Desconectada</p>
+                                </tal:block>                                
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </metal:inventario_de_tiendas>
+    
+    <!-- Comentarios (calificaciones y reseñas)
+    ================================================== -->    
+    <metal:comentarios define-macro="comentarios">
+        <blockquote tal:repeat="comentario comentarios">
+            <p>${comentario.resena}</p>
+            <small>
+                <a tal:condition="comentario.consumidor" tal:attributes="href view.peticion.route_url('usuario', usuario_id = comentario.consumidor.usuario_id)">
+                    ${comentario.consumidor.nombre} ${comentario.consumidor.apellido}
+                </a> el ${comentario.fecha}
+                <tal:block tal:switch="comentario.calificacion">
+                    <span tal:case="'Bien'"><i class="icon-thumbs-up"></i></span>
+                    <span tal:case="'Mal'"><i class="icon-thumbs-down"></i></span>                                    
+                </tal:block>
+            </small>
+        </blockquote>
+    </metal:comentarios>
+    
+    <!-- Carrusel de fotos
+    ================================================== -->    
+    <metal:carrusel_fotos define-macro="carrusel_fotos">
+        <div id="carrusel" class="carousel slide">
             <div class="carousel-inner">
-            	<tal:block tal:repeat="foto fotos" tal:condition="len(fotos) > 0">
-           			<div tal:condition="repeat.foto.start" class="item active">
-        				<div class="thumbnail">
-        					<img src="/estatico/${foto.ruta_de_foto}" alt="Foto" />
-        				</div>
-        			</div>
-        			<div tal:condition="not repeat.foto.start" class="item">
-        				<div class="thumbnail">
-        					<img src="/estatico/${foto.ruta_de_foto}" alt="Foto" />
-        				</div>
-        			</div>
-            	</tal:block>
-            	<div tal:condition="len(fotos) == 0" class="item active">
-    				<div class="thumbnail">
-    					<img src="http://placehold.it/500x500" alt="Foto" />
-    				</div>
-    			</div>
-			</div>
-			<tal:block tal:condition="python:len(fotos) > 1">
-	        	<a class="left carousel-control" href="#carrusel" data-slide="prev">&lsaquo;</a>
-	        	<a class="right carousel-control" href="#carrusel" data-slide="next">&rsaquo;</a>
-        	</tal:block>
+                <tal:block tal:repeat="foto fotos" tal:condition="len(fotos) > 0">
+                    <div tal:condition="repeat.foto.start" class="item active">
+                        <div class="thumbnail">
+                            <img src="/estatico/${foto.ruta_de_foto}" alt="Foto" />
+                        </div>
+                    </div>
+                    <div tal:condition="not repeat.foto.start" class="item">
+                        <div class="thumbnail">
+                            <img src="/estatico/${foto.ruta_de_foto}" alt="Foto" />
+                        </div>
+                    </div>
+                </tal:block>
+                <div tal:condition="len(fotos) == 0" class="item active">
+                    <div class="thumbnail">
+                        <img src="http://placehold.it/500x500" alt="Foto" />
+                    </div>
+                </div>
+            </div>
+            <tal:block tal:condition="python:len(fotos) > 1">
+                <a class="left carousel-control" href="#carrusel" data-slide="prev">&lsaquo;</a>
+                <a class="right carousel-control" href="#carrusel" data-slide="next">&rsaquo;</a>
+            </tal:block>
         </div>
-	</metal:carrusel_fotos>
-	
-	<!-- Ruta de categoria
-	================================================== -->	
-	<metal:ruta_de_categoria define-macro="ruta_de_categoria">
-		<ul id="ruta_de_categoria" class="breadcrumb">
-			<li tal:repeat="nodo ruta">
-		    	<a tal:condition="pagina == 'Producto'" tal:attributes="href view.peticion.route_url('productos', categoria_id = nodo.categoria_id, territorio_id = '0.02.00.00.00.00')">${nodo.nombre}</a> 
-		    	<a tal:condition="pagina == 'Tienda'" tal:attributes="href view.peticion.route_url('tiendas', categoria_id = nodo.categoria_id, territorio_id = '0.02.00.00.00.00')">${nodo.nombre}</a>
-		    	<span class="divider">/</span>
-		  	</li>
-		  	<li tal:condition="pagina == 'Producto'" class="active">${producto.fabricante} ${producto.nombre}</li>
-		  	<li tal:condition="pagina == 'Tienda'" class="active">${cliente.nombre_comun}</li>
-		  	<li class="pull-right">
-		  		<div metal:define-slot="ultima_rebanada"></div>
-		  	</li>
-		</ul>
-	</metal:ruta_de_categoria>
-	
-	<!-- Enlace de categoria
-	================================================== -->	
-	<metal:enlace_categoria define-macro="enlace_categoria">
-		<a tal:condition="pagina == 'Productos'" tal:attributes="href view.peticion.route_url('productos', categoria_id = categoria.categoria_id, territorio_id = view.territorio_id)">${categoria.nombre}</a>
-		<a tal:condition="pagina == 'Tiendas'" tal:attributes="href view.peticion.route_url('tiendas', categoria_id = categoria.categoria_id, territorio_id = view.territorio_id)">${categoria.nombre}</a>
-	</metal:enlace_categoria>
-	
-	<!-- Enlace de ubicacion
-	================================================== -->	
-	<metal:enlace_ubicacion define-macro="enlace_ubicacion">
-		<a tal:condition="pagina == 'Productos'" tal:attributes="href view.peticion.route_url('productos', categoria_id = view.categoria_id, territorio_id = region.territorio_id)">${region.nombre}</a>
-		<a tal:condition="pagina == 'Tiendas'" tal:attributes="href view.peticion.route_url('tiendas', categoria_id = view.categoria_id, territorio_id = region.territorio_id)">${region.nombre}</a>
-	</metal:enlace_ubicacion>
+    </metal:carrusel_fotos>
+    
+    <!-- Ruta de categoria
+    ================================================== -->    
+    <metal:ruta_de_categoria define-macro="ruta_de_categoria">
+        <ul id="ruta_de_categoria" class="breadcrumb">
+            <li tal:repeat="nodo ruta">
+                <a tal:condition="pagina == 'Producto'" tal:attributes="href view.peticion.route_url('productos', categoria_id = nodo.categoria_id, territorio_id = '0.02.00.00.00.00')">${nodo.nombre}</a> 
+                <a tal:condition="pagina == 'Tienda'" tal:attributes="href view.peticion.route_url('tiendas', categoria_id = nodo.categoria_id, territorio_id = '0.02.00.00.00.00')">${nodo.nombre}</a>
+                <span class="divider">/</span>
+            </li>
+            <li tal:condition="pagina == 'Producto'" class="active">${producto.fabricante} ${producto.nombre}</li>
+            <li tal:condition="pagina == 'Tienda'" class="active">${cliente.nombre_comun}</li>
+            <li class="pull-right">
+                <div metal:define-slot="ultima_rebanada"></div>
+            </li>
+        </ul>
+    </metal:ruta_de_categoria>
+    
+    <!-- Enlace de categoria
+    ================================================== -->    
+    <metal:enlace_categoria define-macro="enlace_categoria">
+        <a tal:condition="pagina == 'Productos'" tal:attributes="href view.peticion.route_url('productos', categoria_id = categoria.categoria_id, territorio_id = view.territorio_id)">${categoria.nombre}</a>
+        <a tal:condition="pagina == 'Tiendas'" tal:attributes="href view.peticion.route_url('tiendas', categoria_id = categoria.categoria_id, territorio_id = view.territorio_id)">${categoria.nombre}</a>
+    </metal:enlace_categoria>
+    
+    <!-- Enlace de ubicacion
+    ================================================== -->    
+    <metal:enlace_ubicacion define-macro="enlace_ubicacion">
+        <a tal:condition="pagina == 'Productos'" tal:attributes="href view.peticion.route_url('productos', categoria_id = view.categoria_id, territorio_id = region.territorio_id)">${region.nombre}</a>
+        <a tal:condition="pagina == 'Tiendas'" tal:attributes="href view.peticion.route_url('tiendas', categoria_id = view.categoria_id, territorio_id = region.territorio_id)">${region.nombre}</a>
+    </metal:enlace_ubicacion>
 
-	<!-- Noticias
-	================================================== -->
-	<metal:noticias define-macro="noticias">
-		<table class="table">
-			<thead>
-				<tr>
-					<th>Actividad reciente</th>
-				</tr>
-			</thead>
-  			<tbody>
-	    		<tr tal:repeat="registro registros">
-	    			<td>
-	    				<div class="row-fluid titular-noticia">
-	    					<div class="span2">
-	    						<a tal:omit-tag="not registro.actor_activo.href" href="${registro.actor_activo.href}">
-		    						<div class="thumbnail">
-		    							<img src="http://placehold.it/70x70" alt="foto actor pasivo" tal:condition="registro.actor_activo.foto == ''" />
-	        							<img src="/estatico/${registro.actor_activo.foto}" alt="foto actor activo" tal:condition="registro.actor_activo.foto != ''" />
-	        						</div>
-	        					</a>
-	    					</div>
-	    					<div class="span10">
-		    					<p>
-			    					<tal:block tal:switch="registro.accion">
-										<i tal:case="'agrego'" class="icon-plus"></i>
-										<i tal:case="'abrio'" class="icon-eye-open"></i>
-										<i tal:case="'actualizo'" class="icon-pencil"></i>
-										<i tal:case="'elimino'" class="icon-trash"></i>
-										<i tal:case="'bloqueo'" class="icon-lock"></i>
-										<i tal:case="'abrio sesion'" class="icon-user"></i>
-										<i tal:case="'cerro sesion'" class="icon-off"></i>
-									</tal:block>
-									
-									<a tal:omit-tag="not registro.actor_activo.href" class="popover-aqui" title="${registro.actor_activo.titulo}" tal:attributes="href registro.actor_activo.href">${registro.actor_activo.nombre}</a>
-									
-									${registro.accion}
-									<span tal:repeat="item registro.parametros.items()">
-										${item[0]} = ${item[1]}<tal:block tal:condition="not repeat.item.end">,</tal:block><tal:block tal:condition="repeat.item.end"> de</tal:block>
-									</span>
-									
-									<a tal:omit-tag="not registro.actor_pasivo.href" class="popover-aqui" title="${registro.actor_pasivo.titulo}" tal:attributes="href registro.actor_pasivo.href">${registro.actor_pasivo.nombre}</a>
-								</p>
-								<p><small>hace ${registro.tiempo}</small></p>
-							</div>
-	    				</div>
-	    				<div class="popover-contenido">
-	    					<div class="row-fluid">
-								<div class="span4">
-									<img src="/estatico/${registro.info.foto}" alt="foto actor" tal:condition="registro.info.foto != ''"/>	
-								</div>
-								<div class="span8">
-									<table class="table">
-										<tbody>
-											<tr>
-												<td>
-													<p><span tal:repeat="columna registro.info.diccionario.keys()">${columna}<br /></span></p>
-												</td>
-												<td>
-													<p><span tal:repeat="valor registro.info.diccionario.values()">${valor}<br /></span></p>
-											  	</td>
-											</tr>
-										</tbody>
-									</table>
-								</div>
-							</div>
-	    				</div>
-	    			</td>
-  				</tr>
-  			</tbody>
-		</table>
-	</metal:noticias>
-	
-	<!-- Condiciones
-	================================================== -->	
-	<metal:condiciones define-macro="condiciones">
-		<div class="modal-header">
-        	<button type="button" class="close" data-dismiss="modal">&times;</button>
-          	<h3>Condiciones del Servicio</h3>
+    <!-- Noticias
+    ================================================== -->
+    <metal:noticias define-macro="noticias">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Actividad reciente</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr tal:repeat="registro registros">
+                    <td>
+                        <div class="row-fluid titular-noticia">
+                            <div class="span2">
+                                <a tal:omit-tag="not registro.actor_activo.href" href="${registro.actor_activo.href}">
+                                    <div class="thumbnail">
+                                        <img src="http://placehold.it/70x70" alt="foto actor pasivo" tal:condition="registro.actor_activo.foto == ''" />
+                                        <img src="/estatico/${registro.actor_activo.foto}" alt="foto actor activo" tal:condition="registro.actor_activo.foto != ''" />
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="span10">
+                                <p>
+                                    <tal:block tal:switch="registro.accion">
+                                        <i tal:case="'agrego'" class="icon-plus"></i>
+                                        <i tal:case="'abrio'" class="icon-eye-open"></i>
+                                        <i tal:case="'actualizo'" class="icon-pencil"></i>
+                                        <i tal:case="'elimino'" class="icon-trash"></i>
+                                        <i tal:case="'bloqueo'" class="icon-lock"></i>
+                                        <i tal:case="'abrio sesion'" class="icon-user"></i>
+                                        <i tal:case="'cerro sesion'" class="icon-off"></i>
+                                    </tal:block>
+                                    
+                                    <a tal:omit-tag="not registro.actor_activo.href" class="popover-aqui" title="${registro.actor_activo.titulo}" tal:attributes="href registro.actor_activo.href">${registro.actor_activo.nombre}</a>
+                                    
+                                    ${registro.accion}
+                                    <span tal:repeat="item registro.parametros.items()">
+                                        ${item[0]} = ${item[1]}<tal:block tal:condition="not repeat.item.end">,</tal:block><tal:block tal:condition="repeat.item.end"> de</tal:block>
+                                    </span>
+                                    
+                                    <a tal:omit-tag="not registro.actor_pasivo.href" class="popover-aqui" title="${registro.actor_pasivo.titulo}" tal:attributes="href registro.actor_pasivo.href">${registro.actor_pasivo.nombre}</a>
+                                </p>
+                                <p><small>hace ${registro.tiempo}</small></p>
+                            </div>
+                        </div>
+                        <div class="popover-contenido">
+                            <div class="row-fluid">
+                                <div class="span4">
+                                    <img src="/estatico/${registro.info.foto}" alt="foto actor" tal:condition="registro.info.foto != ''"/>    
+                                </div>
+                                <div class="span8">
+                                    <table class="table">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <p><span tal:repeat="columna registro.info.diccionario.keys()">${columna}<br /></span></p>
+                                                </td>
+                                                <td>
+                                                    <p><span tal:repeat="valor registro.info.diccionario.values()">${valor}<br /></span></p>
+                                                  </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+              </tbody>
+        </table>
+    </metal:noticias>
+    
+    <!-- Condiciones
+    ================================================== -->    
+    <metal:condiciones define-macro="condiciones">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h3>Condiciones del Servicio</h3>
         </div>
         <div class="modal-body">
-        	<p>
-        		Estas Condiciones de Servicio ("Condiciones") gobiernan el acceso y uso 
-        		de los servicios, incluyendo nuestras distintas páginas web, SMS, APIs, 
-        		notificaciones por correo electrónico, aplicaciones, iconos y widgets 
-        		(en adelante, los "Servicios" o "Twitter"), así como el acceso y uso de 
-        		cualquier información, texto, gráficos, fotos u otro material cargado, 
-        		descargado o que se reproduzca a través de los Servicios (en adelante, 
-        		de forma conjunta, el "Contenido"). El acceso y uso de los Servicios queda
-        		condicionado a la aceptación y cumplimiento de estas Condiciones. Al acceder 
-        		o usar los Servicios, usted consiente la aplicación de estas Condiciones.
-        	</p>
+            <p>
+                Estas Condiciones de Servicio ("Condiciones") gobiernan el acceso y uso 
+                de los servicios, incluyendo nuestras distintas páginas web, SMS, APIs, 
+                notificaciones por correo electrónico, aplicaciones, iconos y widgets 
+                (en adelante, los "Servicios" o "Twitter"), así como el acceso y uso de 
+                cualquier información, texto, gráficos, fotos u otro material cargado, 
+                descargado o que se reproduzca a través de los Servicios (en adelante, 
+                de forma conjunta, el "Contenido"). El acceso y uso de los Servicios queda
+                condicionado a la aceptación y cumplimiento de estas Condiciones. Al acceder 
+                o usar los Servicios, usted consiente la aplicación de estas Condiciones.
+            </p>
 
-			<h4>1. Condiciones Básicas</h4>
-			<p>
-				Usted es el único responsable por el uso que pueda dar a los Servicios, por 
-				todo Contenido que usted reproduzca a través de los Servicios y por cualquier 
-				consecuencia que de ello se derive. El Contenido que usted envíe, muestre o 
-				reproduzca podrá ser visto por otros usuarios de los Servicios y a través de 
-				páginas web o servicios de terceros (diríjase por favor a la configuración de 
-				su cuenta para determinar quién puede acceder a su Contenido). Tenga en cuenta 
-				que tan solo debe proporcionar el Contenido que usted considere oportuno compartir 
-				con terceros de conformidad con lo dispuesto en estas Condiciones.
-          	</p>
-          	
-          	<h4>2. Privacidad</h4>
-			<p>
-				Cualquier información que usted facilite a Twitter está sujeta a nuestra Política 
-				de Privacidad que rige la recogida y el uso de su información por parte de Twitter. 
-				Por la presente se le informa de que el uso de los Servicios comporta su 
-				consentimiento implícito a la recogida y el uso de esta información (conforme a lo 
-				dispuesto en la Política de Privacidad), incluyendo, asimismo, su consentimiento 
-				implícito a la transferencia de esta información a Estados Unidos o a otros países 
-				para su almacenamiento, tratamiento y uso por parte de Twitter. Como parte de la 
-				prestación de los Servicios, es posible que tengamos que notificarle determinada 
-				información como, por ejemplo, las novedades en relación con la prestación de los 
-				Servicios o mensajes de carácter administrativo. Estas notificaciones se consideran 
-				parte integrante de los Servicios y de su cuenta de Twitter y es posible que, por 
-				este motivo, usted no pueda negarse a recibirlas.
-			</p>
+            <h4>1. Condiciones Básicas</h4>
+            <p>
+                Usted es el único responsable por el uso que pueda dar a los Servicios, por 
+                todo Contenido que usted reproduzca a través de los Servicios y por cualquier 
+                consecuencia que de ello se derive. El Contenido que usted envíe, muestre o 
+                reproduzca podrá ser visto por otros usuarios de los Servicios y a través de 
+                páginas web o servicios de terceros (diríjase por favor a la configuración de 
+                su cuenta para determinar quién puede acceder a su Contenido). Tenga en cuenta 
+                que tan solo debe proporcionar el Contenido que usted considere oportuno compartir 
+                con terceros de conformidad con lo dispuesto en estas Condiciones.
+            </p>
+            
+            <h4>2. Privacidad</h4>
+            <p>
+                Cualquier información que usted facilite a Twitter está sujeta a nuestra Política 
+                de Privacidad que rige la recogida y el uso de su información por parte de Twitter. 
+                Por la presente se le informa de que el uso de los Servicios comporta su 
+                consentimiento implícito a la recogida y el uso de esta información (conforme a lo 
+                dispuesto en la Política de Privacidad), incluyendo, asimismo, su consentimiento 
+                implícito a la transferencia de esta información a Estados Unidos o a otros países 
+                para su almacenamiento, tratamiento y uso por parte de Twitter. Como parte de la 
+                prestación de los Servicios, es posible que tengamos que notificarle determinada 
+                información como, por ejemplo, las novedades en relación con la prestación de los 
+                Servicios o mensajes de carácter administrativo. Estas notificaciones se consideran 
+                parte integrante de los Servicios y de su cuenta de Twitter y es posible que, por 
+                este motivo, usted no pueda negarse a recibirlas.
+            </p>
 
-			<h4>3. Contraseñas</h4>
-			<p>
-				Usted es el responsable de la custodia de la contraseña que emplea para acceder a 
-				los Servicios y de cualquier actividad o acto que se lleve a cabo con su contraseña. 
-				Recomendamos que proteja su cuenta con una contraseña difícil de descifrar (una 
-				contraseña que contenga combinaciones de letras mayúsculas y minúsculas, números y 
-				símbolos). Twitter no será responsable de ningún perjuicio o daño que resulte del 
-				incumplimiento de lo mencionado con anterioridad.
-			</p>
-			
-          	<h4>4. Sus Derechos</h4>
-			<p>
-				Usted es el titular de los derechos que le amparan sobre cualquier Contenido que 
-				envíe, reproduzca o exponga en los Servicios o a través de los mismos. Mediante el 
-				envío, la reproducción o la exposición de Contenido en los Servicios o a través de 
-				los mismos, usted concede a Twitter una licencia mundial, no-exclusiva y gratuita 
-				(así como el derecho de sub-licenciar) sobre el uso, copia, reproducción, procesamiento, 
-				adaptación, modificación, publicación, transmisión, exposición y distribución de 
-				tal Contenido a través de cualquier medio o método de distribución presente o futuro.
-			</p>
-			
-			<address>
-      			<strong>Zuliaworks C.A.</strong><br />
-        		Calle 77, Urb. Los Olivos<br />
-        		Resd. Robalo Apto 9A<br />
-        		Maracaibo, ZU 4005<br />
-        		Correo electrónico: copyright@zuliaworks.com
-      		</address>
+            <h4>3. Contraseñas</h4>
+            <p>
+                Usted es el responsable de la custodia de la contraseña que emplea para acceder a 
+                los Servicios y de cualquier actividad o acto que se lleve a cabo con su contraseña. 
+                Recomendamos que proteja su cuenta con una contraseña difícil de descifrar (una 
+                contraseña que contenga combinaciones de letras mayúsculas y minúsculas, números y 
+                símbolos). Twitter no será responsable de ningún perjuicio o daño que resulte del 
+                incumplimiento de lo mencionado con anterioridad.
+            </p>
+            
+            <h4>4. Sus Derechos</h4>
+            <p>
+                Usted es el titular de los derechos que le amparan sobre cualquier Contenido que 
+                envíe, reproduzca o exponga en los Servicios o a través de los mismos. Mediante el 
+                envío, la reproducción o la exposición de Contenido en los Servicios o a través de 
+                los mismos, usted concede a Twitter una licencia mundial, no-exclusiva y gratuita 
+                (así como el derecho de sub-licenciar) sobre el uso, copia, reproducción, procesamiento, 
+                adaptación, modificación, publicación, transmisión, exposición y distribución de 
+                tal Contenido a través de cualquier medio o método de distribución presente o futuro.
+            </p>
+            
+            <address>
+                <strong>Zuliaworks C.A.</strong><br />
+                Calle 77, Urb. Los Olivos<br />
+                Resd. Robalo Apto 9A<br />
+                Maracaibo, ZU 4005<br />
+                Correo electrónico: copyright@zuliaworks.com
+            </address>
         </div>
         <div class="modal-footer">
-          	<a href="#" class="btn" data-dismiss="modal">Cerrar</a>
+            <a href="#" class="btn" data-dismiss="modal">Cerrar</a>
         </div>
-	</metal:condiciones>
-	
-	<!-- Listado de tiendas
-	================================================== -->
-	<metal:listado_tiendas define-macro="listado_tiendas">
-		<ul class="thumbnails">
-        	<li class="span2" tal:repeat="tienda lista">
-        		<div tal:define="enlace view.peticion.route_url('tienda', tienda_id = tienda.tienda_id)">
-        			<a href="${enlace}" tal:omit-tag="not enlace">
-        				<div class="thumbnail" tal:define="foto view.obtener_foto('tienda', tienda.tienda_id, 'pequenas')">
-        					<img src="http://placehold.it/160x160" tal:condition="not foto" />
-        					<img src="/estatico/${foto.ruta_de_foto}" tal:condition="foto" />
-        				</div>
-        			</a>
-        			<div class="caption">
-        				<tal:block tal:define="cliente view.obtener_cliente_padre('tienda', tienda.tienda_id)">
-							<a href="${enlace}" tal:omit-tag="not enlace" tal:condition="cliente">
-								${cliente.nombre_comun}
-							</a><br />
-							<span tal:condition="cliente">${cliente.nombre_legal}</span>
-							<p>
-								<span class="label label-success" tal:condition="tienda.abierto">Conectada</span>
-								<span class="label label-important" tal:condition="not tienda.abierto">Desconectada</span>
-								<br />
-								<em tal:condition="cliente">${cliente.rif}</em><br />
-								<strong>Categoria</strong>
-								<tal:block tal:condition="cliente">
-									<span tal:define="categoria_item view.obtener_categoria(cliente.categoria)" tal:condition="categoria_item">
-										${categoria_item.nombre}
-									</span><br />
-								</tal:block>
-								<input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
-							</p>
-						</tal:block>
-					</div>
-	           	</div>
-	        </li>
+    </metal:condiciones>
+    
+    <!-- Listado de tiendas
+    ================================================== -->
+    <metal:listado_tiendas define-macro="listado_tiendas">
+        <ul class="thumbnails">
+            <li class="span2" tal:repeat="tienda lista">
+                <div tal:define="enlace view.peticion.route_url('tienda', tienda_id = tienda.tienda_id)">
+                    <a href="${enlace}" tal:omit-tag="not enlace">
+                        <div class="thumbnail" tal:define="foto view.obtener_foto('tienda', tienda.tienda_id, 'pequenas')">
+                            <img src="http://placehold.it/160x160" tal:condition="not foto" />
+                            <img src="/estatico/${foto.ruta_de_foto}" tal:condition="foto" />
+                        </div>
+                    </a>
+                    <div class="caption">
+                        <tal:block tal:define="cliente view.obtener_cliente_padre('tienda', tienda.tienda_id)">
+                            <a href="${enlace}" tal:omit-tag="not enlace" tal:condition="cliente">
+                                ${cliente.nombre_comun}
+                            </a><br />
+                            <span tal:condition="cliente">${cliente.nombre_legal}</span>
+                            <p>
+                                <span class="label label-success" tal:condition="tienda.abierto">Conectada</span>
+                                <span class="label label-important" tal:condition="not tienda.abierto">Desconectada</span>
+                                <br />
+                                <em tal:condition="cliente">${cliente.rif}</em><br />
+                                <strong>Categoria</strong>
+                                <tal:block tal:condition="cliente">
+                                    <span tal:define="categoria_item view.obtener_categoria(cliente.categoria)" tal:condition="categoria_item">
+                                        ${categoria_item.nombre}
+                                    </span><br />
+                                </tal:block>
+                                <input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
+                            </p>
+                        </tal:block>
+                    </div>
+                   </div>
+            </li>
         </ul>
-	</metal:listado_tiendas>
-	
-	<!-- Listado de productos
-	================================================== -->
-	<metal:listado_productos define-macro="listado_productos">
-		<ul class="thumbnails">
-        	<li class="span2" tal:repeat="item lista">
-        		<div tal:define="enlace view.peticion.route_url('producto', producto_id = item.producto_id)">
-        			<a href="${enlace}" tal:omit-tag="not enlace">
-        				<div class="thumbnail" tal:define="foto view.obtener_foto('producto', item.producto_id, 'pequenas')">
-        					<img src="http://placehold.it/160x160" tal:condition="not foto"/>
-        					<img src="/estatico/${foto.ruta_de_foto}" tal:condition="foto"/>
-        				</div>
-        			</a>
-        			<div class="caption">
-        				<tal:block tal:define="producto view.obtener_producto(item.producto_id)">
-							<a href="${enlace}" tal:omit-tag="not enlace" tal:condition="producto">${producto.nombre}</a><br />
-							<p>
-								<em>${item.codigo}</em><br />
-								<strong>Categoria</strong>
-								<tal:block tal:condition="producto">
-									<span tal:define="categoria_item view.obtener_categoria(producto.categoria)" tal:condition="categoria_item">
-										${categoria_item.nombre}
-									</span><br />	
-								</tal:block> 
-							</p>
-						</tal:block>
-					</div>
-	           	</div>
-	        </li>
+    </metal:listado_tiendas>
+    
+    <!-- Listado de productos
+    ================================================== -->
+    <metal:listado_productos define-macro="listado_productos">
+        <ul class="thumbnails">
+            <li class="span2" tal:repeat="item lista">
+                <div tal:define="enlace view.peticion.route_url('producto', producto_id = item.producto_id)">
+                    <a href="${enlace}" tal:omit-tag="not enlace">
+                        <div class="thumbnail" tal:define="foto view.obtener_foto('producto', item.producto_id, 'pequenas')">
+                            <img src="http://placehold.it/160x160" tal:condition="not foto"/>
+                            <img src="/estatico/${foto.ruta_de_foto}" tal:condition="foto"/>
+                        </div>
+                    </a>
+                    <div class="caption">
+                        <tal:block tal:define="producto view.obtener_producto(item.producto_id)">
+                            <a href="${enlace}" tal:omit-tag="not enlace" tal:condition="producto">${producto.nombre}</a><br />
+                            <p>
+                                <em>${item.codigo}</em><br />
+                                <strong>Categoria</strong>
+                                <tal:block tal:condition="producto">
+                                    <span tal:define="categoria_item view.obtener_categoria(producto.categoria)" tal:condition="categoria_item">
+                                        ${categoria_item.nombre}
+                                    </span><br />    
+                                </tal:block> 
+                            </p>
+                        </tal:block>
+                    </div>
+                   </div>
+            </li>
         </ul>
-	</metal:listado_productos>
-	
-	<!-- Listado de clientes
-	================================================== -->
-	<metal:listado_clientes define-macro="listado_clientes">
-		<table class="table">
-  			<thead>
-    			<tr>
-      				<td>
-      					<strong>Propiedades</strong>
-      					<span class="pull-right" tal:condition="editar">
-      						<a tal:attributes="href view.peticion.route_url('registro_tienda')">
-								<i class="icon-plus"></i>
-								Agregar tienda
-							</a>
-						</span>
-      				</td>
-    			</tr>
-  			</thead>
-  			<tbody>
-	    		<tr tal:repeat="item lista">
-	    			<td>
-	    				<div class="row-fluid">
-	    					<div class="span4">
-	    						<a href="${item.enlace}">
-			        				<div class="thumbnail" tal:define="foto view.obtener_foto(item.tipo, item.tipo_id, 'pequenas')">
-			    						<img src="http://placehold.it/160x160" alt="${item.nombre_comun}" tal:condition="not foto" />
-			    						<img src="/estatico/${foto.ruta_de_foto}" alt="${item.nombre_comun}" tal:condition="foto" />
-			        				</div>
-			        			</a>
-	    					</div>
-	    					<div class="span8">
-								<a href="${item.enlace}">${item.nombre_comun}</a><br />
-								<p>
-									${item.nombre_legal}
-									<br />
-									<strong>Ubicación</strong> ${item.ubicacion}<br />
-								</p>    						
-	    					</div>
-	    				</div>
-  					</td>
-  				</tr>
-  			</tbody>
-		</table>
-	</metal:listado_clientes>
+    </metal:listado_productos>
+    
+    <!-- Listado de clientes
+    ================================================== -->
+    <metal:listado_clientes define-macro="listado_clientes">
+        <table class="table">
+            <thead>
+                <tr>
+                    <td>
+                        <strong>Propiedades</strong>
+                        <span class="pull-right" tal:condition="editar">
+                            <a tal:attributes="href view.peticion.route_url('registro_tienda')">
+                                <i class="icon-plus"></i>
+                                Agregar tienda
+                            </a>
+                        </span>
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr tal:repeat="item lista">
+                    <td>
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <a href="${item.enlace}">
+                                    <div class="thumbnail" tal:define="foto view.obtener_foto(item.tipo, item.tipo_id, 'pequenas')">
+                                        <img src="http://placehold.it/160x160" alt="${item.nombre_comun}" tal:condition="not foto" />
+                                        <img src="/estatico/${foto.ruta_de_foto}" alt="${item.nombre_comun}" tal:condition="foto" />
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="span8">
+                                <a href="${item.enlace}">${item.nombre_comun}</a><br />
+                                <p>
+                                    ${item.nombre_legal}
+                                    <br />
+                                    <strong>Ubicación</strong> ${item.ubicacion}<br />
+                                </p>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </metal:listado_clientes>
 </body>
 </html>

@@ -54,7 +54,7 @@
 											<span tal:condition ="region">
 												Parr. ${region.parroquia}<br />
 												${region.municipio}, Edo. ${region.estado}<br />
-											</span> 
+											</span>
 											${cliente.telefono}<br />
 										</td>
 					  				</tr>

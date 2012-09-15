@@ -1,28 +1,28 @@
 <!DOCTYPE HTML>
 <div metal:use-macro="view.diagrama_global">
-	<div metal:fill-slot="extra_meta_datos">
-		<input type="hidden" name="territorio_id" value="${view.territorio_id}" />
-		<input type="hidden" name="categoria_id" value="${view.categoria_id}" />
-		<input type="hidden" name="territorio_padre" value="${view.territorio_padre}" />
-	</div>
-	<div metal:fill-slot="contenido">
-		
-		<!-- Encabezado
-		================================================== -->
-		<div class="page-header">
-  			<h1>${pagina}</h1>
-		</div>
-		
-		<!-- Listado
-		================================================== -->
-		<div tal:condition="pagina == 'Productos'">
-			<div metal:use-macro="view.macros['listado_productos']"></div>
-		</div>
-		<div tal:condition="pagina == 'Tiendas'">
-			<div metal:use-macro="view.macros['listado_tiendas']"></div>
-		</div>
-	</div>
-	<div metal:fill-slot="scripts_extra">
-		<script type="text/javascript" src="/estatico/js/listado.js"></script>
-	</div>
+    <div metal:fill-slot="extra_meta_datos">
+        <input type="hidden" name="territorio_id" value="${view.territorio_id}" />
+        <input type="hidden" name="categoria_id" value="${view.categoria_id}" />
+        <input type="hidden" name="territorio_padre" value="${view.territorio_padre}" />
+    </div>
+    <div metal:fill-slot="contenido">
+        
+        <!-- Encabezado
+        ================================================== -->
+        <div class="page-header">
+            <h1>${pagina}</h1>
+        </div>
+        
+        <!-- Listado
+        ================================================== -->
+        <div tal:condition="pagina == 'Productos'">
+            <div metal:use-macro="view.macros['listado_productos']"></div>
+        </div>
+        <div tal:condition="pagina == 'Tiendas'">
+            <div metal:use-macro="view.macros['listado_tiendas']"></div>
+        </div>
+    </div>
+    <div metal:fill-slot="scripts_extra">
+        <script type="text/javascript" src="/estatico/js/listado.js"></script>
+    </div>
 </div>
