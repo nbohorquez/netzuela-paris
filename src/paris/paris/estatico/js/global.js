@@ -16,7 +16,7 @@ $(document).ready(function () {
         }
     });
 
-    var tab;    
+    var tab;
     $("ul.treeview").each(function () {
         tab = 0;
         $(this).children("li").each(function () {
