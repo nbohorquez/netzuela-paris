@@ -6,16 +6,18 @@ Created on 20/07/2012
 '''
 
 from formencode.api import Invalid
+from spuria.orm import DBSession
 from sqlalchemy import and_, MetaData, Table, Column, Integer, String
-from sqlalchemy.orm import scoped_session, sessionmaker, mapper
+#from sqlalchemy.orm import scoped_session, sessionmaker, mapper
 from sqlalchemy.sql import select, func, bindparam
-from zope.sqlalchemy import ZopeTransactionExtension
+#from zope.sqlalchemy import ZopeTransactionExtension
 import bcrypt, transaction
 
-DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
+#DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 
 # Codigo tomado de:
-# http://danielkaes.wordpress.com/2009/07/30/create-new-classes-with-python-at-runtime/    
+# http://danielkaes.wordpress.com/2009/07/30/create-new-classes-with-python-at-runtime/
+"""    
 def __mixIn(classname, parentclasses):
     if len(parentclasses) > 0:
         parents = map(lambda p:p.__name__, parentclasses)
@@ -24,7 +26,8 @@ def __mixIn(classname, parentclasses):
         createclass = "class %s:\n\tpass" % classname
     exec createclass
     globals()[classname] = eval(classname)
-            
+"""
+
 root = 1
 acciones = { 
     'Insertar': 'agrego',
@@ -156,7 +159,7 @@ columnas_no_visibles = [
     'propietario',
     'fecha_inicio'
 ]
-
+"""
 def inicializar(motor):
     __cargar_tablas(motor)
     
@@ -191,7 +194,7 @@ def __cargar_tablas(motor):
     )
     __mixIn('tamano_reciente', [object])
     mapper(globals()['tamano_reciente'], esquema_tabla)
-    
+"""    
 def agregar_consumidor(parametros, usuario_id):
     from paris.formularios import FormularioAgregarConsumidor
     from paris.comunes import formatear_fecha_para_mysql

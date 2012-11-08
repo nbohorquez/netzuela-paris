@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from paris.models.spuria import DBSession, inicializar
+from spuria.orm import DBSession, inicializar
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.config import Configurator
@@ -10,9 +10,12 @@ def main(global_config, **settings):
 	""" This function returns a Pyramid WSGI application.
 	"""
 	# Cargamos de forma dinamica todas las tablas desde la base de datos
+	inicializar(archivo=None, **settings)
+	"""
 	engine = engine_from_config(settings, 'sqlalchemy.')
 	inicializar(engine)
 	DBSession.configure(bind=engine)
+	"""
 	
 	"""
 	Tengo que cargar paris.seguridad.obtener_grupos de forma dinamica porque depende de una clase
