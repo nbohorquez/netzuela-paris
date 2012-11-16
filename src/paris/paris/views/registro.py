@@ -7,19 +7,17 @@ Created on 07/06/2012
 
 from paris.comunes import Comunes
 from paris.diagramas import Diagramas
-from paris.models.spuria import (
-    cliente,
+from paris.models.funciones import (
     crear_usuario, 
     crear_tienda, 
     crear_horarios_y_turnos,
-    crear_descripcion,
-    DBSession,
-    tienda
+    crear_descripcion    
 )
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import authenticated_userid
 from pyramid.view import view_config, forbidden_view_config
+from spuria.orm import Cliente, DBSession, Tienda
 
 horario_por_defecto = {
     'Lunes': 'Abierto',
@@ -129,9 +127,9 @@ class RegistroView(Comunes, Diagramas):
             )
         
             creador, descrb = DBSession.query(
-            cliente.rastreable_p, cliente.describible_p).\
-            join(tienda).\
-            filter(tienda.tienda_id == int(tnd['tienda'])).first()
+            Cliente.rastreable_p, Cliente.describible_p).\
+            join(Tienda).\
+            filter(Tienda.tienda_id == int(tnd['tienda'])).first()
             
             # Creamos una descripcion 'dummy'
             descrp = crear_descripcion(

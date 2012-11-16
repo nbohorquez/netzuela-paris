@@ -13,22 +13,22 @@ from paris.comunes import (
 )
 from paris.constantes import MENSAJE_DE_ERROR
 from paris.diagramas import Diagramas
-from paris.models.spuria import (
-    calificacion_resena,
-    cliente,
-    consumidor,
-    DBSession,
-    editar_usuario,
-    patrocinante,
-    rastreable,
-    registro,
-    tienda,
-    usuario
-)
+from paris.models.funciones import editar_usuario
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.security import authenticated_userid
 from pyramid.view import view_config
+from spuria.orm import (
+    CalificacionResena,
+    Cliente,
+    Consumidor,
+    DBSession,
+    Patrocinante,
+    Rastreable,
+    Registro,
+    Tienda,
+    Usuario
+)
 from sqlalchemy import or_, and_, case
 from sqlalchemy.orm import aliased
 
@@ -65,18 +65,18 @@ class UsuarioView(Diagramas, Comunes):
 
     @reify
     def registro(self):
-        r = aliased(rastreable)
-        u = aliased(usuario)
+        r = aliased(Rastreable)
+        u = aliased(Usuario)
 
         resultado = []
-        for reg in DBSession.query(registro).\
+        for reg in DBSession.query(Registro).\
         join(r, or_(
-            registro.actor_activo == r.rastreable_id, 
-            registro.actor_pasivo == r.rastreable_id
+            Registro.actor_activo == r.rastreable_id, 
+            Registro.actor_pasivo == r.rastreable_id
         )).\
         join(u, r.rastreable_id == u.rastreable_p).\
         filter(u.usuario_id == self.usuario_id).\
-        order_by(registro.fecha_hora.desc()).all():
+        order_by(Registro.fecha_hora.desc()).all():
             resultado.append(formatear_entrada_registro(
                 reg, self.peticion, self.tipo_de_rastreable
             ))
@@ -85,7 +85,7 @@ class UsuarioView(Diagramas, Comunes):
 
     @reify
     def consumidor_asociado(self):
-        return DBSession.query(consumidor).\
+        return DBSession.query(Consumidor).\
         filter_by(usuario_p = self.usuario_id).first()
 
     @reify
@@ -98,26 +98,26 @@ class UsuarioView(Diagramas, Comunes):
     def clientes_asociados(self):
         resultado = []
 
-        x1 = DBSession.query(cliente, case([
-            (cliente.rif == tienda.cliente_p, 'tienda')
+        x1 = DBSession.query(Cliente, case([
+            (Cliente.rif == Tienda.cliente_p, 'tienda')
         ]),
         case([
-            (cliente.rif == tienda.cliente_p, tienda.tienda_id)
+            (Cliente.rif == Tienda.cliente_p, Tienda.tienda_id)
         ])).\
         filter(and_(
-            cliente.rif == tienda.cliente_p, 
-            cliente.propietario == self.usuario_id
+            Cliente.rif == Tienda.cliente_p, 
+            Cliente.propietario == self.usuario_id
         ))
 
-        x2 = DBSession.query(cliente, case([
-            (cliente.rif == patrocinante.cliente_p, 'patrocinante')
+        x2 = DBSession.query(Cliente, case([
+            (Cliente.rif == Patrocinante.cliente_p, 'patrocinante')
         ]),
         case([
-            (cliente.rif == patrocinante.cliente_p, patrocinante.patrocinante_id)
+            (Cliente.rif == Patrocinante.cliente_p, Patrocinante.patrocinante_id)
         ])).\
         filter(and_(
-            cliente.rif == patrocinante.cliente_p, 
-            cliente.propietario == self.usuario_id
+            Cliente.rif == Patrocinante.cliente_p, 
+            Cliente.propietario == self.usuario_id
         ))
 
         tmp = x1.union(x2).all()
@@ -136,22 +136,22 @@ class UsuarioView(Diagramas, Comunes):
 
     @reify
     def tiendas_asociadas(self):
-        return DBSession.query(tienda).\
-        join(cliente).\
-        filter(cliente.propietario == self.usuario_id).all()
+        return DBSession.query(Tienda).\
+        join(Cliente).\
+        filter(Cliente.propietario == self.usuario_id).all()
 
     @reify
     def patrocinantes_asociados(self):
-        return DBSession.query(patrocinante).\
-        join(cliente).\
-        filter(cliente.propietario == self.usuario_id).all()
+        return DBSession.query(Patrocinante).\
+        join(Cliente).\
+        filter(Cliente.propietario == self.usuario_id).all()
 
     @reify
     def calificaciones_resenas(self):
-        var_comentarios = DBSession.query(calificacion_resena).\
-        join(consumidor).\
-        join(usuario).\
-        filter(usuario.usuario_id == self.usuario_id).all()
+        var_comentarios = DBSession.query(CalificacionResena).\
+        join(Consumidor).\
+        join(Usuario).\
+        filter(Usuario.usuario_id == self.usuario_id).all()
 
         return formatear_comentarios(var_comentarios)
 

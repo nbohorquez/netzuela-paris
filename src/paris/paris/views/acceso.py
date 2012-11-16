@@ -6,7 +6,7 @@ Created on 07/06/2012
 '''
 
 from paris.diagramas import Diagramas
-from paris.models.spuria import acceso, DBSession, usuario
+from spuria.orm import Acceso, DBSession
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
 from pyramid.security import remember, forget
@@ -35,7 +35,7 @@ class AccesoView(Diagramas):
     
     def autentificar(self, correo, contrasena):
         resultado = False
-        tmp = DBSession.query(acceso.contrasena).filter_by(correo_electronico = correo).first()
+        tmp = DBSession.query(Acceso.contrasena).filter_by(correo_electronico = correo).first()
         if tmp is not None:
             if bcrypt.hashpw(contrasena, tmp[0]) == tmp[0]:
                 resultado = True

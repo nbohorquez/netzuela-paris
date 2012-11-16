@@ -133,7 +133,7 @@ columnas_no_visibles = [
     'patrocinante_id',
     'publicidad_id',
     'palabra_id',
-    'etiqueta_id',        
+    'etiqueta_id',
     'mensaje_id',
     'descripcion_id',
     'producto_id',

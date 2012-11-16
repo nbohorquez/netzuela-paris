@@ -190,56 +190,38 @@
         });
     }
     
-    $.fn.dibujar_niveles = function (padre, yo) {
+    $.fn.dibujar_niveles = function (niveles) {
         return this.each(function () {
             $(this).data('google_map').extender_borde("7.623887", "-68.730469");
             $(this).data('google_map').extender_borde("11.22151", "-63.896484");
-            $(this).agregar_capa({
-                territorio: padre,
-                nivel: 1,
-                tipo: 'polilineas'
-            });
-            $(this).agregar_capa({
-                territorio: yo,
-                nivel: 1,
-                tipo: 'poligonos'
-            });
+            
+            for (var i = 0, len_i = niveles.length; i < len_i; i++) {
+                $(this).agregar_capa({
+                    territorio: niveles[i].territorio,
+                    nivel: niveles[i].nivel,
+                    tipo: niveles[i].tipo
+                });
+            }
         });
     }
     
     $.fn.dibujar_municipios = function () {
         return this.each(function () {
-        var Venezuela = '0.02.00.00.00.00';
-            $(this).data('google_map').extender_borde("7.623887", "-68.730469");
-            $(this).data('google_map').extender_borde("11.22151", "-63.896484");
-            $(this).agregar_capa({
-                territorio: Venezuela,
-                nivel: 1,
-                tipo: 'polilineas'
-            });
-            $(this).agregar_capa({
-                territorio: Venezuela,
-                nivel: 2,
-                tipo: 'poligonos'
-            });
+            var Venezuela = '0.02.00.00.00.00';
+            $(this).dibujar_niveles([
+                {territorio: Venezuela, nivel: 1, tipo: 'polilineas'},
+                {territorio: Venezuela, nivel: 2, tipo: 'poligonos'}
+            ])
         });
     }
     
     $.fn.dibujar_parroquias = function () {
         return this.each(function () {
-        var Venezuela = '0.02.00.00.00.00';
-            $(this).data('google_map').extender_borde("7.623887", "-68.730469");
-            $(this).data('google_map').extender_borde("11.22151", "-63.896484");
-            $(this).agregar_capa({
-                territorio: Venezuela,
-                nivel: 1,
-                tipo: 'polilineas'
-            });
-            $(this).agregar_capa({
-                territorio: Venezuela,
-                nivel: 3,
-                tipo: 'poligonos'
-            });
+            var Venezuela = '0.02.00.00.00.00';
+            $(this).dibujar_niveles([
+                {territorio: Venezuela, nivel: 1, tipo: 'polilineas'},
+                {territorio: Venezuela, nivel: 3, tipo: 'poligonos'}
+            ])
         });
     }
     

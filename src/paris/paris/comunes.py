@@ -6,7 +6,7 @@ Created on 08/04/2012
 '''
 
 from datetime import datetime
-from models.spuria import acciones, columnas_no_visibles,
+from models.funciones import acciones, columnas_no_visibles
 from spuria.orm import (
     Acceso,
     Accion,
@@ -27,23 +27,24 @@ from spuria.orm import (
     Factura,
     Foto,
     GradoDeInstruccion,
-    grupo_de_edad,
-    idioma,
-    inventario,
-    mensaje,
-    patrocinante,
-    privilegios,
-    producto,
-    publicidad,
-    rastreable,
-    seguidor,
-    territorio,
-    tienda,
-    tipo_de_codigo,
-    usuario,
-    sexo,
-    visibilidad
+    GrupoDeEdad,
+    Idioma,
+    Inventario,
+    Mensaje,
+    Patrocinante,
+    Privilegios,
+    Producto,
+    Publicidad,
+    Rastreable,
+    Seguimiento,
+    Territorio,
+    Tienda,
+    TipoDeCodigo,
+    Usuario,
+    Sexo,
+    Visibilidad
 )
+from spuria.orm.descripciones_fotos import DescribibleAsociacion
 from pyramid.decorator import reify
 from sqlalchemy import and_, case, func
 from sqlalchemy.sql.expression import asc
@@ -63,74 +64,81 @@ def formatear_comentarios(comentarios):
         tmp = {}
         tmp['calificacion'] = comentario.calificacion
         tmp['resena'] = comentario.resena
-        
-        fecha_decimal = DBSession.query(rastreable.fecha_de_creacion).\
+
+        fecha = str(comentario.rastreable.fecha_de_creacion)
+        """
+        fecha_decimal = DBSession.query(Rastreable.fecha_de_creacion).\
         filter_by(rastreable_id = comentario.rastreable_p).first()[0]
-        
         fecha = str(fecha_decimal)
-        tmp['fecha'] = "{0}/{1}/{2} {3}:{4}".format(fecha[6:8], fecha[4:6], fecha[0:4], fecha[8:10], fecha[10:12])
-        
-        tmp['consumidor'] = DBSession.query(usuario).\
-        join(consumidor).\
+        """
+        tmp['fecha'] = "{0}/{1}/{2} {3}:{4}".format(
+            fecha[6:8], fecha[4:6], fecha[0:4], fecha[8:10], fecha[10:12]
+        )
+
+        tmp['consumidor'] = DBSession.query(Consumidor).\
         filter_by(consumidor_id = comentario.consumidor_id).first()
-        
+
         resultado.append(tmp)
     return resultado
 
 def formatear_entrada_registro(reg, peticion, demandante):
     def obtener_objeto(tipo, tipo_id, muestro_href):
         return {
-            'cliente': lambda x, y: reg_cliente(x, y),
-            'usuario': lambda x, y: reg_usuario(x, y),
-            'inventario': lambda x, y: reg_inventario(x, y),
-            'croquis': lambda x, y: reg_croquis(x, y),
-            'producto': lambda x, y: reg_producto(x, y),
-            'mensaje': lambda x, y: reg_mensaje(x, y),
-            'busqueda': lambda x, y: reg_busqueda(x, y),
-            'calificacion_resena': lambda x, y: reg_calificacion_resena(x, y),
-            'seguidor': lambda x, y: reg_seguidor(x, y),
-            'descripcion': lambda x, y: reg_descripcion(x, y),
-            'publicidad': lambda x, y: reg_publicidad(x, y),
-            'estadisticas': lambda x, y: reg_estadisticas(x, y),
-            'croquis': lambda x, y: reg_croquis(x, y),
-            'factura': lambda x, y: reg_factura(x, y)
+            'Cliente': lambda x, y: reg_cliente(x, y),
+            'Usuario': lambda x, y: reg_usuario(x, y),
+            'Inventario': lambda x, y: reg_inventario(x, y),
+            'Croquis': lambda x, y: reg_croquis(x, y),
+            'Producto': lambda x, y: reg_producto(x, y),
+            'Mensaje': lambda x, y: reg_mensaje(x, y),
+            'Busqueda': lambda x, y: reg_busqueda(x, y),
+            'CalificacionResena': lambda x, y: reg_calificacion_resena(x, y),
+            'Seguimiento': lambda x, y: reg_seguimiento(x, y),
+            'Descripcion': lambda x, y: reg_descripcion(x, y),
+            'Publicidad': lambda x, y: reg_publicidad(x, y),
+            'Estadisticas': lambda x, y: reg_estadisticas(x, y),
+            'Factura': lambda x, y: reg_factura(x, y)
         }[tipo](tipo_id, muestro_href)
     def reg_cliente(_id, muestro_href):
         valor = {}
-        diccionario = DBSession.query(cliente).\
+        diccionario = DBSession.query(Cliente).\
         filter_by(rastreable_p = _id).first()
         
         valor['nombre'] = diccionario.nombre_comun
         valor['titulo'] = diccionario.nombre_legal
         
-        valor['foto'] = DBSession.query(foto.ruta_de_foto).\
-        join(describible).\
-        join(cliente).\
-        filter(cliente.rastreable_p == _id)
+        valor['foto'] = DBSession.query(Foto.ruta_de_foto).\
+        join(Describible).\
+        join(Cliente).\
+        filter(Cliente.rastreable_p == _id)
 
         x1 = DBSession.query(
-            case([(cliente.rif == tienda.cliente_p, 'tienda')]),
-            case([(cliente.rif == tienda.cliente_p, tienda.tienda_id)])
+            case([(Cliente.rif == Tienda.cliente_p, 'Tienda')]),
+            case([(Cliente.rif == Tienda.cliente_p, Tienda.tienda_id)])
         ).filter(and_(
-            cliente.rif == tienda.cliente_p, 
-            cliente.rastreable_p == _id
+            Cliente.rif == Tienda.cliente_p, 
+            Cliente.rastreable_p == _id
         ))
         
         x2 = DBSession.query(
-            case([(cliente.rif == patrocinante.cliente_p, 'patrocinante')]),
-            case([(cliente.rif == patrocinante.cliente_p, patrocinante.patrocinante_id)])
+            case([(Cliente.rif == Patrocinante.cliente_p, 'Patrocinante')]),
+            case([(
+                Cliente.rif == Patrocinante.cliente_p, 
+                Patrocinante.patrocinante_id
+            )])
         ).filter(and_(
-            cliente.rif == patrocinante.cliente_p,
-            cliente.rastreable_p == _id
+            Cliente.rif == Patrocinante.cliente_p,
+            Cliente.rastreable_p == _id
         ))
         
         tmp1, tmp2 = x1.union(x2).first()
         
         valor['href'] = {
-            'tienda': lambda x: peticion.route_url('tienda', tienda_id = x),
-            'patrocinante': lambda x: peticion.route_url('patrocinante', patrocinante_id = x)
+            'Tienda': lambda x: peticion.route_url('tienda', tienda_id = x),
+            'Patrocinante': lambda x: peticion.route_url(
+                'patrocinante', patrocinante_id = x
+            )
         }[tmp1](tmp2) if muestro_href else None
-    
+
         valor['diccionario'] = {
             'Nombre legal': diccionario.nombre_legal,
             'Nombre comun': diccionario.nombre_comun,
@@ -145,15 +153,19 @@ def formatear_entrada_registro(reg, peticion, demandante):
         return valor
     def reg_usuario(_id, muestro_href):
         valor = {}
-        diccionario = DBSession.query(usuario).\
+        diccionario = DBSession.query(Usuario).\
         filter_by(rastreable_p = _id).first()
-        valor['nombre'] = valor['titulo'] = "{0} {1}".format(diccionario.nombre, diccionario.apellido)
-        valor['foto'] = DBSession.query(foto.ruta_de_foto).\
-        join(describible).\
-        join(usuario).\
-        filter(usuario.rastreable_p == _id)
+        valor['nombre'] = valor['titulo'] = "{0} {1}".format(
+            diccionario.nombre, diccionario.apellido
+        )
+        valor['foto'] = DBSession.query(Foto.ruta_de_foto).\
+        join(Describible).\
+        join(Usuario).\
+        filter(Usuario.rastreable_p == _id)
         
-        valor['href'] = peticion.route_url('usuario', usuario_id = diccionario.usuario_id) if muestro_href else None
+        valor['href'] = peticion.route_url(
+            'usuario', usuario_id = diccionario.usuario_id
+        ) if muestro_href else None
         
         valor['diccionario'] = {
             'Nombre': valor['nombre'],
@@ -163,19 +175,22 @@ def formatear_entrada_registro(reg, peticion, demandante):
         return valor
     def reg_inventario(_id, muestro_href):
         valor = {}
-        diccionario = DBSession.query(inventario).\
+        diccionario = DBSession.query(Inventario).\
         filter_by(rastreable_p = _id).first()
         valor['titulo'] = valor['nombre'] = diccionario.descripcion
-        valor['foto'] = DBSession.query(foto.ruta_de_foto).\
-        join(describible).\
-        join(producto).\
-        join(inventario).\
-        filter(inventario.rastreable_p == _id)
+        valor['foto'] = DBSession.query(Foto.ruta_de_foto).\
+        join(Describible).\
+        join(Producto).\
+        join(Inventario).\
+        filter(Inventario.rastreable_p == _id)
         
-        valor['href'] = peticion.route_url('producto', producto_id = diccionario.producto_id) if muestro_href else None
+        valor['href'] = peticion.route_url(
+            'producto', producto_id = diccionario.producto_id
+        ) if muestro_href else None
         
-        tipo_codigo, codigo = DBSession.query(producto.tipo_de_codigo, producto.codigo).\
-        filter(producto.producto_id == diccionario.producto_id).first()
+        tipo_codigo, codigo = DBSession.query(
+            Producto.tipo_de_codigo, Producto.codigo
+        ).filter(Producto.producto_id == diccionario.producto_id).first()
         
         valor['diccionario'] = {
             'Descripcion': valor['nombre'],
@@ -185,22 +200,23 @@ def formatear_entrada_registro(reg, peticion, demandante):
         return valor
     def reg_croquis(_id, muestro_href):
         valor = {}
-        valor['titulo'] = valor['nombre'] = 'croquis'
+        valor['titulo'] = valor['nombre'] = 'Croquis'
         valor['href'] = '#' if muestro_href else None
         valor['diccionario'] = {}
         return valor
     def reg_producto(_id, muestro_href):
         valor = {}
-        tmp1, tmp2 = DBSession.query(producto.fabricante, producto.nombre).\
+        tmp1, tmp2 = DBSession.query(Producto.fabricante, Producto.nombre).\
         filter_by(rastreable_p = _id).first()
-        valor['foto'] = DBSession.query(foto.ruta_de_foto).\
-        join(describible).\
-        join(producto).\
-        filter(producto.rastreable_p == _id)
+        valor['foto'] = DBSession.query(Foto.ruta_de_foto).\
+        join(Describible).\
+        join(Producto).\
+        filter(Producto.rastreable_p == _id)
         valor['nombre'] = valor['titulo'] = "{0} {1}".format(tmp1, tmp2)
         
         if muestro_href:
-            tmp3 = DBSession.query(producto.producto_id).filter_by(rastreable_p = _id).first()
+            tmp3 = DBSession.query(Producto.producto_id).\
+            filter_by(rastreable_p = _id).first()
             tmp4 = tmp3[0] if (tmp3 is not None) else None
             valor['href'] = peticion.route_url('producto', producto_id = tmp4)
         else:
@@ -210,13 +226,13 @@ def formatear_entrada_registro(reg, peticion, demandante):
         return valor
     def reg_mensaje(_id, muestro_href):
         valor = {}
-        valor['nombre'] = valor['titulo'] = 'mensaje'
+        valor['nombre'] = valor['titulo'] = 'Mensaje'
         valor['href'] = '#' if muestro_href else None
         valor['diccionario'] = {}
         return valor
     def reg_busqueda(_id, muestro_href):
         valor = {}
-        valor['nombre'] = valor['titulo'] = 'busqueda'
+        valor['nombre'] = valor['titulo'] = 'Busqueda'
         valor['href'] = '#' if muestro_href else None
         valor['diccionario'] = {}
         return valor
@@ -226,44 +242,46 @@ def formatear_entrada_registro(reg, peticion, demandante):
         valor['href'] = '#' if muestro_href else None
         valor['diccionario'] = {}
         return valor
-    def reg_seguidor(_id, muestro_href):
+    def reg_seguimiento(_id, muestro_href):
         valor = {}
-        valor['nombre'] = valor['titulo'] = 'seguidor'
+        valor['nombre'] = valor['titulo'] = 'Seguimiento'
         valor['href'] = '#' if muestro_href else None
         valor['diccionario'] = {}
         return valor
     def reg_descripcion(_id, muestro_href):
         valor = {}
-        valor['nombre'] = 'descripcion'
+        valor['nombre'] = 'Descripcion'
         
         x1 = DBSession.query(case([(
-            descripcion.describible == producto.describible_p, 
-            func.concat(producto.fabricante, ' ', producto.nombre)
+            Descripcion.describible == Producto.describible_p, 
+            func.concat(Producto.fabricante, ' ', Producto.nombre)
         )])).filter(and_(
-            descripcion.describible == producto.describible_p,
-            descripcion.rastreable_p == _id
+            Descripcion.describible == Producto.describible_p,
+            Descripcion.rastreable_p == _id
         ))
         
-        x2 = DBSession.query(case([
-            (descripcion.describible == cliente.describible_p, cliente.nombre_legal)
-        ])).filter(and_(
-            descripcion.describible == cliente.describible_p,
-            descripcion.rastreable_p == _id
+        x2 = DBSession.query(case([(
+            Descripcion.describible == Cliente.describible_p, 
+            Cliente.nombre_legal
+        )])).filter(and_(
+            Descripcion.describible == Cliente.describible_p,
+            Descripcion.rastreable_p == _id
         ))
         
         x3 = DBSession.query(case([(
-            descripcion.describible == usuario.describible_p, 
-            func.concat(usuario.nombre, ' ', usuario.apellido)
+            Descripcion.describible == Usuario.describible_p, 
+            func.concat(Usuario.nombre, ' ', Usuario.apellido)
         )])).filter(and_(
-            descripcion.describible == usuario.describible_p,
-            descripcion.rastreable_p == _id
+            Descripcion.describible == Usuario.describible_p,
+            Descripcion.rastreable_p == _id
         ))
         
-        x4 = DBSession.query(case([
-            (descripcion.describible == publicidad.describible_p, publicidad.nombre)
-        ])).filter(and_(
-            descripcion.describible == publicidad.describible_p,
-            descripcion.rastreable_p == _id
+        x4 = DBSession.query(case([(
+            Descripcion.describible == Publicidad.describible_p, 
+            Publicidad.nombre
+        )])).filter(and_(
+            Descripcion.describible == Publicidad.describible_p,
+            Descripcion.rastreable_p == _id
         ))
         
         tmp = x1.union(x2, x3, x4).first()
@@ -273,8 +291,8 @@ def formatear_entrada_registro(reg, peticion, demandante):
         return valor
     def reg_publicidad(_id, muestro_href):
         valor = {}
-        valor['nombre'] = 'publicidad'
-        tmp = DBSession.query(publicidad.nombre).\
+        valor['nombre'] = 'Publicidad'
+        tmp = DBSession.query(Publicidad.nombre).\
         filter_by(rastreable_p = _id).first()
         valor['titulo'] = tmp[0] if (tmp is not None) else ""
         valor['href'] = '#' if muestro_href else None
@@ -282,13 +300,13 @@ def formatear_entrada_registro(reg, peticion, demandante):
         return valor
     def reg_estadisticas(_id, muestro_href):
         valor = {}
-        valor['nombre'] = valor['titulo'] = 'estadisticas'
+        valor['nombre'] = valor['titulo'] = 'Estadisticas'
         valor['href'] = '#' if muestro_href else None
         valor['diccionario'] = {}
         return valor
     def reg_factura(_id, muestro_href):
         valor = {}
-        valor['nombre'] = valor['titulo'] = 'factura'
+        valor['nombre'] = valor['titulo'] = 'Factura'
         valor['href'] = '#' if muestro_href else None
         valor['diccionario'] = {}
         return valor
@@ -305,21 +323,27 @@ def formatear_entrada_registro(reg, peticion, demandante):
     por_defecto['href'] = None
     
     tipo_activo = rastreable_a_tipo(reg.actor_activo)
-    activo = obtener_objeto(tipo_activo, reg.actor_activo, demandante != tipo_activo) \
-    if (tipo_activo is not None) else por_defecto
+    activo = obtener_objeto(
+        tipo_activo, reg.actor_activo, demandante != tipo_activo
+    ) if (tipo_activo is not None) else por_defecto
     
     if 'foto' in activo:
-        tmp = activo['foto'].filter(foto.ruta_de_foto.like('%miniaturas%')).first()
+        tmp = activo['foto'].filter(
+            Foto.ruta_de_foto.like('%miniaturas%')
+        ).first()
         activo['foto'] = tmp[0] if (tmp is not None) else ''
     else:
         activo['foto'] = ''
     
     tipo_pasivo = rastreable_a_tipo(reg.actor_pasivo)
-    pasivo = obtener_objeto(tipo_pasivo, reg.actor_pasivo, demandante != tipo_pasivo) \
-    if (tipo_pasivo is not None) else por_defecto
+    pasivo = obtener_objeto(
+        tipo_pasivo, reg.actor_pasivo, demandante != tipo_pasivo
+    ) if (tipo_pasivo is not None) else por_defecto
     
     if 'foto' in pasivo:
-        tmp = pasivo['foto'].filter(foto.ruta_de_foto.like('%miniaturas%')).first()
+        tmp = pasivo['foto'].filter(
+            Foto.ruta_de_foto.like('%miniaturas%')
+        ).first()
         pasivo['foto'] = tmp[0] if (tmp is not None) else ''
     else:
         pasivo['foto'] = ''
@@ -357,114 +381,131 @@ def formatear_entrada_registro(reg, peticion, demandante):
         entrada['tiempo'] = "{0} dia(s)".format(str(diferencia.days))
     else:
         if diferencia.seconds > 3600:
-            entrada['tiempo'] = "{0} hora(s)".format(str(diferencia.seconds/3600))
+            entrada['tiempo'] = "{0} hora(s)".format(
+                str(diferencia.seconds/3600)
+            )
         elif diferencia.seconds < 3600 and diferencia.seconds > 60:
-            entrada['tiempo'] = "{0} minuto(s)".format(str(diferencia.seconds/60))
+            entrada['tiempo'] = "{0} minuto(s)".format(
+                str(diferencia.seconds/60)
+            )
         else:
             entrada['tiempo'] = "{0} segundo(s)".format(str(diferencia.seconds))
-    
+
     return entrada
 
 def rastreable_a_tipo(rastreable_id):
     tmp1 = DBSession.query(case([(
-        rastreable_id == cliente.rastreable_p, 'cliente'
-    )])).filter(rastreable_id == cliente.rastreable_p)
+        rastreable_id == Cliente.rastreable_p, 'Cliente'
+    )])).filter(rastreable_id == Cliente.rastreable_p)
     
     tmp2 = DBSession.query(case([(
-        rastreable_id == inventario.rastreable_p, 'inventario'
-    )])).filter(rastreable_id == inventario.rastreable_p)
+        rastreable_id == Inventario.rastreable_p, 'Inventario'
+    )])).filter(rastreable_id == Inventario.rastreable_p)
     
     tmp3 = DBSession.query(case([(
-        rastreable_id == producto.rastreable_p, 'producto'
-    )])).filter(rastreable_id == producto.rastreable_p)
+        rastreable_id == Producto.rastreable_p, 'Producto'
+    )])).filter(rastreable_id == Producto.rastreable_p)
     
     tmp4 = DBSession.query(case([(
-        rastreable_id == mensaje.rastreable_p, 'mensaje'
-    )])).filter(rastreable_id == mensaje.rastreable_p)
+        rastreable_id == Mensaje.rastreable_p, 'Mensaje'
+    )])).filter(rastreable_id == Mensaje.rastreable_p)
     
     tmp5 = DBSession.query(case([(
-        rastreable_id == usuario.rastreable_p, 'usuario'
-    )])).filter(rastreable_id == usuario.rastreable_p)
+        rastreable_id == Usuario.rastreable_p, 'Usuario'
+    )])).filter(rastreable_id == Usuario.rastreable_p)
     
     tmp6 = DBSession.query(case([(
-        rastreable_id == busqueda.rastreable_p, 'busqueda'
-    )])).filter(rastreable_id == busqueda.rastreable_p)
+        rastreable_id == Busqueda.rastreable_p, 'Busqueda'
+    )])).filter(rastreable_id == Busqueda.rastreable_p)
     
     tmp7 = DBSession.query(case([(
-        rastreable_id == calificacion_resena.rastreable_p, 'calificacion_resena'
-    )])).filter(rastreable_id == calificacion_resena.rastreable_p)
+        rastreable_id == CalificacionResena.rastreable_p, 'CalificacionResena'
+    )])).filter(rastreable_id == CalificacionResena.rastreable_p)
     
     tmp8 = DBSession.query(case([(
-        rastreable_id == seguidor.rastreable_p, 'seguidor'
-    )])).filter(rastreable_id == seguidor.rastreable_p)
+        rastreable_id == Seguimiento.rastreable_p, 'Seguimiento'
+    )])).filter(rastreable_id == Seguimiento.rastreable_p)
     
     tmp9 = DBSession.query(case([(
-        rastreable_id == descripcion.rastreable_p, 'descripcion'
-    )])).filter(rastreable_id == descripcion.rastreable_p)
+        rastreable_id == Descripcion.rastreable_p, 'Descripcion'
+    )])).filter(rastreable_id == Descripcion.rastreable_p)
     
     tmp10 = DBSession.query(case([(
-        rastreable_id == publicidad.rastreable_p, 'publicidad'
-    )])).filter(rastreable_id == publicidad.rastreable_p)
+        rastreable_id == Publicidad.rastreable_p, 'Publicidad'
+    )])).filter(rastreable_id == Publicidad.rastreable_p)
     
     tmp11 = DBSession.query(case([(
-        rastreable_id == estadisticas.rastreable_p, 'estadisticas'
-    )])).filter(rastreable_id == estadisticas.rastreable_p)
+        rastreable_id == Estadisticas.rastreable_p, 'Estadisticas'
+    )])).filter(rastreable_id == Estadisticas.rastreable_p)
     
     tmp12 = DBSession.query(case([(
-        rastreable_id == croquis.rastreable_p, 'croquis'
-    )])).filter(rastreable_id == croquis.rastreable_p)
+        rastreable_id == Croquis.rastreable_p, 'Croquis'
+    )])).filter(rastreable_id == Croquis.rastreable_p)
         
     tmp13 = DBSession.query(case([(
-        rastreable_id == factura.rastreable_p, 'factura'
-    )])).filter(rastreable_id == factura.rastreable_p)
+        rastreable_id == Factura.rastreable_p, 'Factura'
+    )])).filter(rastreable_id == Factura.rastreable_p)
     
-    tmp = tmp1.union(tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, 
-                     tmp9, tmp10, tmp11, tmp12, tmp13).first()
+    tmp = tmp1.union(
+        tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, tmp9, tmp10, tmp11, tmp12, 
+        tmp13
+    ).first()
 
     return tmp[0] if (tmp is not None) else None
 
 def sql_foto(objeto, objeto_id, tamano):
     def foto_tienda():
-        return DBSession.query(foto).\
-        join(describible).\
-        join(cliente).\
-        join(tienda).\
-        filter(and_(tienda.tienda_id == objeto_id, foto.ruta_de_foto.like('%' + tamano + '%')))
+        return DBSession.query(Foto).\
+        join(Describible).\
+        join(DescribibleAsociacion).\
+        join(Cliente).\
+        join(Tienda).\
+        filter(and_(
+            Tienda.tienda_id == objeto_id, 
+            Foto.ruta_de_foto.like('%' + tamano + '%')
+        ))
     def foto_producto():
-        return DBSession.query(foto).\
-        join(describible).\
-        join(producto).\
-        filter(and_(producto.producto_id == objeto_id, foto.ruta_de_foto.like('%' + tamano + '%')))
+        return DBSession.query(Foto).\
+        join(Describible).\
+        join(DescribibleAsociacion).\
+        join(Producto).\
+        filter(and_(
+            Producto.producto_id == objeto_id, 
+            Foto.ruta_de_foto.like('%' + tamano + '%')
+        ))
     def foto_patrocinante():
-        return DBSession.query(foto).\
-        join(describible).\
-        join(cliente).\
-        join(patrocinante).\
+        return DBSession.query(Foto).\
+        join(Describible).\
+        join(DescribibleAsociacion).\
+        join(Cliente).\
+        join(Patrocinante).\
         filter(and_(
-            patrocinante.patrocinante_id == objeto_id, 
-            foto.ruta_de_foto.like('%' + tamano + '%'))
-        )
+            Patrocinante.patrocinante_id == objeto_id, 
+            Foto.ruta_de_foto.like('%' + tamano + '%')
+        ))
     def foto_publicidad():
-        return DBSession.query(foto).\
-        join(describible).\
-        join(publicidad).\
+        return DBSession.query(Foto).\
+        join(Describible).\
+        join(DescribibleAsociacion).\
+        join(Publicidad).\
         filter(and_(
-            publicidad.publicidad_id == objeto_id, 
-            foto.ruta_de_foto.like('%' + tamano + '%'))
-        )
+            Publicidad.publicidad_id == objeto_id, 
+            Foto.ruta_de_foto.like('%' + tamano + '%')
+        ))
     def foto_usuario():
-        return DBSession.query(foto).\
-        join(describible).\
-        join(usuario).\
+        return DBSession.query(Foto).\
+        join(Describible).\
+        join(DescribibleAsociacion).\
+        join(Usuario).\
         filter(and_(
-            usuario.usuario_id == objeto_id, 
-            foto.ruta_de_foto.like('%' + tamano + '%'))
-        )
+            Usuario.usuario_id == objeto_id, 
+            Foto.ruta_de_foto.like('%' + tamano + '%')
+        ))
 
     sql = {
-        'tienda': lambda: foto_tienda(), 
-        'producto': lambda: foto_producto(), 
-        'patrocinante': lambda: foto_patrocinante(), 
+        'tienda': lambda: foto_tienda(),
+        'producto': lambda: foto_producto(),
+        'patrocinante': lambda: foto_patrocinante(),
         'publicidad': lambda: foto_publicidad(),
         'usuario': lambda: foto_usuario()
     }[objeto]()
@@ -477,59 +518,60 @@ class Comunes(object):
     
     @reify
     def categorias(self):
-        return DBSession.query(categoria).all()
+        return DBSession.query(Categoria).all()
     
     @reify
     def paises(self):
-        return DBSession.query(territorio).filter_by(nivel = 1).all()
+        return DBSession.query(Territorio).filter_by(nivel = 1).all()
     
     @reify
     def grados_de_instruccion(self):
-        return DBSession.query(grado_de_instruccion).order_by(asc(grado_de_instruccion.orden)).all()
+        return DBSession.query(GradoDeInstruccion).\
+        order_by(asc(GradoDeInstruccion.orden)).all()
     
     @reify
     def sexos(self):
-        return DBSession.query(sexo).all()
+        return DBSession.query(Sexo).all()
     
     @reify
     def codigos_de_error(self):
-        return DBSession.query(codigo_de_error).all()
+        return DBSession.query(CodigoDeError).all()
     
     @reify
     def privilegios(self):
-        return DBSession.query(privilegios).all()
+        return DBSession.query(Privilegios).all()
     
     @reify
     def idiomas(self):
-        return DBSession.query(idioma).all()
+        return DBSession.query(Idioma).all()
     
     @reify
     def tipos_de_codigo(self):
-        return DBSession.query(tipo_de_codigo).all()
+        return DBSession.query(TipoDeCodigo).all()
     
     @reify
     def visibilidades(self):
-        return DBSession.query(visibilidad).all()
+        return DBSession.query(Visibilidad).all()
     
     @reify
     def acciones(self):
-        return DBSession.query(accion).all()
+        return DBSession.query(Accion).all()
     
     @reify
     def calificaciones(self):
-        return DBSession.query(calificacion).all()
+        return DBSession.query(Calificacion).all()
     
     @reify
     def grupos_de_edades(self):
-        return DBSession.query(grupo_de_edad).all()
+        return DBSession.query(GrupoDeEdad).all()
 
     @reify
     def estatus(self):
-        return DBSession.query(estatus).all()
+        return DBSession.query(Estatus).all()
     
     @reify
     def dias(self):
-        return DBSession.query(dia).order_by(asc(dia.orden)).all()
+        return DBSession.query(Dia).order_by(asc(Dia.orden)).all()
     
     @reify
     def turnos(self):
@@ -537,19 +579,27 @@ class Comunes(object):
     
     @reify
     def fotos_grandes(self):
-        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'grandes')
+        return self.obtener_fotos(
+            self.tipo_de_peticion, self.peticion_id, 'grandes'
+        )
     
     @reify
     def fotos_medianas(self):
-        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'medianas')
+        return self.obtener_fotos(
+            self.tipo_de_peticion, self.peticion_id, 'medianas'
+        )
     
     @reify
     def fotos_pequenas(self):
-        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'pequenas')
+        return self.obtener_fotos(
+            self.tipo_de_peticion, self.peticion_id, 'pequenas'
+        )
     
     @reify
     def fotos_miniaturas(self):
-        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'miniaturas')
+        return self.obtener_fotos(
+            self.tipo_de_peticion, self.peticion_id, 'miniaturas'
+        )
     
     def obtener_foto(self, objeto, objeto_id, tamano):
         return sql_foto(objeto, objeto_id, tamano).first()
@@ -557,55 +607,56 @@ class Comunes(object):
     def obtener_fotos(self, objeto, objeto_id, tamano):
         return sql_foto(objeto, objeto_id, tamano).all()
     
-    def obtener_ruta_territorio(self, terr_id):
+    def obtener_ruta_territorio(self, territorio):
         ruta = []
         
         while True:
-            terr = self.obtener_territorio(terr_id)
-            ruta.append(terr)
+            ruta.append(territorio)
             
-            if (terr.territorio_padre == terr.territorio_id) \
-            or (terr.territorio_padre == None) \
-            or (terr.nivel == 1):
+            if (territorio.territorio_padre == territorio.territorio_id) \
+            or (territorio.territorio_padre == None) \
+            or (territorio.nivel == 1):
                 break
             else:
-                terr_id = terr.territorio_padre
+                territorio = territorio.territorio_padre
     
         ruta.reverse()
         return ruta
     
-    def obtener_ruta_categoria(self, cat_id):
+    def obtener_ruta_categoria(self, categoria):
         ruta = []
         
         while True:
-            cat = self.obtener_categoria(cat_id)
-            ruta.append(cat)
-            if (cat.hijo_de_categoria == cat.categoria_id) or (cat.hijo_de_categoria == None):
+            ruta.append(categoria)
+            if (categoria.hijo_de_categoria == categoria.categoria_id) or \
+            (categoria.hijo_de_categoria == None):
                 break
             else:
-                cat_id = cat.hijo_de_categoria
+                categoria = categoria.padre
         
         ruta.reverse()
         return ruta
         
     def obtener_territorio(self, terr_id):
-        return DBSession.query(territorio).filter_by(territorio_id = terr_id).first()
+        return DBSession.query(Territorio).filter_by(territorio_id = terr_id).\
+        first()
     
     def obtener_categoria(self, cat_id):
-        return DBSession.query(categoria).filter_by(categoria_id = cat_id).first()
-            
+        return DBSession.query(Categoria).filter_by(categoria_id = cat_id).\
+        first()
+
     def obtener_cliente(self, cli_id):
-        return DBSession.query(cliente).filter_by(rif = cli_id).first()
+        return DBSession.query(Cliente).filter_by(rif = cli_id).first()
     
     def obtener_cliente_padre(self, objeto, objeto_id):
         def cli_tienda(_id):
-            return DBSession.query(cliente).\
-            join(tienda).\
-            filter(tienda.tienda_id == _id).first()
+            return DBSession.query(Cliente).\
+            join(Tienda).\
+            filter(Tienda.tienda_id == _id).first()
         def cli_patrocinante(_id):
-            return DBSession.query(cliente).\
-            join(patrocinante).\
-            filter(patrocinante.patrocinante_id == _id).first()
+            return DBSession.query(Cliente).\
+            join(Patrocinante).\
+            filter(Patrocinante.patrocinante_id == _id).first()
         
         resultado = {
             'tienda': lambda x: cli_tienda(x), 
@@ -615,21 +666,23 @@ class Comunes(object):
         return resultado
     
     def obtener_tienda(self, tie_id):
-        return DBSession.query(tienda).filter_by(tienda_id = tie_id).first()
+        return DBSession.query(Tienda).filter_by(tienda_id = tie_id).first()
     
     def obtener_patrocinante(self, pat_id):
-        return DBSession.query(patrocinante).filter_by(patrocinante_id = pat_id).first()
+        return DBSession.query(Patrocinante).filter_by(
+            patrocinante_id = pat_id
+        ).first()
     
     def obtener_producto(self, pro_id):
-        return DBSession.query(producto).filter_by(producto_id = pro_id).first()
+        return DBSession.query(Producto).filter_by(producto_id = pro_id).first()
     
     def obtener_usuario(self, objeto, objeto_id):
         def usu_id(_id):
-            return DBSession.query(usuario).filter_by(usuario_id = _id).first()
+            return DBSession.query(Usuario).filter_by(usuario_id = _id).first()
         def usu_correo(correo):
-            return DBSession.query(usuario).\
-            join(acceso).\
-            filter(acceso.correo_electronico == correo).first()
+            return DBSession.query(Usuario).\
+            join(Acceso).\
+            filter(Acceso.correo_electronico == correo).first()
     
         tmp = {
             'id': lambda x: usu_id(x), 

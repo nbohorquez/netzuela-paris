@@ -85,7 +85,6 @@
                 
                 <!-- Menu lateral
                 ================================================== -->
-                
                 <div class="well" style="padding: 8px 0;">
                     <ul id="categorias" class="nav nav-list treeview" tal:condition="pagina == 'Productos' or pagina == 'Tiendas'">
                         <li class="nav-header">Categorías</li>
@@ -144,7 +143,7 @@
                         </li>
                     </ul>
                 </div>
-                
+
                 <!-- Gadget lateral
                 ================================================== -->
                 <div id="gadget2" class="accordion-group">
@@ -159,7 +158,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Zona central
             ================================================== -->
             <div class="span10">

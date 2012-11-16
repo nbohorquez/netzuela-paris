@@ -10,7 +10,7 @@ from paris.comunes import (
 )    
 from paris.constantes import MENSAJE_DE_ERROR
 from paris.diagramas import Diagramas
-from paris.models.spuria import editar_patrocinante
+from paris.models.funciones import editar_patrocinante
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.security import authenticated_userid

@@ -6,15 +6,15 @@ Created on 19/06/2012
 '''
 
 from .constantes import EDAD_MINIMA
-from paris.models.spuria import (
-    acceso, 
-    categoria,
-    dia, 
+from spuria.orm import (
+    Acceso, 
+    Categoria,
+    Dia, 
     DBSession, 
-    grado_de_instruccion, 
-    sexo, 
-    territorio,
-    tipo_de_codigo
+    GradoDeInstruccion, 
+    Sexo, 
+    Territorio,
+    TipoDeCodigo
 )
 from datetime import date, timedelta
 from formencode import validators
@@ -65,7 +65,7 @@ class UsuarioUnico(validators.FancyValidator):
         return valor.strip()
     
     def validate_python(self, valor, estado):
-        existe = DBSession.query(acceso).\
+        existe = DBSession.query(Acceso).\
         filter_by(correo_electronico = valor).first()
         if existe is not None:
             raise Invalid(self.mensaje, valor, estado)
@@ -77,8 +77,8 @@ class GradoDeInstruccionValido(validators.FancyValidator):
         return valor.strip()
     
     def validate_python(self, valor, estado):
-        grados = DBSession.query(grado_de_instruccion).\
-        filter(grado_de_instruccion.valor == valor).first()
+        grados = DBSession.query(GradoDeInstruccion).\
+        filter(GradoDeInstruccion.valor == valor).first()
         if grados is None:
             raise Invalid(self.mensaje, valor, estado)
         
@@ -89,8 +89,8 @@ class CategoriaValida(validators.FancyValidator):
         return valor.strip()
     
     def validate_python(self, valor, estado):
-        categorias = DBSession.query(categoria).\
-        filter(categoria.categoria_id == valor).first()
+        categorias = DBSession.query(Categoria).\
+        filter(Categoria.categoria_id == valor).first()
         if categorias is None:
             raise Invalid(self.mensaje, valor, estado)
 
@@ -111,7 +111,7 @@ class SexoValido(validators.FancyValidator):
         return valor.strip()
     
     def validate_python(self, valor, estado):
-        sexos = DBSession.query(sexo).filter(sexo.valor == valor).first()
+        sexos = DBSession.query(Sexo).filter(Sexo.valor == valor).first()
         if sexos is None:
             raise Invalid(self.mensaje, valor, estado)
 
@@ -122,8 +122,8 @@ class TipoDeCodigoValido(validators.FancyValidator):
         return valor.strip()
     
     def validate_python(self, valor, estado):
-        tipos = DBSession.query(tipo_de_codigo).\
-        filter(tipo_de_codigo.valor == valor).first()
+        tipos = DBSession.query(TipoDeCodigo).\
+        filter(TipoDeCodigo.valor == valor).first()
         if tipos is None:
             raise Invalid(self.mensaje, valor, estado)
 
@@ -134,7 +134,7 @@ class UbicacionExistente(validators.FancyValidator):
         return valor.strip()
     
     def validate_python(self, valor, estado):
-        resultado = DBSession.query(territorio.nombre).\
+        resultado = DBSession.query(Territorio.nombre).\
         filter_by(territorio_id = valor).first()
         if resultado is None:
             raise Invalid(self.mensaje, valor, estado)
@@ -146,8 +146,8 @@ class PaisExistente(validators.FancyValidator):
         return valor.strip()
     
     def validate_python(self, valor, estado):
-        resultado = DBSession.query(territorio.nombre).\
-        filter(and_(territorio.territorio_id == valor, territorio.nivel == 1)).\
+        resultado = DBSession.query(Territorio.nombre).\
+        filter(and_(Territorio.territorio_id == valor, Territorio.nivel == 1)).\
         first()
         if resultado is None:
             raise Invalid(self.mensaje, valor, estado)
@@ -181,7 +181,7 @@ class DiaValido(validators.FancyValidator):
         return valor.strip()
     
     def validate_python(self, valor, estado):
-        resultado = DBSession.query(dia).filter(dia.valor == valor).first()
+        resultado = DBSession.query(Dia).filter(Dia.valor == valor).first()
         if resultado is None:
             raise Invalid(self.mensaje, valor, estado)
         

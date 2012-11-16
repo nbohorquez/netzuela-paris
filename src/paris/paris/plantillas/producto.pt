@@ -24,7 +24,7 @@
                 <div class="span9">
                     <h1>${producto.fabricante} <span style="color: silver">${producto.nombre}</span></h1>
                     <div class="row-fluid">
-                        <div class="span5 editable" tal:define="territorio view.obtener_territorio(producto.pais_de_origen)">
+                        <div class="span5 editable">
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -58,8 +58,8 @@
                                                 ${producto.ancho}<br />
                                                 ${producto.alto}<br />
                                                 ${producto.peso}<br />
-                                                <span tal:condition="territorio">
-                                                    ${territorio.nombre}<br />
+                                                <span tal:condition="producto.pais_de_origen">
+                                                    ${producto.pais_de_origen.nombre}<br />
                                                 </span>
                                             </p>
                                         </td>
@@ -67,7 +67,7 @@
                                 </tbody>
                             </table>
                             <div tal:condition="editar" metal:use-macro="view.formularios['editar_producto']"
-                                tal:define="campo_tipo_de_codigo producto.tipo_de_codigo; campo_codigo producto.codigo; campo_fabricante producto.fabricante; campo_modelo producto.modelo; campo_nombre producto.nombre; campo_debut_en_el_mercado view.debut_en_el_mercado; campo_largo producto.largo; campo_ancho producto.ancho; campo_alto producto.alto; campo_peso producto.peso; campo_pais_de_origen territorio.territorio_id"></div>
+                                tal:define="campo_tipo_de_codigo producto.tipo_de_codigo; campo_codigo producto.codigo; campo_fabricante producto.fabricante; campo_modelo producto.modelo; campo_nombre producto.nombre; campo_debut_en_el_mercado view.debut_en_el_mercado; campo_largo producto.largo; campo_ancho producto.ancho; campo_alto producto.alto; campo_peso producto.peso; campo_pais_de_origen producto.pais_de_origen.territorio_id"></div>
                         </div>
                         <div class="span7"></div>
                     </div>
@@ -85,7 +85,7 @@
                 <div class="editable">
                     <div metal:use-macro="view.macros['ruta_de_categoria']" tal:define="ruta view.ruta_categoria_actual">
                         <div metal:fill-slot="ultima_rebanada">
-                            <div tal:condition="editar" metal:use-macro="view.formularios['editar_categoria']" tal:define="campo_categoria producto.categoria"></div>
+                            <div tal:condition="editar" metal:use-macro="view.formularios['editar_categoria']" tal:define="campo_categoria producto.categoria.categoria_id"></div>
                         </div>
                     </div>
                 </div>
@@ -110,10 +110,13 @@
                         </table>
                     </div>
                 </div>
+                
                 <div class="row-fluid">
+                    <!--
                     <div class="span6">
                         <div metal:use-macro="view.macros['noticias']" tal:define="registros view.registro"></div>
                     </div>
+                    -->
                     <div class="span6">
                         <div metal:use-macro="view.macros['inventario_de_tiendas']" tal:define="lista view.inventario_reciente"></div>
                     </div>
