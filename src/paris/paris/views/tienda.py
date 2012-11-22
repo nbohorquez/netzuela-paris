@@ -5,14 +5,15 @@ Created on 08/04/2012
 @author: nestor
 '''
 
-from paris.comunes import (
-    Comunes,
+from formencode.api import Invalid
+from paris.comunes import Comunes
+from paris.formatos import (
     formatear_comentarios,
-    formatear_entrada_registro
+    formatear_entrada_noticias
 )
 from paris.constantes import MENSAJE_DE_ERROR
 from paris.diagramas import Diagramas
-from paris.models.funciones import editar_tienda
+from paris.models.edicion import editar_tienda
 from spuria.orm import (
     CalificableSeguible,
     CalificacionResena,
@@ -34,16 +35,17 @@ from spuria.orm import (
     Tienda,
     Turno
 )
-from spuria.orm.descripciones_fotos import DescribibleAsociacion
 from spuria.orm.calificaciones_resenas import CalificableSeguibleAsociacion
 from spuria.orm.croquis_puntos import DibujableAsociacion
+from spuria.orm.descripciones_fotos import DescribibleAsociacion
+from spuria.orm.rastreable import RastreableAsociacion
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.security import authenticated_userid
 from pyramid.view import view_config
-from sqlalchemy import and_, or_
-from sqlalchemy.orm import aliased
+from sqlalchemy import and_, desc, or_
 from sqlalchemy.sql import asc
+import transaction
 
 # Aptana siempre va a decir que las clases de spuria (tienda, producto, etc) no 
 # estan definidas explicitamente en ninguna parte. Lo que ocurre es que yo las 
@@ -91,24 +93,23 @@ class TiendaView(Diagramas, Comunes):
 
     @reify
     def registro(self):
-        r = aliased(Rastreable)
-        c = aliased(Cliente)
-        t = aliased(Tienda)
+        """
+        registros = self.tienda.rastreable.registro_activo + \
+        self.tienda.rastreable.registro_pasivo
+        """
+        registros = DBSession.query(Registro).\
+        join(Rastreable, or_(
+            Registro.actor_activo_id == Rastreable.rastreable_id,
+            Registro.actor_pasivo_id == Rastreable.rastreable_id
+        )).join(RastreableAsociacion).\
+        join(Tienda).\
+        filter(Tienda.tienda_id == self.tienda_id).\
+        order_by(desc(Registro.fecha_hora)).\
+        limit(10)
         
-        resultado = []
-        for reg in DBSession.query(Registro).\
-        join(r, or_(
-            Registro.actor_activo == r.rastreable_id, 
-            Registro.actor_pasivo == r.rastreable_id
-        )).\
-        join(c, r.rastreable_id == c.rastreable_p).\
-        join(t, c.rif == t.cliente_p).\
-        filter(t.tienda_id == self.tienda_id).\
-        order_by(Registro.fecha_hora.desc()).all():
-            resultado.append(formatear_entrada_registro(
-                reg, self.peticion, self.tipo_de_rastreable
-            ))
-        return resultado
+        noticias = [formatear_entrada_noticias(registro, self.peticion, \
+                    self.tienda) for registro in registros]
+        return noticias
         
     @reify
     def direccion(self):
@@ -187,21 +188,22 @@ class TiendaView(Diagramas, Comunes):
             usuario_autentificado = self.obtener_usuario(
                 'correo_electronico', autentificado
             )
-            propietario = self.obtener_usuario(
-                'id', self.cliente_padre.propietario
-            )
+            propietario = self.tienda.propietario
+            
             editar = True \
             if usuario_autentificado.usuario_id == propietario.usuario_id \
             else False
 
             if editar and ('guardar' in self.peticion.POST):
-                error = editar_tienda(dict(self.peticion.POST), self.tienda_id)
-                aviso = { 'error': 'Error', 'mensaje': error } \
-                if (error is not None) \
-                else { 
-                    'error': 'OK', 
-                    'mensaje': 'Datos actualizados correctamente' 
-                }
+                try:
+                    with transaction.manager:
+                        editar_tienda(dict(self.peticion.POST), self.tienda)
+                    aviso = {
+                        'error': 'OK',
+                        'mensaje': 'Datos actualizados correctamente'
+                    }
+                except Invalid as e:
+                    aviso = { 'error': 'Error', 'mensaje': e.msg }
 
         return {
             'pagina': 'Tienda', 

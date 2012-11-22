@@ -579,7 +579,7 @@
                         <div metal:use-macro="view.formularios['campo_largo']"></div>
                         <div metal:use-macro="view.formularios['campo_ancho']"></div>
                         <div metal:use-macro="view.formularios['campo_alto']"></div>
-                        <div metal:use-macro="view.formularios['campo_peso']"></div>                          
+                        <div metal:use-macro="view.formularios['campo_peso']"></div>
                         <div metal:use-macro="view.formularios['campo_pais_de_origen']"></div>
                         <div metal:use-macro="view.formularios['botones_pie_de_modal']"></div>
                     </fieldset>
@@ -607,10 +607,36 @@
                         <div metal:use-macro="view.formularios['campo_nombre']"></div>
                         <div metal:use-macro="view.formularios['campo_apellido']"></div>
                         <div metal:use-macro="view.formularios['campo_ubicacion']"></div>
+                        <div metal:use-macro="view.formularios['botones_pie_de_modal']"></div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </metal:editar_usuario>
+    
+    <!-- Editar consumidor
+    ================================================== -->
+    <metal:editar_consumidor define-macro="editar_consumidor">
+        <div class="boton-editar-contenido">
+            <a data-toggle="modal" href="#editar_consumidor">
+                <i class="icon-edit"></i>
+                Editar
+            </a>
+        </div>
+        <div id="editar_consumidor" class="modal hide fade">
+            <div class="modal-header">
+                <div metal:use-macro="view.formularios['encabezado_edicion']"></div>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="formulario_editar_usuario" method="post" accept-charset="UTF-8">
+                    <fieldset>
+                        <div metal:use-macro="view.formularios['campo_nombre']"></div>
+                        <div metal:use-macro="view.formularios['campo_apellido']"></div>
+                        <div metal:use-macro="view.formularios['campo_ubicacion']"></div>
                         <!-- Si este usuario no tiene un consumidor asociado, permitir que 
                           creen uno especificando sexo y fecha de nacimiento. De lo contrario,
                           son campos no editables -->
-                        <tal:block tal:define="habilitar_campo_sexo python:'True' if not consumidor_asociado else None; habilitar_campo_fecha_de_nacimiento python:'True' if not consumidor_asociado else None">
+                        <tal:block tal:define="habilitar_campo_sexo python:None; habilitar_campo_fecha_de_nacimiento python:None">
                             <div metal:use-macro="view.formularios['campo_sexo']"></div>
                             <div metal:use-macro="view.formularios['campo_fecha_de_nacimiento']"></div>
                         </tal:block>
@@ -620,7 +646,7 @@
                 </form>
             </div>
         </div>
-    </metal:editar_usuario>
+    </metal:editar_consumidor>
     
     <!-- Editar categoria
     ================================================== -->

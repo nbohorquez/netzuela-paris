@@ -5,7 +5,7 @@ Created on 19/06/2012
 @author: nestor
 '''
 
-from .constantes import EDAD_MINIMA
+from models.constantes import EDAD_MINIMA
 from spuria.orm import (
     Acceso, 
     Categoria,

@@ -5,15 +5,17 @@ Created on 08/04/2012
 @author: nestor
 '''
 
-from paris.comunes import (
-    Comunes,
+from formencode.api import Invalid
+from paris.comunes import Comunes
+from paris.formatos import (
     formatear_comentarios,
-    formatear_entrada_registro,
+    formatear_entrada_noticias,
     formatear_fecha_para_paris
 )
 from paris.constantes import MENSAJE_DE_ERROR
 from paris.diagramas import Diagramas
-from paris.models.funciones import editar_producto, root
+from paris.models.edicion import editar_producto
+from paris.models.constantes import ROOT
 from spuria.orm import (
     CalificableSeguible,
     CalificacionResena,
@@ -23,16 +25,19 @@ from spuria.orm import (
     InventarioReciente,
     Producto,
     Rastreable,
-    Registro
+    Registro,
+    Inventario
 )
 from spuria.orm.descripciones_fotos import DescribibleAsociacion
 from spuria.orm.calificaciones_resenas import CalificableSeguibleAsociacion
+from spuria.orm.rastreable import RastreableAsociacion
+from sqlalchemy import desc, or_
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.security import authenticated_userid
-from sqlalchemy import or_
-from sqlalchemy.orm import aliased
 from pyramid.view import view_config
+import transaction
+
 
 # Aptana siempre va a decir que las clases de spuria (tienda, producto, etc) no 
 # estan definidas explicitamente en ninguna parte. Esto es porque yo las cargo 
@@ -83,23 +88,32 @@ class ProductoView(Diagramas, Comunes):
     
     @reify
     def registro(self):
-        r = aliased(Rastreable)
-        p = aliased(Producto)
+        reg1 = DBSession.query(Registro).\
+        join(Rastreable, Registro.actor_pasivo_id == Rastreable.rastreable_id).\
+        join(RastreableAsociacion).\
+        join(Inventario).\
+        join(Producto).\
+        filter(Producto.producto_id == self.producto_id)
         
-        resultado = []
-        for reg in DBSession.query(Registro).\
-        join(r, or_(
-            Registro.actor_activo == r.rastreable_id, 
-            Registro.actor_pasivo == r.rastreable_id
-        )).\
-        join(p, r.rastreable_id == p.rastreable_p).\
-        filter(p.producto_id == self.producto_id).\
-        order_by(Registro.fecha_hora.desc()).all():
-            resultado.append(formatear_entrada_registro(
-                reg, self.peticion, self.tipo_de_rastreable
-            ))
-
-        return resultado
+        reg2 = DBSession.query(Registro).\
+        join(Rastreable, or_(
+            Registro.actor_activo_id == Rastreable.rastreable_id,
+            Registro.actor_pasivo_id == Rastreable.rastreable_id
+        )).join(RastreableAsociacion).\
+        join(Producto).\
+        filter(Producto.producto_id == self.producto_id)
+        
+        registros = reg1.union(reg2).order_by(desc(Registro.fecha_hora)).\
+        limit(10)
+        
+        """
+        registros = self.producto.rastreable.registro_activo \
+        + self.producto.rastreable.registro_pasivo + inventario
+        """
+        
+        noticias = [formatear_entrada_noticias(registro, self.peticion, \
+                    self.producto) for registro in registros]
+        return noticias
     
     @reify
     def descripciones(self):
@@ -140,19 +154,19 @@ class ProductoView(Diagramas, Comunes):
             usuario_autentificado = self.obtener_usuario(
                 'correo_electronico', autentificado
             )
-            editar = True if usuario_autentificado.usuario_id == root else False
-                        
-            if editar and ('guardar' in self.peticion.POST):
-                error = editar_producto(
-                    dict(self.peticion.POST), self.producto_id
-                )
-                aviso = { 'error': 'Error', 'mensaje': error } \
-                if (error is not None) \
-                else { 
-                    'error': 'OK', 
-                    'mensaje': 'Datos actualizados correctamente' 
-                }
+            editar = True if usuario_autentificado.usuario_id == ROOT else False
             
+            if editar and ('guardar' in self.peticion.POST):
+                try:
+                    with transaction.manager:
+                        editar_producto(dict(self.peticion.POST), self.producto)
+                    aviso = {
+                        'error': 'OK',
+                        'mensaje': 'Datos actualizados correctamente'
+                    }
+                except Invalid as e:
+                    aviso = { 'error': 'Error', 'mensaje': e.msg }
+
         return {
             'pagina': 'Producto', 
             'producto': self.producto, 

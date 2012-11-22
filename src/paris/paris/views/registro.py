@@ -7,11 +7,11 @@ Created on 07/06/2012
 
 from paris.comunes import Comunes
 from paris.diagramas import Diagramas
-from paris.models.funciones import (
+from paris.models.edicion import (
     crear_usuario, 
     crear_tienda, 
-    crear_horarios_y_turnos,
-    crear_descripcion    
+    crear_descripcion,
+    editar_horarios_y_turnos
 )
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
@@ -122,7 +122,7 @@ class RegistroView(Comunes, Diagramas):
                 return resultado
 
             # Creamos horarios y turnos predeterminados
-            error = crear_horarios_y_turnos(
+            error = editar_horarios_y_turnos(
                 horario_por_defecto, int(tnd['tienda'])
             )
         

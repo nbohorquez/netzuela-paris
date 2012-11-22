@@ -239,7 +239,7 @@
                         <div class="popover-contenido">
                             <div class="row-fluid">
                                 <div class="span4">
-                                    <img src="/estatico/${registro.info.foto}" alt="foto actor" tal:condition="registro.info.foto != ''"/>    
+                                    <img src="/estatico/${registro.info.foto}" alt="foto actor" tal:condition="registro.info.foto != ''"/>
                                 </div>
                                 <div class="span8">
                                     <table class="table">
@@ -250,7 +250,7 @@
                                                 </td>
                                                 <td>
                                                     <p><span tal:repeat="valor registro.info.diccionario.values()">${valor}<br /></span></p>
-                                                  </td>
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -259,7 +259,7 @@
                         </div>
                     </td>
                 </tr>
-              </tbody>
+            </tbody>
         </table>
     </metal:noticias>
     
@@ -425,22 +425,22 @@
             </thead>
             <tbody>
                 <tr tal:repeat="item lista">
-                    <td>
+                    <td tal:define="enlace python:{'tienda': lambda: view.peticion.route_url('tienda', tienda_id = item.tienda_id), 'patrocinante': lambda: view.peticion.route_url('patrocinante', patrocinante_id = item.patrocinante_id)}[item.tipo]()">
                         <div class="row-fluid">
                             <div class="span4">
-                                <a href="${item.enlace}">
-                                    <div class="thumbnail" tal:define="foto view.obtener_foto(item.tipo, item.tipo_id, 'pequenas')">
+                                <a href="${enlace}">
+                                    <div class="thumbnail" tal:define="foto python:{'tienda': lambda: view.obtener_foto('tienda', item.tienda_id, 'pequenas'), 'patrocinante': lambda: view.obtener_foto('patrocinante', item.patrocinante_id, 'pequenas')}[item.tipo]()">
                                         <img src="http://placehold.it/160x160" alt="${item.nombre_comun}" tal:condition="not foto" />
                                         <img src="/estatico/${foto.ruta_de_foto}" alt="${item.nombre_comun}" tal:condition="foto" />
                                     </div>
                                 </a>
                             </div>
                             <div class="span8">
-                                <a href="${item.enlace}">${item.nombre_comun}</a><br />
+                                <a href="${enlace}">${item.nombre_comun}</a><br />
                                 <p>
                                     ${item.nombre_legal}
                                     <br />
-                                    <strong>Ubicación</strong> ${item.ubicacion}<br />
+                                    <strong>Ubicación</strong> ${item.ubicacion.nombre}<br />
                                 </p>
                             </div>
                         </div>
