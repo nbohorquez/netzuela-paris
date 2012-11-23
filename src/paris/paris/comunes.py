@@ -5,467 +5,102 @@ Created on 08/04/2012
 @author: nestor
 '''
 
-from datetime import datetime
-from paris.models.spuria import (
-    acceso,
-    accion,
-    acciones,
-    busqueda,
-    calificacion,
-    calificacion_resena,
-    categoria,
-    cliente,
-    codigo_de_error,
-    columnas_no_visibles,
-    consumidor,
-    croquis,
+from spuria.orm import (
+    Acceso,
+    Accion,
+    Busqueda,
+    Calificacion,
+    CalificacionResena,
+    Categoria,
+    Cliente,
+    CodigoDeError,
+    Consumidor,
+    Croquis,
     DBSession,
-    describible,
-    descripcion,
-    dia,
-    estadisticas,
-    estatus,
-    factura,
-    foto,
-    grado_de_instruccion,
-    grupo_de_edad,
-    idioma,
-    inventario,
-    mensaje,
-    patrocinante,
-    privilegios,
-    producto,
-    publicidad,
-    rastreable,
-    seguidor,
-    territorio,
-    tienda,
-    tipo_de_codigo,
-    usuario,
-    sexo,
-    visibilidad
+    Describible,
+    Descripcion,
+    Dia,
+    Estadisticas,
+    Estatus,
+    Factura,
+    Foto,
+    GradoDeInstruccion,
+    GrupoDeEdad,
+    Idioma,
+    Inventario,
+    Mensaje,
+    Patrocinante,
+    Privilegios,
+    Producto,
+    Publicidad,
+    Rastreable,
+    Seguimiento,
+    Territorio,
+    Tienda,
+    TipoDeCodigo,
+    Usuario,
+    Sexo,
+    Visibilidad
 )
+from spuria.orm.descripciones_fotos import DescribibleAsociacion
 from pyramid.decorator import reify
-from sqlalchemy import and_, case, func
+from sqlalchemy import and_, func
+from sqlalchemy.orm import aliased
 from sqlalchemy.sql.expression import asc
-from time import strftime, strptime
-
-def formatear_fecha_para_mysql(fecha):
-    fecha_neutra = strptime(fecha, '%d/%m/%Y')
-    return strftime('%Y-%m-%d', fecha_neutra)
-    
-def formatear_fecha_para_paris(fecha):
-    fecha_neutra = strptime(fecha, '%Y-%m-%d')
-    return strftime('%d/%m/%Y', fecha_neutra)
-
-def formatear_comentarios(comentarios):
-    resultado = []
-    for comentario in comentarios:
-        tmp = {}
-        tmp['calificacion'] = comentario.calificacion
-        tmp['resena'] = comentario.resena
-        
-        fecha_decimal = DBSession.query(rastreable.fecha_de_creacion).\
-        filter_by(rastreable_id = comentario.rastreable_p).first()[0]
-        
-        fecha = str(fecha_decimal)
-        tmp['fecha'] = "{0}/{1}/{2} {3}:{4}".format(fecha[6:8], fecha[4:6], fecha[0:4], fecha[8:10], fecha[10:12])
-        
-        tmp['consumidor'] = DBSession.query(usuario).\
-        join(consumidor).\
-        filter_by(consumidor_id = comentario.consumidor_id).first()
-        
-        resultado.append(tmp)
-    return resultado
-
-def formatear_entrada_registro(reg, peticion, demandante):
-    def obtener_objeto(tipo, tipo_id, muestro_href):
-        return {
-            'cliente': lambda x, y: reg_cliente(x, y),
-            'usuario': lambda x, y: reg_usuario(x, y),
-            'inventario': lambda x, y: reg_inventario(x, y),
-            'croquis': lambda x, y: reg_croquis(x, y),
-            'producto': lambda x, y: reg_producto(x, y),
-            'mensaje': lambda x, y: reg_mensaje(x, y),
-            'busqueda': lambda x, y: reg_busqueda(x, y),
-            'calificacion_resena': lambda x, y: reg_calificacion_resena(x, y),
-            'seguidor': lambda x, y: reg_seguidor(x, y),
-            'descripcion': lambda x, y: reg_descripcion(x, y),
-            'publicidad': lambda x, y: reg_publicidad(x, y),
-            'estadisticas': lambda x, y: reg_estadisticas(x, y),
-            'croquis': lambda x, y: reg_croquis(x, y),
-            'factura': lambda x, y: reg_factura(x, y)
-        }[tipo](tipo_id, muestro_href)
-    def reg_cliente(_id, muestro_href):
-        valor = {}
-        diccionario = DBSession.query(cliente).\
-        filter_by(rastreable_p = _id).first()
-        
-        valor['nombre'] = diccionario.nombre_comun
-        valor['titulo'] = diccionario.nombre_legal
-        
-        valor['foto'] = DBSession.query(foto.ruta_de_foto).\
-        join(describible).\
-        join(cliente).\
-        filter(cliente.rastreable_p == _id)
-
-        x1 = DBSession.query(
-            case([(cliente.rif == tienda.cliente_p, 'tienda')]),
-            case([(cliente.rif == tienda.cliente_p, tienda.tienda_id)])
-        ).filter(and_(
-            cliente.rif == tienda.cliente_p, 
-            cliente.rastreable_p == _id
-        ))
-        
-        x2 = DBSession.query(
-            case([(cliente.rif == patrocinante.cliente_p, 'patrocinante')]),
-            case([(cliente.rif == patrocinante.cliente_p, patrocinante.patrocinante_id)])
-        ).filter(and_(
-            cliente.rif == patrocinante.cliente_p,
-            cliente.rastreable_p == _id
-        ))
-        
-        tmp1, tmp2 = x1.union(x2).first()
-        
-        valor['href'] = {
-            'tienda': lambda x: peticion.route_url('tienda', tienda_id = x),
-            'patrocinante': lambda x: peticion.route_url('patrocinante', patrocinante_id = x)
-        }[tmp1](tmp2) if muestro_href else None
-    
-        valor['diccionario'] = {
-            'Nombre legal': diccionario.nombre_legal,
-            'Nombre comun': diccionario.nombre_comun,
-            'RIF': diccionario.rif,
-            'Estatus': diccionario.estatus,
-            'Propietario': diccionario.propietario,
-            'Categoria': diccionario.categoria,
-            'Telefono': diccionario.telefono,
-            'Ubicacion': diccionario.ubicacion
-        }
-
-        return valor
-    def reg_usuario(_id, muestro_href):
-        valor = {}
-        diccionario = DBSession.query(usuario).\
-        filter_by(rastreable_p = _id).first()
-        valor['nombre'] = valor['titulo'] = "{0} {1}".format(diccionario.nombre, diccionario.apellido)
-        valor['foto'] = DBSession.query(foto.ruta_de_foto).\
-        join(describible).\
-        join(usuario).\
-        filter(usuario.rastreable_p == _id)
-        
-        valor['href'] = peticion.route_url('usuario', usuario_id = diccionario.usuario_id) if muestro_href else None
-        
-        valor['diccionario'] = {
-            'Nombre': valor['nombre'],
-            'Estatus': diccionario.estatus,
-            'Ubicacion': diccionario.ubicacion
-        }
-        return valor
-    def reg_inventario(_id, muestro_href):
-        valor = {}
-        diccionario = DBSession.query(inventario).\
-        filter_by(rastreable_p = _id).first()
-        valor['titulo'] = valor['nombre'] = diccionario.descripcion
-        valor['foto'] = DBSession.query(foto.ruta_de_foto).\
-        join(describible).\
-        join(producto).\
-        join(inventario).\
-        filter(inventario.rastreable_p == _id)
-        
-        valor['href'] = peticion.route_url('producto', producto_id = diccionario.producto_id) if muestro_href else None
-        
-        tipo_codigo, codigo = DBSession.query(producto.tipo_de_codigo, producto.codigo).\
-        filter(producto.producto_id == diccionario.producto_id).first()
-        
-        valor['diccionario'] = {
-            'Descripcion': valor['nombre'],
-            'SKU': diccionario.codigo,
-            tipo_codigo: codigo
-        }
-        return valor
-    def reg_croquis(_id, muestro_href):
-        valor = {}
-        valor['titulo'] = valor['nombre'] = 'croquis'
-        valor['href'] = '#' if muestro_href else None
-        valor['diccionario'] = {}
-        return valor
-    def reg_producto(_id, muestro_href):
-        valor = {}
-        tmp1, tmp2 = DBSession.query(producto.fabricante, producto.nombre).\
-        filter_by(rastreable_p = _id).first()
-        valor['foto'] = DBSession.query(foto.ruta_de_foto).\
-        join(describible).\
-        join(producto).\
-        filter(producto.rastreable_p == _id)
-        valor['nombre'] = valor['titulo'] = "{0} {1}".format(tmp1, tmp2)
-        
-        if muestro_href:
-            tmp3 = DBSession.query(producto.producto_id).filter_by(rastreable_p = _id).first()
-            tmp4 = tmp3[0] if (tmp3 is not None) else None
-            valor['href'] = peticion.route_url('producto', producto_id = tmp4)
-        else:
-            valor['href'] = None
-            
-        valor['diccionario'] = {}
-        return valor
-    def reg_mensaje(_id, muestro_href):
-        valor = {}
-        valor['nombre'] = valor['titulo'] = 'mensaje'
-        valor['href'] = '#' if muestro_href else None
-        valor['diccionario'] = {}
-        return valor
-    def reg_busqueda(_id, muestro_href):
-        valor = {}
-        valor['nombre'] = valor['titulo'] = 'busqueda'
-        valor['href'] = '#' if muestro_href else None
-        valor['diccionario'] = {}
-        return valor
-    def reg_calificacion_resena(_id, muestro_href):
-        valor = {}
-        valor['nombre'] = valor['titulo'] = 'comentario'
-        valor['href'] = '#' if muestro_href else None
-        valor['diccionario'] = {}
-        return valor
-    def reg_seguidor(_id, muestro_href):
-        valor = {}
-        valor['nombre'] = valor['titulo'] = 'seguidor'
-        valor['href'] = '#' if muestro_href else None
-        valor['diccionario'] = {}
-        return valor
-    def reg_descripcion(_id, muestro_href):
-        valor = {}
-        valor['nombre'] = 'descripcion'
-        
-        x1 = DBSession.query(case([(
-            descripcion.describible == producto.describible_p, 
-            func.concat(producto.fabricante, ' ', producto.nombre)
-        )])).filter(and_(
-            descripcion.describible == producto.describible_p,
-            descripcion.rastreable_p == _id
-        ))
-        
-        x2 = DBSession.query(case([
-            (descripcion.describible == cliente.describible_p, cliente.nombre_legal)
-        ])).filter(and_(
-            descripcion.describible == cliente.describible_p,
-            descripcion.rastreable_p == _id
-        ))
-        
-        x3 = DBSession.query(case([(
-            descripcion.describible == usuario.describible_p, 
-            func.concat(usuario.nombre, ' ', usuario.apellido)
-        )])).filter(and_(
-            descripcion.describible == usuario.describible_p,
-            descripcion.rastreable_p == _id
-        ))
-        
-        x4 = DBSession.query(case([
-            (descripcion.describible == publicidad.describible_p, publicidad.nombre)
-        ])).filter(and_(
-            descripcion.describible == publicidad.describible_p,
-            descripcion.rastreable_p == _id
-        ))
-        
-        tmp = x1.union(x2, x3, x4).first()
-        valor['titulo'] = tmp[0] if (tmp is not None) else ""
-        valor['href'] = '#' if muestro_href else None
-        valor['diccionario'] = {}
-        return valor
-    def reg_publicidad(_id, muestro_href):
-        valor = {}
-        valor['nombre'] = 'publicidad'
-        tmp = DBSession.query(publicidad.nombre).\
-        filter_by(rastreable_p = _id).first()
-        valor['titulo'] = tmp[0] if (tmp is not None) else ""
-        valor['href'] = '#' if muestro_href else None
-        valor['diccionario'] = {}
-        return valor
-    def reg_estadisticas(_id, muestro_href):
-        valor = {}
-        valor['nombre'] = valor['titulo'] = 'estadisticas'
-        valor['href'] = '#' if muestro_href else None
-        valor['diccionario'] = {}
-        return valor
-    def reg_factura(_id, muestro_href):
-        valor = {}
-        valor['nombre'] = valor['titulo'] = 'factura'
-        valor['href'] = '#' if muestro_href else None
-        valor['diccionario'] = {}
-        return valor
-    def depurar_columnas_registro(diccionario):
-        return dict((entrada[0].replace('_', ' '), entrada[1]) \
-        for entrada in diccionario.items() \
-        if entrada[0] not in columnas_no_visibles)
-    def pulir_columnas_registro(diccionario):
-        return dict((entrada[0].capitalize(), entrada[1]) \
-        for entrada in diccionario.items())
-    
-    por_defecto = {}
-    por_defecto['nombre'] = por_defecto['titulo'] = ''
-    por_defecto['href'] = None
-    
-    tipo_activo = rastreable_a_tipo(reg.actor_activo)
-    activo = obtener_objeto(tipo_activo, reg.actor_activo, demandante != tipo_activo) \
-    if (tipo_activo is not None) else por_defecto
-    
-    if 'foto' in activo:
-        tmp = activo['foto'].filter(foto.ruta_de_foto.like('%miniaturas%')).first()
-        activo['foto'] = tmp[0] if (tmp is not None) else ''
-    else:
-        activo['foto'] = ''
-    
-    tipo_pasivo = rastreable_a_tipo(reg.actor_pasivo)
-    pasivo = obtener_objeto(tipo_pasivo, reg.actor_pasivo, demandante != tipo_pasivo) \
-    if (tipo_pasivo is not None) else por_defecto
-    
-    if 'foto' in pasivo:
-        tmp = pasivo['foto'].filter(foto.ruta_de_foto.like('%miniaturas%')).first()
-        pasivo['foto'] = tmp[0] if (tmp is not None) else ''
-    else:
-        pasivo['foto'] = ''
-    
-    entrada = {}
-    entrada['actor_activo'] = activo
-    entrada['actor_pasivo'] = pasivo
-    entrada['accion'] = acciones[reg.accion]
-    entrada['info'] = activo if demandante != tipo_activo else pasivo
-                    
-    columnas = reg.columna.split('<|>') if (reg.columna is not None) else ''
-    valores = reg.valor.split('<|>') if (reg.valor is not None) else ''
-    
-    diccionario = dict(zip(columnas, valores)) \
-    if (len(columnas) == len(valores)) \
-    else {'Error': 'Numero de columnas y valores no concuerda'}
-    
-    diccionario_depurado = depurar_columnas_registro(diccionario)
-    entrada['parametros'] = diccionario_depurado \
-    if (entrada['accion'] == 'actualizo') else {}
-
-    fecha = str(reg.fecha_hora)
-    ano = int(fecha[0:4])
-    mes = int(fecha[4:6])
-    dia = int(fecha[6:8])
-    hora = int(fecha[8:10])
-    minu = int(fecha[10:12])
-    seg = int(fecha[12:14])
-    mseg = int(fecha[15:18])
-    entonces = datetime(ano, mes, dia, hora, minu, seg, mseg * 1000)
-    ahora = datetime.now()
-    diferencia = ahora - entonces
-    
-    if diferencia.days > 0:
-        entrada['tiempo'] = "{0} dia(s)".format(str(diferencia.days))
-    else:
-        if diferencia.seconds > 3600:
-            entrada['tiempo'] = "{0} hora(s)".format(str(diferencia.seconds/3600))
-        elif diferencia.seconds < 3600 and diferencia.seconds > 60:
-            entrada['tiempo'] = "{0} minuto(s)".format(str(diferencia.seconds/60))
-        else:
-            entrada['tiempo'] = "{0} segundo(s)".format(str(diferencia.seconds))
-    
-    return entrada
-
-def rastreable_a_tipo(rastreable_id):
-    tmp1 = DBSession.query(case([(
-        rastreable_id == cliente.rastreable_p, 'cliente'
-    )])).filter(rastreable_id == cliente.rastreable_p)
-    
-    tmp2 = DBSession.query(case([(
-        rastreable_id == inventario.rastreable_p, 'inventario'
-    )])).filter(rastreable_id == inventario.rastreable_p)
-    
-    tmp3 = DBSession.query(case([(
-        rastreable_id == producto.rastreable_p, 'producto'
-    )])).filter(rastreable_id == producto.rastreable_p)
-    
-    tmp4 = DBSession.query(case([(
-        rastreable_id == mensaje.rastreable_p, 'mensaje'
-    )])).filter(rastreable_id == mensaje.rastreable_p)
-    
-    tmp5 = DBSession.query(case([(
-        rastreable_id == usuario.rastreable_p, 'usuario'
-    )])).filter(rastreable_id == usuario.rastreable_p)
-    
-    tmp6 = DBSession.query(case([(
-        rastreable_id == busqueda.rastreable_p, 'busqueda'
-    )])).filter(rastreable_id == busqueda.rastreable_p)
-    
-    tmp7 = DBSession.query(case([(
-        rastreable_id == calificacion_resena.rastreable_p, 'calificacion_resena'
-    )])).filter(rastreable_id == calificacion_resena.rastreable_p)
-    
-    tmp8 = DBSession.query(case([(
-        rastreable_id == seguidor.rastreable_p, 'seguidor'
-    )])).filter(rastreable_id == seguidor.rastreable_p)
-    
-    tmp9 = DBSession.query(case([(
-        rastreable_id == descripcion.rastreable_p, 'descripcion'
-    )])).filter(rastreable_id == descripcion.rastreable_p)
-    
-    tmp10 = DBSession.query(case([(
-        rastreable_id == publicidad.rastreable_p, 'publicidad'
-    )])).filter(rastreable_id == publicidad.rastreable_p)
-    
-    tmp11 = DBSession.query(case([(
-        rastreable_id == estadisticas.rastreable_p, 'estadisticas'
-    )])).filter(rastreable_id == estadisticas.rastreable_p)
-    
-    tmp12 = DBSession.query(case([(
-        rastreable_id == croquis.rastreable_p, 'croquis'
-    )])).filter(rastreable_id == croquis.rastreable_p)
-        
-    tmp13 = DBSession.query(case([(
-        rastreable_id == factura.rastreable_p, 'factura'
-    )])).filter(rastreable_id == factura.rastreable_p)
-    
-    tmp = tmp1.union(tmp2, tmp3, tmp4, tmp5, tmp6, tmp7, tmp8, 
-                     tmp9, tmp10, tmp11, tmp12, tmp13).first()
-
-    return tmp[0] if (tmp is not None) else None
 
 def sql_foto(objeto, objeto_id, tamano):
     def foto_tienda():
-        return DBSession.query(foto).\
-        join(describible).\
-        join(cliente).\
-        join(tienda).\
-        filter(and_(tienda.tienda_id == objeto_id, foto.ruta_de_foto.like('%' + tamano + '%')))
+        return DBSession.query(Foto).\
+        join(Describible).\
+        join(DescribibleAsociacion).\
+        join(Cliente).\
+        join(Tienda).\
+        filter(and_(
+            Tienda.tienda_id == objeto_id, 
+            Foto.ruta_de_foto.like('%' + tamano + '%')
+        ))
     def foto_producto():
-        return DBSession.query(foto).\
-        join(describible).\
-        join(producto).\
-        filter(and_(producto.producto_id == objeto_id, foto.ruta_de_foto.like('%' + tamano + '%')))
+        return DBSession.query(Foto).\
+        join(Describible).\
+        join(DescribibleAsociacion).\
+        join(Producto).\
+        filter(and_(
+            Producto.producto_id == objeto_id, 
+            Foto.ruta_de_foto.like('%' + tamano + '%')
+        ))
     def foto_patrocinante():
-        return DBSession.query(foto).\
-        join(describible).\
-        join(cliente).\
-        join(patrocinante).\
+        return DBSession.query(Foto).\
+        join(Describible).\
+        join(DescribibleAsociacion).\
+        join(Cliente).\
+        join(Patrocinante).\
         filter(and_(
-            patrocinante.patrocinante_id == objeto_id, 
-            foto.ruta_de_foto.like('%' + tamano + '%'))
-        )
+            Patrocinante.patrocinante_id == objeto_id, 
+            Foto.ruta_de_foto.like('%' + tamano + '%')
+        ))
     def foto_publicidad():
-        return DBSession.query(foto).\
-        join(describible).\
-        join(publicidad).\
+        return DBSession.query(Foto).\
+        join(Describible).\
+        join(DescribibleAsociacion).\
+        join(Publicidad).\
         filter(and_(
-            publicidad.publicidad_id == objeto_id, 
-            foto.ruta_de_foto.like('%' + tamano + '%'))
-        )
+            Publicidad.publicidad_id == objeto_id, 
+            Foto.ruta_de_foto.like('%' + tamano + '%')
+        ))
     def foto_usuario():
-        return DBSession.query(foto).\
-        join(describible).\
-        join(usuario).\
+        return DBSession.query(Foto).\
+        join(Describible).\
+        join(DescribibleAsociacion).\
+        join(Usuario).\
         filter(and_(
-            usuario.usuario_id == objeto_id, 
-            foto.ruta_de_foto.like('%' + tamano + '%'))
-        )
+            Usuario.usuario_id == objeto_id, 
+            Foto.ruta_de_foto.like('%' + tamano + '%')
+        ))
 
     sql = {
-        'tienda': lambda: foto_tienda(), 
-        'producto': lambda: foto_producto(), 
-        'patrocinante': lambda: foto_patrocinante(), 
+        'tienda': lambda: foto_tienda(),
+        'producto': lambda: foto_producto(),
+        'patrocinante': lambda: foto_patrocinante(),
         'publicidad': lambda: foto_publicidad(),
         'usuario': lambda: foto_usuario()
     }[objeto]()
@@ -476,81 +111,235 @@ class Comunes(object):
     def __init__(self):
         pass
     
+    """
+    <PETICION>
+    """
+    
+    @reify
+    def peticion(self):
+        return self.peticion
+
+    @reify
+    def pagina_actual(self):
+        return self.pagina_actual
+    
+    @reify
+    def categoria_id(self):
+        return self.categoria_id
+    
+    @reify
+    def categoria_base(self):
+        return self.categoria_id.replace('.00', '')
+    
+    @reify
+    def territorio_id(self):
+        return self.territorio_id
+    
+    @reify
+    def territorio_base(self):
+        return self.territorio_id.replace('.00', '')
+    
+    """
+    </PETICION>
+    <TABLAS CONSTANTES>
+    """
+    
     @reify
     def categorias(self):
-        return DBSession.query(categoria).all()
+        return DBSession.query(Categoria).all()
     
     @reify
     def paises(self):
-        return DBSession.query(territorio).filter_by(nivel = 1).all()
+        return DBSession.query(Territorio).filter_by(nivel = 1).all()
     
     @reify
     def grados_de_instruccion(self):
-        return DBSession.query(grado_de_instruccion).order_by(asc(grado_de_instruccion.orden)).all()
+        return DBSession.query(GradoDeInstruccion).\
+        order_by(asc(GradoDeInstruccion.orden)).all()
     
     @reify
     def sexos(self):
-        return DBSession.query(sexo).all()
+        return DBSession.query(Sexo).all()
     
     @reify
     def codigos_de_error(self):
-        return DBSession.query(codigo_de_error).all()
+        return DBSession.query(CodigoDeError).all()
     
     @reify
     def privilegios(self):
-        return DBSession.query(privilegios).all()
+        return DBSession.query(Privilegios).all()
     
     @reify
     def idiomas(self):
-        return DBSession.query(idioma).all()
+        return DBSession.query(Idioma).all()
     
     @reify
     def tipos_de_codigo(self):
-        return DBSession.query(tipo_de_codigo).all()
+        return DBSession.query(TipoDeCodigo).all()
     
     @reify
     def visibilidades(self):
-        return DBSession.query(visibilidad).all()
+        return DBSession.query(Visibilidad).all()
     
     @reify
     def acciones(self):
-        return DBSession.query(accion).all()
+        return DBSession.query(Accion).all()
     
     @reify
     def calificaciones(self):
-        return DBSession.query(calificacion).all()
+        return DBSession.query(Calificacion).all()
     
     @reify
     def grupos_de_edades(self):
-        return DBSession.query(grupo_de_edad).all()
+        return DBSession.query(GrupoDeEdad).all()
 
     @reify
     def estatus(self):
-        return DBSession.query(estatus).all()
+        return DBSession.query(Estatus).all()
     
     @reify
     def dias(self):
-        return DBSession.query(dia).order_by(asc(dia.orden)).all()
+        return DBSession.query(Dia).order_by(asc(Dia.orden)).all()
     
     @reify
     def turnos(self):
         return ['Abierto', 'Cerrado']
     
+    """
+    </TABLAS CONSTANTES>
+    <FOTOS>
+    """
+    
     @reify
     def fotos_grandes(self):
-        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'grandes')
+        return self.obtener_fotos(
+            self.tipo_de_peticion, self.peticion_id, 'grandes'
+        )
     
     @reify
     def fotos_medianas(self):
-        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'medianas')
+        return self.obtener_fotos(
+            self.tipo_de_peticion, self.peticion_id, 'medianas'
+        )
     
     @reify
     def fotos_pequenas(self):
-        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'pequenas')
+        return self.obtener_fotos(
+            self.tipo_de_peticion, self.peticion_id, 'pequenas'
+        )
     
     @reify
     def fotos_miniaturas(self):
-        return self.obtener_fotos(self.tipo_de_peticion, self.peticion_id, 'miniaturas')
+        return self.obtener_fotos(
+            self.tipo_de_peticion, self.peticion_id, 'miniaturas'
+        )
+    """
+    </FOTOS>
+    """
+    
+    @reify
+    def territorios_hijos(self):
+        try:
+            if self.subtipo_de_peticion == 'tiendas':
+                trr_sub = DBSession.query(Territorio).\
+                join(Tienda).\
+                filter(and_(
+                    Tienda.categoria_id.contains(self.categoria_base),
+                    Tienda.ubicacion_id.contains(self.territorio_base)
+                )).subquery()
+            elif self.subtipo_de_peticion == 'productos':
+                trr_sub = DBSession.query(Territorio).\
+                join(Tienda).\
+                join(Inventario).\
+                join(Producto).\
+                filter(and_(
+                    Producto.categoria_id.contains(self.categoria_base),
+                    Tienda.ubicacion_id.contains(self.territorio_base)
+                )).subquery()
+        except AttributeError:
+            if self.tipo_de_peticion == 'producto':
+                trr_sub = DBSession.query(Territorio).\
+                join(Tienda).\
+                join(Inventario).\
+                join(Producto).\
+                filter(and_(
+                    Producto.producto_id == self.producto_id,
+                    Tienda.ubicacion_id.contains(self.territorio_base)
+                )).subquery()
+
+        trr = aliased(Territorio, trr_sub)
+        
+        territorios = DBSession.query(Territorio).\
+        filter(and_(
+            Territorio.territorio_padre_id == self.territorio_id,
+            Territorio.territorio_padre_id != Territorio.territorio_id,
+            trr.territorio_id.contains(
+                func.replace(Territorio.territorio_id, '.00', '')
+            )
+        )).all()
+        
+        return territorios
+    
+    @reify
+    def ruta_territorio_actual(self):
+        return self.obtener_ruta_territorio(
+            self.obtener_territorio(self.territorio_id)
+        )
+    @reify
+    def categorias_hijas(self):
+        try:
+            if self.subtipo_de_peticion == 'tiendas':
+                cat_sub = DBSession.query(Categoria).\
+                join(Tienda).\
+                filter(and_(
+                    Tienda.categoria_id.contains(self.categoria_base),
+                    Tienda.ubicacion_id.contains(self.territorio_base)
+                )).subquery()
+            elif self.subtipo_de_peticion == 'productos':
+                cat_sub = DBSession.query(Categoria).\
+                join(Producto).\
+                join(Inventario).\
+                join(Tienda).\
+                filter(and_(
+                    Producto.categoria_id.contains(self.categoria_base),
+                    Tienda.ubicacion_id.contains(self.territorio_base)
+                )).subquery()
+        except AttributeError:
+            if self.tipo_de_peticion == 'tienda':
+                cat_sub = DBSession.query(Categoria).\
+                join(Producto).\
+                join(Inventario).\
+                join(Tienda).\
+                filter(and_(
+                    Producto.categoria_id.contains(self.categoria_base),
+                    Tienda.tienda_id == self.tienda_id
+                )).subquery()
+                
+        cat = aliased(Categoria, cat_sub)
+        categorias = DBSession.query(Categoria).\
+        filter(and_(
+            Categoria.hijo_de_categoria == self.categoria_id,
+            Categoria.hijo_de_categoria != Categoria.categoria_id,
+            cat.categoria_id.contains(
+                func.replace(Categoria.categoria_id, '.00', '')
+            )
+        )).all()
+
+        return categorias
+    
+    @reify
+    def ruta_categoria_actual(self):
+        return self.obtener_ruta_categoria(
+            self.obtener_categoria(self.categoria_id)
+        )
+
+    @reify
+    def y_verga(self):
+        return self.categoria_id
+    
+    @reify
+    def y_verga2(self):
+        return self.categoria_base
     
     def obtener_foto(self, objeto, objeto_id, tamano):
         return sql_foto(objeto, objeto_id, tamano).first()
@@ -558,55 +347,56 @@ class Comunes(object):
     def obtener_fotos(self, objeto, objeto_id, tamano):
         return sql_foto(objeto, objeto_id, tamano).all()
     
-    def obtener_ruta_territorio(self, terr_id):
+    def obtener_ruta_territorio(self, territorio):
         ruta = []
         
         while True:
-            terr = self.obtener_territorio(terr_id)
-            ruta.append(terr)
+            ruta.append(territorio)
             
-            if (terr.territorio_padre == terr.territorio_id) \
-            or (terr.territorio_padre == None) \
-            or (terr.nivel == 1):
+            if (territorio.territorio_padre == territorio.territorio_id) \
+            or (territorio.territorio_padre == None) \
+            or (territorio.nivel == 1):
                 break
             else:
-                terr_id = terr.territorio_padre
+                territorio = territorio.territorio_padre
     
         ruta.reverse()
         return ruta
     
-    def obtener_ruta_categoria(self, cat_id):
+    def obtener_ruta_categoria(self, categoria):
         ruta = []
         
         while True:
-            cat = self.obtener_categoria(cat_id)
-            ruta.append(cat)
-            if (cat.hijo_de_categoria == cat.categoria_id) or (cat.hijo_de_categoria == None):
+            ruta.append(categoria)
+            if (categoria.hijo_de_categoria == categoria.categoria_id) \
+            or (categoria.hijo_de_categoria == None):
                 break
             else:
-                cat_id = cat.hijo_de_categoria
+                categoria = categoria.padre
         
         ruta.reverse()
         return ruta
         
     def obtener_territorio(self, terr_id):
-        return DBSession.query(territorio).filter_by(territorio_id = terr_id).first()
+        return DBSession.query(Territorio).filter_by(territorio_id = terr_id).\
+        first()
     
     def obtener_categoria(self, cat_id):
-        return DBSession.query(categoria).filter_by(categoria_id = cat_id).first()
-            
+        return DBSession.query(Categoria).filter_by(categoria_id = cat_id).\
+        first()
+
     def obtener_cliente(self, cli_id):
-        return DBSession.query(cliente).filter_by(rif = cli_id).first()
+        return DBSession.query(Cliente).filter_by(rif = cli_id).first()
     
     def obtener_cliente_padre(self, objeto, objeto_id):
         def cli_tienda(_id):
-            return DBSession.query(cliente).\
-            join(tienda).\
-            filter(tienda.tienda_id == _id).first()
+            return DBSession.query(Cliente).\
+            join(Tienda).\
+            filter(Tienda.tienda_id == _id).first()
         def cli_patrocinante(_id):
-            return DBSession.query(cliente).\
-            join(patrocinante).\
-            filter(patrocinante.patrocinante_id == _id).first()
+            return DBSession.query(Cliente).\
+            join(Patrocinante).\
+            filter(Patrocinante.patrocinante_id == _id).first()
         
         resultado = {
             'tienda': lambda x: cli_tienda(x), 
@@ -616,21 +406,23 @@ class Comunes(object):
         return resultado
     
     def obtener_tienda(self, tie_id):
-        return DBSession.query(tienda).filter_by(tienda_id = tie_id).first()
+        return DBSession.query(Tienda).filter_by(tienda_id = tie_id).first()
     
     def obtener_patrocinante(self, pat_id):
-        return DBSession.query(patrocinante).filter_by(patrocinante_id = pat_id).first()
+        return DBSession.query(Patrocinante).filter_by(
+            patrocinante_id = pat_id
+        ).first()
     
     def obtener_producto(self, pro_id):
-        return DBSession.query(producto).filter_by(producto_id = pro_id).first()
+        return DBSession.query(Producto).filter_by(producto_id = pro_id).first()
     
     def obtener_usuario(self, objeto, objeto_id):
         def usu_id(_id):
-            return DBSession.query(usuario).filter_by(usuario_id = _id).first()
+            return DBSession.query(Usuario).filter_by(usuario_id = _id).first()
         def usu_correo(correo):
-            return DBSession.query(usuario).\
-            join(acceso).\
-            filter(acceso.correo_electronico == correo).first()
+            return DBSession.query(Usuario).\
+            join(Acceso).\
+            filter(Acceso.correo_electronico == correo).first()
     
         tmp = {
             'id': lambda x: usu_id(x), 

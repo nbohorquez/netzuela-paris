@@ -34,9 +34,10 @@ $(document).ready(function () {
     $('.dropdown-menu').find('form').click(function (e) {
         e.stopPropagation();
     });
-    
+
+    $("#mapa").height($("#mapa").width());
     $("#mapa").google_map();
-    
+    /*
     $('#gadget1_colapsable').on('hidden', function () {
         $("#gadget1").height('auto');
         $("#gadget1_encabezado a i").removeClass("icon-chevron-up").addClass("icon-chevron-down");
@@ -52,7 +53,7 @@ $(document).ready(function () {
         $("#gadget1_encabezado a i").removeClass("icon-chevron-down").addClass("icon-chevron-up");
         $("#mapa").data('google_map').redibujar(true);
     });
-    
+    */
     $('#gadget2_colapsable').on('hidden', function () {
         $("#gadget2").height('auto');
         $("#gadget2_encabezado a i").removeClass("icon-chevron-up").addClass("icon-chevron-down");

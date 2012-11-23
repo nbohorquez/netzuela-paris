@@ -67,7 +67,7 @@ crear_env () {
     easy_install -U distribute
     cd ../src/paris
     pip install pyramid
-    python setup.py install
+    python setup.py develop
     deactivate
     cd "$pwd"
 }

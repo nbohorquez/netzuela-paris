@@ -2,7 +2,7 @@
 
 import unittest
 import transaction
-from paris.models.spuria import DBSession
+from spuria.orm import DBSession
 from pyramid import testing
 
 class TestMyView(unittest.TestCase):

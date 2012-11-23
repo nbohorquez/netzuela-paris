@@ -15,7 +15,7 @@
                     <a data-toggle="modal" href="#fotos_usuario">
                         <div class="thumbnail" tal:define="foto view.obtener_foto('usuario', usuario.usuario_id, 'medianas')">
                             <img src="/estatico/${foto.ruta_de_foto}" alt="Foto" tal:condition="foto" />
-                            <img src="http://placehold.it/220x220" alt="Foto" tal:condition="not foto" />
+                            <img src="http://placehold.it/300x300" alt="Foto" tal:condition="not foto" />
                         </div>
                     </a>
                     <div id="fotos_usuario" class="modal hide fade">
@@ -24,8 +24,8 @@
                 </div>
                 <div class="span9">
                     <h1>${usuario.nombre} ${usuario.apellido}</h1>
-                    <div class="row-fluid">
-                        <div class="span5 editable" tal:define="consumidor view.consumidor_asociado; territorio view.obtener_territorio(usuario.ubicacion)">
+                    <div class="row-fluid" tal:define="es_consumidor python:usuario.tipo == 'consumidor'">
+                        <div class="span5 editable">
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -39,30 +39,43 @@
                                                 Nombre<br />
                                                 Apellido<br />
                                                 Ubicación<br />
-                                                Sexo<br />
-                                                Fecha de nacimiento<br />
-                                                Grado de instrucción<br />
+                                                <span tal:condition="es_consumidor">
+                                                    Sexo<br />
+                                                    Fecha de nacimiento<br />
+                                                    Grado de instrucción<br /
+                                                </span>
+                                                
                                             </p>
                                         </td>
                                         <td>
                                             <p>
                                                 ${usuario.nombre}<br />
                                                 ${usuario.apellido}<br />
-                                                <span tal:condition="territorio">
-                                                    ${territorio.nombre}<br />
+                                                <span tal:condition="usuario.ubicacion">
+                                                    ${usuario.ubicacion.nombre}<br />
                                                 </span>
-                                                <span tal:condition="consumidor">
-                                                    ${consumidor.sexo}<br />
+                                                <span tal:condition="es_consumidor">
+                                                    ${usuario.sexo}<br />
                                                     <span tal:content="view.fecha_de_nacimiento"></span><br />
-                                                    ${consumidor.grado_de_instruccion}                                                      
+                                                    ${usuario.grado_de_instruccion}
                                                 </span>
                                             </p>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
-                            <div tal:condition="editar" metal:use-macro="view.formularios['editar_usuario']"
-                                tal:define="campo_nombre usuario.nombre; campo_apellido usuario.apellido; campo_ubicacion territorio; campo_grado_de_instruccion python:consumidor.grado_de_instruccion if consumidor else None; campo_sexo python:consumidor.sexo if consumidor else None; campo_fecha_de_nacimiento view.fecha_de_nacimiento; consumidor_asociado consumidor"></div>
+                            <div tal:condition="editar">
+                                <tal:block tal:condition="es_consumidor">
+                                    <div metal:use-macro="view.formularios['editar_consumidor']" 
+                                    tal:define="campo_nombre usuario.nombre; campo_apellido usuario.apellido; campo_ubicacion usuario.ubicacion; campo_grado_de_instruccion usuario.grado_de_instruccion; campo_sexo usuario.sexo; campo_fecha_de_nacimiento view.fecha_de_nacimiento">
+                                    </div>
+                                </tal:block> 
+                                <tal:block tal:condition="not es_consumidor">
+                                    <div metal:use-macro="view.formularios['editar_usuario']"
+                                    tal:define="campo_nombre usuario.nombre; campo_apellido usuario.apellido; campo_ubicacion usuario.ubicacion">
+                                    </div>
+                                </tal:block> 
+                            </div>
                         </div>
                         <div class="span7"></div>
                     </div>
@@ -82,7 +95,7 @@
                         <div metal:use-macro="view.macros['noticias']" tal:define="registros view.registro"></div>
                     </div>
                     <div class="span6">
-                        <div metal:use-macro="view.macros['listado_clientes']" tal:define="lista view.clientes_asociados"></div>
+                        <div metal:use-macro="view.macros['listado_clientes']" tal:define="lista usuario.propiedades"></div>
                     </div>
                 </div>
             </div>
