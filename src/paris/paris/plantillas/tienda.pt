@@ -2,6 +2,7 @@
 <div metal:use-macro="view.diagrama_global">
     <div metal:fill-slot="extra_meta_datos">
         <input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
+        <input type="hidden" name="categoria_id" value="${view.categoria_id}" />
     </div>
     <div metal:fill-slot="contenido">
         
@@ -113,7 +114,7 @@
             ================================================== -->
             <div class="tab-pane active" id="informacion">
                 <div class="editable">
-                    <div metal:use-macro="view.macros['ruta_de_categoria']" tal:define="ruta view.ruta_categoria_actual">
+                    <div metal:use-macro="view.macros['ruta_de_categoria']" tal:define="ruta view.obtener_ruta_categoria(view.tienda.categoria)">
                         <div metal:fill-slot="ultima_rebanada">
                             <div tal:condition="editar" metal:use-macro="view.formularios['editar_categoria']" tal:define="campo_categoria tienda.categoria_id"></div>
                         </div>

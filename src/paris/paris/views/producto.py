@@ -26,14 +26,16 @@ from spuria.orm import (
     Producto,
     Rastreable,
     Registro,
-    Inventario
+    Inventario,
+    Tienda
 )
 from spuria.orm.descripciones_fotos import DescribibleAsociacion
 from spuria.orm.calificaciones_resenas import CalificableSeguibleAsociacion
 from spuria.orm.rastreable import RastreableAsociacion
-from sqlalchemy import desc, or_
+from sqlalchemy import desc, or_, and_
+from sqlalchemy.orm import aliased
 from pyramid.decorator import reify
-from pyramid.httpexceptions import HTTPNotFound
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 from pyramid.security import authenticated_userid
 from pyramid.view import view_config
 import transaction
@@ -47,27 +49,20 @@ class ProductoView(Diagramas, Comunes):
     def __init__(self, peticion):
         self.peticion = peticion
         self.pagina_actual = peticion.url
+        
         if 'producto_id' in self.peticion.matchdict:
             self.producto_id = self.peticion.matchdict['producto_id']
+        if 'territorio_id' in self.peticion.matchdict:
+            self.territorio_id = self.peticion.matchdict['territorio_id']
+        else:
+            self.territorio_id = None
 
-    @reify
-    def peticion(self):
-        return self.peticion
-    
-    @reify
-    def pagina_actual(self):
-        return self.pagina_actual
-    
     @reify
     def peticion_id(self):
         return self.producto_id
     
     @reify
     def tipo_de_peticion(self):
-        return 'producto'
-    
-    @reify
-    def tipo_de_rastreable(self):
         return 'producto'
     
     @property
@@ -77,7 +72,11 @@ class ProductoView(Diagramas, Comunes):
     @reify
     def inventario_reciente(self):
         return DBSession.query(InventarioReciente).\
-        filter_by(producto_id = self.producto_id).all()
+        join(Tienda, InventarioReciente.tienda_id == Tienda.tienda_id).\
+        filter(and_(
+            InventarioReciente.producto_id == self.producto_id,
+            Tienda.ubicacion_id.contains(self.territorio_base)
+        )).all()
 
     @reify
     def debut_en_el_mercado(self):
@@ -88,10 +87,15 @@ class ProductoView(Diagramas, Comunes):
     
     @reify
     def registro(self):
+        inventario = DBSession.query(Inventario).\
+        join(Tienda).\
+        filter(Tienda.ubicacion_id.contains(self.territorio_base)).\
+        subquery()
+        
         reg1 = DBSession.query(Registro).\
         join(Rastreable, Registro.actor_pasivo_id == Rastreable.rastreable_id).\
         join(RastreableAsociacion).\
-        join(Inventario).\
+        join(inventario).\
         join(Producto).\
         filter(Producto.producto_id == self.producto_id)
         
@@ -105,11 +109,6 @@ class ProductoView(Diagramas, Comunes):
         
         registros = reg1.union(reg2).order_by(desc(Registro.fecha_hora)).\
         limit(10)
-        
-        """
-        registros = self.producto.rastreable.registro_activo \
-        + self.producto.rastreable.registro_pasivo + inventario
-        """
         
         noticias = [formatear_entrada_noticias(registro, self.peticion, \
                     self.producto) for registro in registros]
@@ -141,9 +140,19 @@ class ProductoView(Diagramas, Comunes):
                  request_method='GET')
     @view_config(route_name='producto', renderer='../plantillas/producto.pt', 
                  request_method='POST')
+    @view_config(route_name='producto_geo', renderer='../plantillas/producto.pt', 
+                 request_method='GET')
+    @view_config(route_name='producto_geo', renderer='../plantillas/producto.pt',
+                 request_method='POST')
     def producto_view(self):
         editar = False
         aviso = None
+        
+        if self.territorio_id is None:
+            return HTTPFound(location = self.peticion.route_url(
+                'producto_geo', producto_id = self.producto_id, 
+                territorio_id = '0.02.00.00.00.00'
+            ))
         
         if self.producto is None:
             return HTTPNotFound(MENSAJE_DE_ERROR)

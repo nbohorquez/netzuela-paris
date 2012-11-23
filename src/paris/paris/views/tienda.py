@@ -33,14 +33,16 @@ from spuria.orm import (
     TamanoReciente,
     Territorio,
     Tienda,
-    Turno
+    Turno,
+    Producto,
+    Inventario
 )
 from spuria.orm.calificaciones_resenas import CalificableSeguibleAsociacion
 from spuria.orm.croquis_puntos import DibujableAsociacion
 from spuria.orm.descripciones_fotos import DescribibleAsociacion
 from spuria.orm.rastreable import RastreableAsociacion
 from pyramid.decorator import reify
-from pyramid.httpexceptions import HTTPNotFound
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound
 from pyramid.security import authenticated_userid
 from pyramid.view import view_config
 from sqlalchemy import and_, desc, or_
@@ -57,15 +59,11 @@ class TiendaView(Diagramas, Comunes):
         self.pagina_actual = peticion.url
         if 'tienda_id' in self.peticion.matchdict:
             self.tienda_id = self.peticion.matchdict['tienda_id']
+        if 'categoria_id' in self.peticion.matchdict:
+            self.categoria_id = self.peticion.matchdict['categoria_id']
+        else:
+            self.categoria_id = None
         
-    @reify
-    def peticion(self):
-        return self.peticion
-    
-    @reify
-    def pagina_actual(self):
-        return self.pagina_actual
-    
     @reify
     def peticion_id(self):
         return self.tienda_id
@@ -74,10 +72,6 @@ class TiendaView(Diagramas, Comunes):
     def tipo_de_peticion(self):
         return 'tienda'
     
-    @reify
-    def tipo_de_rastreable(self):
-        return 'cliente'
-    
     @property
     def tienda(self):
         return self.obtener_tienda(self.tienda_id)
@@ -85,7 +79,11 @@ class TiendaView(Diagramas, Comunes):
     @reify
     def inventario_reciente(self):
         return DBSession.query(InventarioReciente).\
-        filter_by(tienda_id = self.tienda_id).all()
+        join(Producto, InventarioReciente.producto_id == Producto.producto_id).\
+        filter(and_(
+            InventarioReciente.tienda_id == self.tienda_id,
+            Producto.categoria_id.contains(self.categoria_base)
+        )).all()
         
     @property
     def cliente_padre(self):
@@ -93,18 +91,25 @@ class TiendaView(Diagramas, Comunes):
 
     @reify
     def registro(self):
+        reg1 = DBSession.query(Registro).\
+        join(Rastreable, Registro.actor_pasivo_id == Rastreable.rastreable_id).\
+        join(RastreableAsociacion).\
+        join(Inventario).\
+        join(Producto).\
+        filter(and_(
+            Producto.categoria_id.contains(self.categoria_base),
+            Inventario.tienda_id == self.tienda_id
+        ))
         """
-        registros = self.tienda.rastreable.registro_activo + \
-        self.tienda.rastreable.registro_pasivo
-        """
-        registros = DBSession.query(Registro).\
+        reg2 = DBSession.query(Registro).\
         join(Rastreable, or_(
             Registro.actor_activo_id == Rastreable.rastreable_id,
             Registro.actor_pasivo_id == Rastreable.rastreable_id
         )).join(RastreableAsociacion).\
         join(Tienda).\
-        filter(Tienda.tienda_id == self.tienda_id).\
-        order_by(desc(Registro.fecha_hora)).\
+        filter(Tienda.tienda_id == self.tienda_id)
+        """
+        registros = reg1.order_by(desc(Registro.fecha_hora)).\
         limit(10)
         
         noticias = [formatear_entrada_noticias(registro, self.peticion, \
@@ -167,13 +172,13 @@ class TiendaView(Diagramas, Comunes):
         filter(Tienda.tienda_id == self.tienda_id).all()
         return formatear_comentarios(comentarios)
     
-    @reify
-    def ruta_categoria_actual(self):
-        return self.obtener_ruta_categoria(self.tienda.categoria)
-    
     @view_config(route_name='tienda', renderer='../plantillas/tienda.pt', 
                  request_method='GET')
     @view_config(route_name='tienda', renderer='../plantillas/tienda.pt', 
+                 request_method='POST')
+    @view_config(route_name='tienda_cat', renderer='../plantillas/tienda.pt', 
+                 request_method='GET')
+    @view_config(route_name='tienda_cat', renderer='../plantillas/tienda.pt',
                  request_method='POST')
     def tienda_view(self):
         editar = False
@@ -181,7 +186,13 @@ class TiendaView(Diagramas, Comunes):
         
         if self.tienda is None:
             return HTTPNotFound(MENSAJE_DE_ERROR)
-        
+
+        if self.categoria_id is None:
+            return HTTPFound(location = self.peticion.route_url(
+                'tienda_cat', tienda_id = self.tienda_id, 
+                categoria_id = self.tienda.categoria_id
+            ))
+            
         autentificado = authenticated_userid(self.peticion)
         
         if autentificado:

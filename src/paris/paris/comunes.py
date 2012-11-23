@@ -44,7 +44,8 @@ from spuria.orm import (
 )
 from spuria.orm.descripciones_fotos import DescribibleAsociacion
 from pyramid.decorator import reify
-from sqlalchemy import and_
+from sqlalchemy import and_, func
+from sqlalchemy.orm import aliased
 from sqlalchemy.sql.expression import asc
 
 def sql_foto(objeto, objeto_id, tamano):
@@ -110,6 +111,39 @@ class Comunes(object):
     def __init__(self):
         pass
     
+    """
+    <PETICION>
+    """
+    
+    @reify
+    def peticion(self):
+        return self.peticion
+
+    @reify
+    def pagina_actual(self):
+        return self.pagina_actual
+    
+    @reify
+    def categoria_id(self):
+        return self.categoria_id
+    
+    @reify
+    def categoria_base(self):
+        return self.categoria_id.replace('.00', '')
+    
+    @reify
+    def territorio_id(self):
+        return self.territorio_id
+    
+    @reify
+    def territorio_base(self):
+        return self.territorio_id.replace('.00', '')
+    
+    """
+    </PETICION>
+    <TABLAS CONSTANTES>
+    """
+    
     @reify
     def categorias(self):
         return DBSession.query(Categoria).all()
@@ -171,6 +205,11 @@ class Comunes(object):
     def turnos(self):
         return ['Abierto', 'Cerrado']
     
+    """
+    </TABLAS CONSTANTES>
+    <FOTOS>
+    """
+    
     @reify
     def fotos_grandes(self):
         return self.obtener_fotos(
@@ -194,6 +233,113 @@ class Comunes(object):
         return self.obtener_fotos(
             self.tipo_de_peticion, self.peticion_id, 'miniaturas'
         )
+    """
+    </FOTOS>
+    """
+    
+    @reify
+    def territorios_hijos(self):
+        try:
+            if self.subtipo_de_peticion == 'tiendas':
+                trr_sub = DBSession.query(Territorio).\
+                join(Tienda).\
+                filter(and_(
+                    Tienda.categoria_id.contains(self.categoria_base),
+                    Tienda.ubicacion_id.contains(self.territorio_base)
+                )).subquery()
+            elif self.subtipo_de_peticion == 'productos':
+                trr_sub = DBSession.query(Territorio).\
+                join(Tienda).\
+                join(Inventario).\
+                join(Producto).\
+                filter(and_(
+                    Producto.categoria_id.contains(self.categoria_base),
+                    Tienda.ubicacion_id.contains(self.territorio_base)
+                )).subquery()
+        except AttributeError:
+            if self.tipo_de_peticion == 'producto':
+                trr_sub = DBSession.query(Territorio).\
+                join(Tienda).\
+                join(Inventario).\
+                join(Producto).\
+                filter(and_(
+                    Producto.producto_id == self.producto_id,
+                    Tienda.ubicacion_id.contains(self.territorio_base)
+                )).subquery()
+
+        trr = aliased(Territorio, trr_sub)
+        
+        territorios = DBSession.query(Territorio).\
+        filter(and_(
+            Territorio.territorio_padre_id == self.territorio_id,
+            Territorio.territorio_padre_id != Territorio.territorio_id,
+            trr.territorio_id.contains(
+                func.replace(Territorio.territorio_id, '.00', '')
+            )
+        )).all()
+        
+        return territorios
+    
+    @reify
+    def ruta_territorio_actual(self):
+        return self.obtener_ruta_territorio(
+            self.obtener_territorio(self.territorio_id)
+        )
+    @reify
+    def categorias_hijas(self):
+        try:
+            if self.subtipo_de_peticion == 'tiendas':
+                cat_sub = DBSession.query(Categoria).\
+                join(Tienda).\
+                filter(and_(
+                    Tienda.categoria_id.contains(self.categoria_base),
+                    Tienda.ubicacion_id.contains(self.territorio_base)
+                )).subquery()
+            elif self.subtipo_de_peticion == 'productos':
+                cat_sub = DBSession.query(Categoria).\
+                join(Producto).\
+                join(Inventario).\
+                join(Tienda).\
+                filter(and_(
+                    Producto.categoria_id.contains(self.categoria_base),
+                    Tienda.ubicacion_id.contains(self.territorio_base)
+                )).subquery()
+        except AttributeError:
+            if self.tipo_de_peticion == 'tienda':
+                cat_sub = DBSession.query(Categoria).\
+                join(Producto).\
+                join(Inventario).\
+                join(Tienda).\
+                filter(and_(
+                    Producto.categoria_id.contains(self.categoria_base),
+                    Tienda.tienda_id == self.tienda_id
+                )).subquery()
+                
+        cat = aliased(Categoria, cat_sub)
+        categorias = DBSession.query(Categoria).\
+        filter(and_(
+            Categoria.hijo_de_categoria == self.categoria_id,
+            Categoria.hijo_de_categoria != Categoria.categoria_id,
+            cat.categoria_id.contains(
+                func.replace(Categoria.categoria_id, '.00', '')
+            )
+        )).all()
+
+        return categorias
+    
+    @reify
+    def ruta_categoria_actual(self):
+        return self.obtener_ruta_categoria(
+            self.obtener_categoria(self.categoria_id)
+        )
+
+    @reify
+    def y_verga(self):
+        return self.categoria_id
+    
+    @reify
+    def y_verga2(self):
+        return self.categoria_base
     
     def obtener_foto(self, objeto, objeto_id, tamano):
         return sql_foto(objeto, objeto_id, tamano).first()
@@ -222,8 +368,8 @@ class Comunes(object):
         
         while True:
             ruta.append(categoria)
-            if (categoria.hijo_de_categoria == categoria.categoria_id) or \
-            (categoria.hijo_de_categoria == None):
+            if (categoria.hijo_de_categoria == categoria.categoria_id) \
+            or (categoria.hijo_de_categoria == None):
                 break
             else:
                 categoria = categoria.padre

@@ -2,6 +2,7 @@
 <div metal:use-macro="view.diagrama_global">
     <div metal:fill-slot="extra_meta_datos">
         <input type="hidden" name="producto_id" value="${producto.producto_id}" />
+        <input type="hidden" name="territorio_id" value="${view.territorio_id}" />
     </div>
     <div metal:fill-slot="contenido">
         
@@ -14,7 +15,7 @@
                     <a data-toggle="modal" href="#fotos_producto">
                         <div class="thumbnail" tal:define="foto view.obtener_foto('producto', producto.producto_id, 'medianas')">
                             <img src="/estatico/${foto.ruta_de_foto}" alt="Foto" tal:condition="foto" />
-                            <img src="http://placehold.it/70x70" alt="Foto" tal:condition="not foto" />
+                            <img src="http://placehold.it/300x300" alt="Foto" tal:condition="not foto" />
                         </div>
                     </a>
                     <div id="fotos_producto" class="modal hide fade">
@@ -23,6 +24,11 @@
                 </div>
                 <div class="span9">
                     <h1>${producto.fabricante} <span style="color: silver">${producto.nombre}</span></h1>
+                    <h3>
+                        <a href="#"><i class="icon-file"></i></a>
+                        <a href="#"><i class="icon-camera"></i></a>    
+                        <a href="#"><i class="icon-barcode"></i></a>
+                    </h3>
                     <div class="row-fluid">
                         <div class="span5 editable">
                             <table class="table">
@@ -39,12 +45,6 @@
                                                 Nombre<br />
                                                 Modelo<br />
                                                 Código (${producto.tipo_de_codigo})<br />
-                                                Debut en el mercado<br />
-                                                Largo [m]<br />
-                                                Ancho [m]<br />
-                                                Alto [m]<br />
-                                                Peso [kg]<br />
-                                                País de orígen<br />
                                             </p>
                                         </td>
                                         <td>
@@ -53,14 +53,6 @@
                                                 ${producto.nombre}<br />
                                                 ${producto.modelo}<br />
                                                 ${producto.codigo}<br />
-                                                <span tal:content="view.debut_en_el_mercado"></span><br />
-                                                ${producto.largo}<br />
-                                                ${producto.ancho}<br />
-                                                ${producto.alto}<br />
-                                                ${producto.peso}<br />
-                                                <span tal:condition="producto.pais_de_origen">
-                                                    ${producto.pais_de_origen.nombre}<br />
-                                                </span>
                                             </p>
                                         </td>
                                     </tr>
@@ -69,32 +61,11 @@
                             <div tal:condition="editar" metal:use-macro="view.formularios['editar_producto']"
                                 tal:define="campo_tipo_de_codigo producto.tipo_de_codigo; campo_codigo producto.codigo; campo_fabricante producto.fabricante; campo_modelo producto.modelo; campo_nombre producto.nombre; campo_debut_en_el_mercado view.debut_en_el_mercado; campo_largo producto.largo; campo_ancho producto.ancho; campo_alto producto.alto; campo_peso producto.peso; campo_pais_de_origen producto.pais_de_origen.territorio_id"></div>
                         </div>
-                        <div class="span7"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Contenido
-        ================================================== -->    
-        <div id="contenido_pestanas" class="tab-content">
-            
-            <!-- Informacion
-            ================================================== -->
-            <div class="tab-pane active" id="informacion">
-                <div class="editable">
-                    <div metal:use-macro="view.macros['ruta_de_categoria']" tal:define="ruta view.ruta_categoria_actual">
-                        <div metal:fill-slot="ultima_rebanada">
-                            <div tal:condition="editar" metal:use-macro="view.formularios['editar_categoria']" tal:define="campo_categoria producto.categoria.categoria_id"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span12">
-                        <table class="table">
+                        <div class="span7">
+                            <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Descripción</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -108,15 +79,54 @@
                                 </tr>
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 </div>
-                
+            </div>
+        </div>
+        
+        <!-- Contenido
+        ================================================== -->
+        <div id="contenido_pestanas" class="tab-content">
+            
+            <!-- Informacion
+            ================================================== -->
+            <div class="tab-pane active" id="informacion">
+                <div class="editable">
+                    <div metal:use-macro="view.macros['ruta_de_categoria']" tal:define="ruta view.ruta_categoria_actual">
+                        <div metal:fill-slot="ultima_rebanada">
+                            <div tal:condition="editar" metal:use-macro="view.formularios['editar_categoria']" tal:define="campo_categoria producto.categoria.categoria_id"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div metal:use-macro="view.macros['inventario_de_tiendas']" tal:define="lista view.inventario_reciente"></div>
+                    </div>
+                    <div class="span6">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Mapa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div id="mapa"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <div class="row-fluid">
                     <div class="span6">
                         <div metal:use-macro="view.macros['noticias']" tal:define="registros view.registro"></div>
                     </div>
                     <div class="span6">
-                        <div metal:use-macro="view.macros['inventario_de_tiendas']" tal:define="lista view.inventario_reciente"></div>
+                        
                     </div>
                 </div>
             </div>

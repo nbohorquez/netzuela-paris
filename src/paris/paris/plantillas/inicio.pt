@@ -35,11 +35,18 @@
                         <p style="text-align:center;margin-top:0px;margin-bottom:0px;padding:0px;">
                             <img alt='Tu mundo en tiempo real' height='218' src='/estatico/img/Netzuela-.png' width='685' />
                         </p>
+                        <p style="text-align:center;margin-top:0px;margin-bottom:0px;padding:0px;">
+                            <a class="btn btn-inverse btn-large" tal:attributes="href view.peticion.route_url('productos', categoria_id = '0.00.00.00.00.00', territorio_id = '0.02.00.00.00.00')">
+                                ¡Entra al sitio de prueba!
+                            </a>
+                        </p>
                     </div>
+                    <!--
                     <form class="form-search centrado">
                         <input type="text" class="input-medium search-query" />
                         <button type="submit" class="btn">Búsqueda</button>
                     </form>
+                    -->
                 </div>
             </div>
         </div>
@@ -48,35 +55,19 @@
             <div class="span4">
                 <h2>Precios</h2>
                 <p>Busca los mejores precios de cualquier producto que se te ocurra. Tus búsquedas se hacen instantáneamente sobre el inventario de cientos de miles de tiendas de todos los rincones del país. Esta no es una tienda virtual, es el mundo real en tiempo real.</p>
-                <p><a class="btn" href="#">View details &raquo;</a></p>
+                <!--<p><a class="btn" href="#">View details &raquo;</a></p>-->
             </div>
             <div class="span4">
                 <h2>Ubicación</h2>
                 <p>¿Te ha pasado que compras algo en una tienda y resulta que había una más cercana que lo vendía a un mejor precio? Hubieses ahorrado tiempo y dinero de haberlo sabido. Encuentra fácilmente la tienda más conveniente e incluso ¡averigua si esta abierta!</p>
-                <p><a class="btn" href="#">View details &raquo;</a></p>
+                <!--<p><a class="btn" href="#">View details &raquo;</a></p>-->
             </div>
             <div class="span4">
                 <h2>Existencia</h2>
                 <p>"Si señor(a) tenemos exactamente lo que Ud. busca, pero sólo nos queda uno..." Asegúrate que esto no te vuelva a pasar. Desde tu casa o desde tu teléfono móvil entérate primero. Netzuela te informa sobre la cantidad de productos que quedan en el estante.</p>
-                <p><a class="btn" href="#">View details &raquo;</a></p>
+                <!--<p><a class="btn" href="#">View details &raquo;</a></p>-->
             </div>
         </div>
-        <div class="row-fluid">
-            <div class="span4">
-                <h2>Estadísticas</h2>
-                <p>¿Te ha pasado que compras algo en una tienda y resulta que había una más cercana que lo vendía a un mejor precio? Hubieses ahorrado tiempo y dinero de haberlo sabido. Encuentra fácilmente la tienda más conveniente e incluso ¡averigua si esta abierta!</p>
-                <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div>
-            <div class="span4">
-                <h2>Ubicación</h2>
-                <p>¿Te ha pasado que compras algo en una tienda y resulta que había una más cercana que lo vendía a un mejor precio? Hubieses ahorrado tiempo y dinero de haberlo sabido. Encuentra fácilmente la tienda más conveniente e incluso ¡averigua si esta abierta!</p>
-                <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div>
-            <div class="span4">
-                <h2>Ubicación</h2>
-                <p>¿Te ha pasado que compras algo en una tienda y resulta que había una más cercana que lo vendía a un mejor precio? Hubieses ahorrado tiempo y dinero de haberlo sabido. Encuentra fácilmente la tienda más conveniente e incluso ¡averigua si esta abierta!</p>
-                <p><a class="btn" href="#">View details &raquo;</a></p>
-            </div>
         <hr/>
         <footer class="pull-right">
             <p>

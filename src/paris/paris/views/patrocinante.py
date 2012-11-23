@@ -6,9 +6,7 @@ Created on 31/07/2012
 '''
 
 from formencode.api import Invalid
-from paris.comunes import (
-    Comunes
-)    
+from paris.comunes import Comunes
 from paris.constantes import MENSAJE_DE_ERROR
 from paris.diagramas import Diagramas
 from paris.models.edicion import editar_patrocinante
@@ -26,20 +24,8 @@ class PatrocinanteView(Diagramas, Comunes):
             self.patrocinante_id = self.peticion.matchdict['patrocinante_id']
             
     @reify
-    def peticion(self):
-        return self.peticion
-    
-    @reify
-    def pagina_actual(self):
-        return self.pagina_actual
-    
-    @reify
     def tipo_de_peticion(self):
         return 'patrocinante'
-    
-    @reify
-    def tipo_de_rastreable(self):
-        return 'cliente'
     
     @reify
     def peticion_id(self):
@@ -57,7 +43,7 @@ class PatrocinanteView(Diagramas, Comunes):
     
     @view_config(route_name='patrocinante', 
                  renderer='../plantillas/patrocinante.pt')
-    def patrocinante_view(self):        
+    def patrocinante_view(self):
         editar = False
         aviso = None
         

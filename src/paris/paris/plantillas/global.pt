@@ -86,7 +86,22 @@
                 <!-- Menu lateral
                 ================================================== -->
                 <div class="well" style="padding: 8px 0;">
-                    <ul id="categorias" class="nav nav-list treeview" tal:condition="pagina == 'Productos' or pagina == 'Tiendas'">
+                    <ul id="menu" class="nav nav-list" tal:condition="pagina == 'Producto' or pagina == 'Tienda' or pagina == 'Usuario'">
+                        <li class="nav-header">Menú</li>
+                        <li class="active">
+                            <a href="#informacion" data-toggle="tab">
+                                <i class="icon-list-alt"></i>
+                                Información
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#comentarios" data-toggle="tab">
+                                <i class="icon-comment"></i>
+                                Comentarios
+                            </a>
+                        </li>
+                    </ul>
+                    <ul id="categorias" class="nav nav-list treeview" tal:condition="pagina == 'Productos' or pagina == 'Tiendas' or pagina == 'Tienda'">
                         <li class="nav-header">Categorías</li>
                         <tal:block tal:repeat="categoria view.ruta_categoria_actual">
                             <li class="active nodo_padre" tal:condition="categoria.categoria_id == view.categoria_id">
@@ -102,7 +117,7 @@
                             </li>
                         </tal:block>
                     </ul>
-                    <ul id="ubicacion" class="nav nav-list treeview" tal:condition="pagina == 'Productos' or pagina == 'Tiendas'">
+                    <ul id="ubicacion" class="nav nav-list treeview" tal:condition="pagina == 'Productos' or pagina == 'Tiendas'or pagina == 'Producto'">
                         <li class="nav-header">Ubicación</li>
                         <tal:block tal:repeat="region view.ruta_territorio_actual">
                             <li class="active nodo_padre" tal:condition="region.territorio_id == view.territorio_id">
@@ -117,21 +132,6 @@
                                 <div metal:use-macro="view.macros['enlace_ubicacion']"></div>
                             </li>
                         </tal:block>
-                    </ul>
-                    <ul id="menu" class="nav nav-list" tal:condition="pagina == 'Producto' or pagina == 'Tienda' or pagina == 'Usuario'">
-                        <li class="nav-header">Menú</li>
-                        <li class="active">
-                            <a href="#informacion" data-toggle="tab">
-                                <i class="icon-list-alt"></i>
-                                Información
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#comentarios" data-toggle="tab">
-                                <i class="icon-comment"></i>
-                                Comentarios
-                            </a>
-                        </li>
                     </ul>
                     <ul class="nav nav-list">
                         <li class="divider"></li>
@@ -170,7 +170,9 @@
                         </a>
                     </div>
                     <div id="gadget1_colapsable" class="accordion-body collapse in">
+                        <!--
                         <div id="mapa"></div>
+                        -->
                     </div>
                 </div>
                 <div id="principal">

@@ -40,26 +40,14 @@ class UsuarioView(Diagramas, Comunes):
         self.pagina_actual = peticion.url
         if 'usuario_id' in self.peticion.matchdict:
             self.usuario_id = self.peticion.matchdict['usuario_id']
-
-    @reify
-    def peticion(self):
-        return self.peticion
-
-    @reify
-    def pagina_actual(self):
-        return self.pagina_actual
-
-    @reify
-    def tipo_de_peticion(self):
-        return 'usuario'
-
-    @reify
-    def tipo_de_rastreable(self):
-        return 'usuario'
-
+    
     @reify
     def peticion_id(self):
         return self.usuario_id
+    
+    @reify
+    def tipo_de_peticion(self):
+        return 'usuario'
 
     @property
     def usuario(self):
@@ -67,10 +55,6 @@ class UsuarioView(Diagramas, Comunes):
 
     @reify
     def registro(self):
-        """
-        registros = self.usuario.rastreable.registro_activo + \
-        self.usuario.rastreable.registro_pasivo
-        """
         registros = DBSession.query(Registro).\
         join(Rastreable, or_(
             Registro.actor_activo_id == Rastreable.rastreable_id,
