@@ -108,7 +108,7 @@ $(document).ready(function () {
     $('#mapa').dibujar_poligono_tienda(tienda.id);
 
     // Esto activa los popover sobre los dias de la semana en el horario de la tienda
-    $('a[rel="popover"]').popover();
+    $('a[rel="popover"]').popover({trigger: 'hover'});
 });
 
 $(window).unload(function () {

@@ -4,166 +4,156 @@
         <input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
         <input type="hidden" name="categoria_id" value="${view.categoria_id}" />
     </div>
-    <div metal:fill-slot="contenido">
-        
-        <!-- Encabezado
-        ================================================== -->
-        <div metal:use-macro="view.macros['resultado_de_operacion']"></div>
-        <div class="page-header">
-            <div class="row-fluid">
-                <div class="span3">
-                    <a data-toggle="modal" href="#fotos_tienda">
-                        <div class="thumbnail" tal:define="foto view.obtener_foto('tienda', tienda.tienda_id, 'medianas')">
-                            <img src="/estatico/${foto.ruta_de_foto}" alt="Foto" tal:condition="foto" />
-                            <img src="http://placehold.it/300x300" alt="Foto" tal:condition="not foto" />
-                        </div>
-                    </a>
-                    <div id="fotos_tienda" class="modal hide fade">
-                        <div metal:use-macro="view.macros['carrusel_fotos']" tal:define="fotos view.fotos_grandes"></div>
-                    </div>
+
+    <!-- Pitch
+    ================================================== -->
+    <div class="pitch" metal:fill-slot="pitch">
+        <h3>${tienda.nombre_comun}</h3>
+        <hr />
+        <div class="imagen-centrada">
+            <a data-toggle="modal" href="#fotos_tienda">
+                <div tal:define="foto view.obtener_foto('tienda', tienda.tienda_id, 'pequenas')">
+                    <img class="img-rounded" src="/estatico/${foto.ruta_de_foto}" alt="Foto" tal:condition="foto" />
+                    <img class="img-rounded" src="http://placehold.it/160x160" alt="Foto" tal:condition="not foto" />
                 </div>
-                <div class="span9">
-                    <h1>${tienda.nombre_comun} 
-                        <span class="label label-success" tal:condition="tienda.abierto">Conectada</span>
-                        <span class="label label-important" tal:condition="not tienda.abierto">Desconectada</span>
-                    </h1>
-                    <h3>
-                        <a href="${tienda.facebook}"><i class="icon-remove"></i></a>
-                        <a href="${tienda.twitter}"><i class="icon-remove"></i></a>    
-                        <a href="mailto:${tienda.correo_electronico}"><i class="icon-envelope"></i></a>
-                    </h3>
-                    <div class="row-fluid">
-                        <div class="span4 editable">
-                            <table id="direccion" class="table" tal:define="region view.direccion">
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            <a class="accordion-toggle" data-toggle="collapse" href="#gadget1_colapsable">
-                                                <i class="icon-map-marker"></i>
-                                            </a>
-                                            ${tienda.nombre_legal}
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <span tal:condition="tienda.edificio_cc">Edif. ${tienda.edificio_cc}</span><span tal:condition="tienda.casa">Casa ${tienda.casa}</span><span tal:condition="tienda.piso">, Piso ${tienda.piso}</span><span tal:condition="tienda.apartamento">, Apart. ${tienda.apartamento}</span><span tal:condition="tienda.local_no">, Local ${tienda.local_no}</span>
-                                            <br />
-                                            <span tal:condition="tienda.calle">Cl. ${tienda.calle}</span><span tal:condition="tienda.sector_urb_barrio">, Sector ${tienda.sector_urb_barrio}</span>
-                                            <br />
-                                            <span tal:condition="region">
-                                                Parr. ${region.parroquia}<br />
-                                                ${region.municipio}, Edo. ${region.estado}<br />
-                                            </span>
-                                            ${tienda.telefono}<br />
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div tal:condition="editar" metal:use-macro="view.formularios['editar_direccion']" 
-                                tal:define="campo_edificio tienda.edificio_cc; campo_piso tienda.piso; campo_apartamento tienda.apartamento; campo_local_no tienda.local_no; campo_casa tienda.casa; campo_calle tienda.calle; campo_urbanizacion tienda.sector_urb_barrio; campo_ubicacion tienda.ubicacion"></div>
-                        </div>
-                        <div class="span4 editable" tal:define="horarios view.horarios">
-                            <table id="horarios" class="table pull-left">
-                                <thead>
-                                    <tr>
-                                        <tal:block tal:repeat="horario horarios">
-                                            <th tal:content="horario.dia[0]">dia</th>
-                                        </tal:block>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <tal:block tal:repeat="horario horarios">
-                                            <td>
-                                                <a href="#" tal:condition="horario.laborable" rel="popover" title="${horario.dia}" tal:attributes="data-content python:'\n'.join(['{0.hora_de_apertura} - {0.hora_de_cierre}'.format(t) for t in horario.turnos])">
-                                                    <i class="icon-ok"></i>
-                                                </a>
-                                                <a href="#" tal:condition="not horario.laborable" rel="popover" title="${horario.dia}" data-content="No laborable">
-                                                    <i class="icon-remove"></i>
-                                                </a>
-                                            </td>
-                                        </tal:block>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="7">
-                                            <div id="turno">
-                                                <h5 id="comentario_turno"></h5>
-                                                <div class="progress">
-                                                    <div id="barra_de_turno" class="bar" style="width: 50%"></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div tal:condition="editar" metal:use-macro="view.formularios['editar_horario']" tal:define="campo_horarios horarios"></div>
-                        </div>
-                        <div class="span4"></div>
-                    </div>
+            </a>
+            <div id="fotos_tienda" class="modal hide fade">
+                <div metal:use-macro="view.macros['carrusel_fotos']" tal:define="fotos view.fotos_grandes"></div>
+            </div>
+        </div>
+        <hr />
+        <div style="padding: 0 8px">
+            <p>
+                <a href="${tienda.facebook}"><i class="icon-remove"></i></a>
+                <a href="${tienda.twitter}"><i class="icon-remove"></i></a>
+                <a href="mailto:${tienda.correo_electronico}"><i class="icon-envelope"></i></a>
+                <span class="label label-success pull-right" tal:condition="tienda.abierto">Conectada</span>
+                <span class="label label-important pull-right" tal:condition="not tienda.abierto">Desconectada</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Informacion adicional
+    ================================================== -->
+    <div metal:fill-slot="info">
+        <div class="accordion-inner">
+            <div class="editable">
+                <table id="direccion" class="table table-hover" tal:define="region view.direccion">
+                    <thead>
+                        <tr>
+                            <th>
+                                ${tienda.nombre_legal}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span tal:condition="tienda.edificio_cc">Edif. ${tienda.edificio_cc}</span><span tal:condition="tienda.casa">Casa ${tienda.casa}</span><span tal:condition="tienda.piso">, Piso ${tienda.piso}</span><span tal:condition="tienda.apartamento">, Apart. ${tienda.apartamento}</span><span tal:condition="tienda.local_no">, Local ${tienda.local_no}</span>
+                                <br />
+                                <span tal:condition="tienda.calle">Cl. ${tienda.calle}</span><span tal:condition="tienda.sector_urb_barrio">, Sector ${tienda.sector_urb_barrio}</span>
+                                <br />
+                                <span tal:condition="region">
+                                    Parr. ${region.parroquia}<br />
+                                    ${region.municipio}, Edo. ${region.estado}<br />
+                                </span>
+                                ${tienda.telefono}<br />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div tal:condition="editar" metal:use-macro="view.formularios['editar_direccion']" 
+                    tal:define="campo_edificio tienda.edificio_cc; campo_piso tienda.piso; campo_apartamento tienda.apartamento; campo_local_no tienda.local_no; campo_casa tienda.casa; campo_calle tienda.calle; campo_urbanizacion tienda.sector_urb_barrio; campo_ubicacion tienda.ubicacion"></div>
+            </div>
+            <div class="editable" tal:define="horarios view.horarios">
+                <table id="horarios" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th tal:repeat="horario horarios">${horario.dia[0]}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td tal:repeat="horario horarios">
+                                <a href="#" tal:condition="horario.laborable" rel="popover" title="${horario.dia}" tal:attributes="data-content python:'\n'.join(['{0.hora_de_apertura} - {0.hora_de_cierre}'.format(t) for t in horario.turnos])">
+                                    <i class="icon-ok"></i>
+                                </a>
+                                <a href="#" tal:condition="not horario.laborable" rel="popover" title="${horario.dia}" data-content="No laborable">
+                                    <i class="icon-remove"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="7">
+                                <div id="turno">
+                                    <h5 id="comentario_turno"></h5>
+                                    <div class="progress">
+                                        <div id="barra_de_turno" class="bar" style="width: 50%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div tal:condition="editar" metal:use-macro="view.formularios['editar_horario']" tal:define="campo_horarios horarios"></div>
+            </div>
+            <p class="pull-right" tal:define="tamano view.tamano_reciente" tal:condition="tamano">
+                <abbr title="Numero total de productos">N:</abbr>
+                <span>${tamano.numero_total_de_productos}</span>
+                <abbr title="Cantidad total de productos">C:</abbr>
+                <span>${tamano.cantidad_total_de_productos}</span>
+                <abbr title="Tamano del inventario">T:</abbr>
+                <span>${tamano.valor}</span>
+            </p>
+        </div>
+    </div>
+    
+    <div metal:fill-slot="categoria">
+        <div class="editable">
+            <div metal:use-macro="view.macros['ruta_de_categoria']" tal:define="ruta view.obtener_ruta_categoria(view.tienda.categoria)">
+                <div metal:fill-slot="ultima_rebanada">
+                    <div tal:condition="editar" metal:use-macro="view.formularios['editar_categoria']" tal:define="campo_categoria tienda.categoria_id"></div>
                 </div>
             </div>
         </div>
-        
-        <!-- Contenido
-        ================================================== -->
+    </div>
+    
+    <!-- Contenido
+    ================================================== -->
+    <div metal:fill-slot="contenido">
+        <div metal:use-macro="view.macros['resultado_de_operacion']"></div>
+
         <div id="contenido_pestanas" class="tab-content">
-            
-            <!-- Informacion
-            ================================================== -->
-            <div class="tab-pane active" id="informacion">
-                <div class="editable">
-                    <div metal:use-macro="view.macros['ruta_de_categoria']" tal:define="ruta view.obtener_ruta_categoria(view.tienda.categoria)">
-                        <div metal:fill-slot="ultima_rebanada">
-                            <div tal:condition="editar" metal:use-macro="view.formularios['editar_categoria']" tal:define="campo_categoria tienda.categoria_id"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span12">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Descripción</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr tal:repeat="descripcion view.descripciones">
-                                    <td>
-                                        <div class="editable">
-                                            <p>${descripcion.contenido}</p>
-                                            <div tal:condition="editar" metal:use-macro="view.formularios['editar_descripcion']" tal:define="campo_descripcion descripcion"></div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="row-fluid">
-                    <div class="span6">
-                        <div metal:use-macro="view.macros['noticias']" tal:define="registros view.registro"></div>
-                    </div>
-                    <div class="span6">
-                        <div metal:use-macro="view.macros['inventario_de_productos']" tal:define="lista view.inventario_reciente; tamano view.tamano_reciente"></div>
-                    </div>
-                </div>
+            <div class="tab-pane active" id="inventario">
+                <div metal:use-macro="view.macros['inventario_de_productos']" tal:define="lista view.inventario_reciente"></div>
             </div>
             
-            <!-- Comentarios (calificaciones y reseñas)
-            ================================================== -->
+            <div class="tab-pane" id="actividad_reciente">
+                <div metal:use-macro="view.macros['noticias']" tal:define="registros view.registro"></div>
+            </div>
+            
+            <div class="tab-pane" id="descripcion">
+                <table class="table table-hover" >
+                    <tbody>
+                        <tr tal:repeat="descripcion view.descripciones">
+                            <td>
+                                <div class="editable">
+                                    <p>${descripcion.contenido}</p>
+                                    <div tal:condition="editar" metal:use-macro="view.formularios['editar_descripcion']" tal:define="campo_descripcion descripcion"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
             <div class="tab-pane" id="comentarios">
                 <div metal:use-macro="view.macros['comentarios']" tal:define="comentarios view.calificaciones_resenas"></div>
             </div>
         </div>
     </div>
+    
     <div metal:fill-slot="scripts_extra">
-        <script type="text/javascript" src="/estatico/js/bootstrap-tooltip.js"></script>
-        <script type="text/javascript" src="/estatico/js/bootstrap-carousel.js"></script>
-        <script type="text/javascript" src="/estatico/js/bootstrap-popover.js"></script>
-        <script type="text/javascript" src="/estatico/js/bootstrap-modal.js"></script>
-        <script type="text/javascript" src="/estatico/js/bootstrap-alert.js"></script>
         <script type="text/javascript" src="/estatico/js/noticias.js"></script>
         <script type="text/javascript" src="/estatico/js/tienda.js"></script>
     </div>

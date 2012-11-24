@@ -12,7 +12,7 @@
         // Contructor publico
         this.inicializar = function (elemento, opciones) {
             this.opciones = $.extend({}, $.google_map.defaults, opciones);
-        
+            
             var infobox_posicion = new google.maps.Point(80, 230);
             var contexto = this;
             var opciones2 = {

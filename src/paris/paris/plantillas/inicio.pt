@@ -1,56 +1,29 @@
 <!DOCTYPE HTML>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <title>Netzuela - ${pagina}</title>
-    <link rel="stylesheet" href="/estatico/css/bootstrap.css"/>
-    <link rel="stylesheet" href="/estatico/css/bootstrap-responsive.css" />
-    <link rel="stylesheet" href="/estatico/css/netzuela.css" />
-</head>
-<body>
-    <div class="navbar navbar-fixed-top">
-        <div class="navbar-inner">
-            <div class="container">
-                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                      <span class="icon-bar"></span>
-                      <span class="icon-bar"></span>
-                      <span class="icon-bar"></span>
-                </a>
-                <a class='brand' href='/' title='Tu mundo en tiempo real'>
-                    <img alt='Logo de Netzuela' height='16' src='/estatico/img/Netzuela-w-.png' width='83' />
-                </a>
-                <div class="nav-collapse">
-                    <ul id="navegacion" class="nav">
-                        <li><a tal:attributes="href view.peticion.route_url('productos', categoria_id = '0.00.00.00.00.00', territorio_id = '0.02.00.00.00.00')">Productos</a></li>
-                        <li><a tal:attributes="href view.peticion.route_url('tiendas', categoria_id = '0.00.00.00.00.00', territorio_id = '0.02.00.00.00.00')">Tiendas</a></li>
-                    </ul>
-                </div>
+<div metal:use-macro="view.diagrama_sencillo">
+    <div metal:fill-slot="extra_meta_datos"></div>
+    
+    <div metal:fill-slot="contenido">
+        <div class="hero-unit">
+            <div class='big-media'>
+                <p class="imagen-centrada">
+                    <img alt='Tu mundo en tiempo real' height='218' src='/estatico/img/Netzuela-.png' width='685' />
+                </p>
+                <p class="imagen-centrada">
+                    <a class="btn btn-inverse btn-large" tal:attributes="href view.peticion.route_url('productos', categoria_id = '0.00.00.00.00.00', territorio_id = '0.02.00.00.00.00')">
+                        ¡Entra al sitio de prueba!
+                    </a>
+                </p>
             </div>
+            <!--
+            <form class="form-search centrado">
+                <input type="text" class="input-medium search-query" />
+                <button type="submit" class="btn">Búsqueda</button>
+            </form>
+            -->
         </div>
-    </div>    
-    <div class="container-fluid">
-        <div class="row-fluid">
-            <div class="span12">
-                <div class="hero-unit">
-                    <div class='big-media'>
-                        <p style="text-align:center;margin-top:0px;margin-bottom:0px;padding:0px;">
-                            <img alt='Tu mundo en tiempo real' height='218' src='/estatico/img/Netzuela-.png' width='685' />
-                        </p>
-                        <p style="text-align:center;margin-top:0px;margin-bottom:0px;padding:0px;">
-                            <a class="btn btn-inverse btn-large" tal:attributes="href view.peticion.route_url('productos', categoria_id = '0.00.00.00.00.00', territorio_id = '0.02.00.00.00.00')">
-                                ¡Entra al sitio de prueba!
-                            </a>
-                        </p>
-                    </div>
-                    <!--
-                    <form class="form-search centrado">
-                        <input type="text" class="input-medium search-query" />
-                        <button type="submit" class="btn">Búsqueda</button>
-                    </form>
-                    -->
-                </div>
-            </div>
-        </div>
+        
         <hr/>
+        
         <div class="row-fluid">
             <div class="span4">
                 <h2>Precios</h2>
@@ -68,18 +41,7 @@
                 <!--<p><a class="btn" href="#">View details &raquo;</a></p>-->
             </div>
         </div>
-        <hr/>
-        <footer class="pull-right">
-            <p>
-                <span><a href="/acerca">Sobre nosotros</a></span>
-                <span><a href="/publicidad">Publicidad</a></span>
-                <span><a href="/desarrolladores">Desarrolladores</a></span>
-                <span><a href="/empleo">Empleo</a></span>
-                <span><a href="/condiciones">Condiciones</a></span>
-                <span><a href="/ayuda">Ayuda</a></span>
-                <span>&copy 2012 Zuliaworks</span>
-            </p>
-        </footer>
     </div>
-</body>
-</html>
+    
+    <div metal:fill-slot="scripts_extra"></div>
+</div>

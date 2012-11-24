@@ -3,38 +3,77 @@ html
     height: 100%;
 }
 body
-{ 
+{
     height: 100%;
     padding-top: 60px;
+    margin: 0;
+    background: url('/estatico/img/background5.png');
+    background-size: 1600px 1000px;
+    background-repeat:repeat;
+    display: compact;
 }
 .titular-noticia
 {
 }
-a.popover-aqui
+.popover-aqui
 {
 }
-div.popover-contenido
+.popover-contenido
 {
     display: none;
 }
-div.editable
+.editable
 {
     position: relative;
 }
-div.boton-editar-contenido
+.boton-editar-contenido
 {
     display: none;
     position: absolute;
     right: 0;
     bottom: 0;
 }
-div.boton-editar-breadcum
+.nav-tabs
+{
+    background-color: white;
+}
+.boton-editar-breadcum
 {
     display: none;
 }
 form.centrado
 {
-    display:block;
-    float:none;
-    margin:0 auto;
+    display: block;
+    float: none;
+    margin: 0px auto;
+}
+
+.table 
+{
+    margin-bottom: 0px
+}
+.pitch h3
+{
+    text-align: center
+}
+.imagen-centrada 
+{
+    text-align: center;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding: 0px;
+}
+.accordion-group
+{
+    background-color: white;
+    margin-bottom: 20px
+}
+.dropdown-menu
+{
+    padding: 15px; 
+    padding-bottom: 0px;
+}
+.well
+{
+    padding: 8px 0;
 }

@@ -8,7 +8,7 @@ $(document).ready(function () {
         alto: screen.height,
         ancho: screen.width
     };
-    
+
     $("#navegacion li").each(function () {
         // Chequeo si this.text() contiene la cadena de caracteres objeto.val()
         if (~$(this).text().indexOf(pagina)) {
@@ -35,37 +35,86 @@ $(document).ready(function () {
         e.stopPropagation();
     });
 
-    $("#mapa").height($("#mapa").width());
-    $("#mapa").google_map();
-    /*
-    $('#gadget1_colapsable').on('hidden', function () {
-        $("#gadget1").height('auto');
-        $("#gadget1_encabezado a i").removeClass("icon-chevron-up").addClass("icon-chevron-down");
+    switch (pagina)
+        {
+            case 'Tienda':
+            case 'Producto':
+            case 'Patrocinante':
+            case 'Usuario':
+                $("#mapa").google_map({
+                    estilos: [{
+                        featureType: "road",
+                        stylers: [
+                            { visibility: "on" }
+                        ]
+                    },{
+                        featureType: "poi",
+                        stylers: [
+                            { visibility: "off" }
+                        ]
+                    },{
+                        featureType: "transit",
+                        stylers: [
+                            { visibility: "off" }
+                        ]
+                    },{
+                        featureType: "administrative.province",
+                        stylers: [
+                            { visibility: "off" }
+                        ]
+                    }] 
+                });
+                break;
+            case 'Tiendas':
+            case 'Productos':
+            case 'Registro':
+            case 'Registro de tienda':
+                $("#mapa").google_map();
+                break;
+            default:
+                $("#mapa").google_map();
+        }
+    
+    $('.accordion-body').on('hidden', function () {
+        $(this).siblings('.accordion-heading').find('a i').removeClass("icon-chevron-up").addClass("icon-chevron-down");
+    });
+    
+    $('.accordion-body').on('show', function () {
+        $(this).siblings('.accordion-heading').find('a i').removeClass("icon-chevron-down").addClass("icon-chevron-up");
+    });
+
+    $('#gadget_colapsable').on('hidden', function () {
+        $("#gadget").height('auto');
         $("#mapa").data('google_map').redibujar(false);
     });
     
-    $('#gadget1_colapsable').on('show', function () {
+    $('#gadget_colapsable').on('show', function () {
         // Debido a que la pagina tiene el encabezado "DOCTYPE html", es necesario especificar
         // el tamaño del lienzo del mapa en pixeles y no en porcentajes. Mas informacion aqui:
         // http://stackoverflow.com/questions/3217928/google-map-not-working-with-xhtml-doctype-document-type
-        $("#gadget1").height((pantalla.alto * 0.4).toString() + 'px');
-        $("#mapa").height($("#gadget1").height() - $("#gadget1_encabezado").height());
-        $("#gadget1_encabezado a i").removeClass("icon-chevron-down").addClass("icon-chevron-up");
+        //$("#gadget1").height((pantalla.alto * 0.4).toString() + 'px');
+        switch (pagina)
+        {
+            case 'Tienda':
+            case 'Producto':
+            case 'Patrocinante':
+            case 'Usuario':
+                $("#gadget").height($("#pitch_well").height() + $("#gadget_encabezado").height()/2);
+                break;
+            case 'Tiendas':
+            case 'Productos':
+            case 'Registro':
+            case 'Registro de tienda':
+                $("#gadget").height('350px');
+                break;
+            default:
+                $("#gadget").height('350px');
+        }
+        
+        $("#mapa").height($("#gadget").height() - $("#gadget_encabezado").height());
         $("#mapa").data('google_map').redibujar(true);
     });
-    */
-    $('#gadget2_colapsable').on('hidden', function () {
-        $("#gadget2").height('auto');
-        $("#gadget2_encabezado a i").removeClass("icon-chevron-up").addClass("icon-chevron-down");
-    });
-    
-    $('#gadget2_colapsable').on('show', function () {
-        $("#gadget2").height($("#gadget2").width());
-        $("#historial").height($("#gadget2").height() - $("#gadget2_encabezado").height());
-        $("#gadget2_encabezado a i").removeClass("icon-chevron-down").addClass("icon-chevron-up");
-        $('#historial').mostrar_historial();
-    });
-    
+
     $('.editable').hover(function () {
         //$(this).css('background-color', '#f5f5f5');
         $(this).find('.boton-editar-contenido').show();

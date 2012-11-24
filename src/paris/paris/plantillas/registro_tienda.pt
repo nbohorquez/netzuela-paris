@@ -1,43 +1,56 @@
 <!DOCTYPE HTML>
-<div metal:use-macro="view.diagrama_global">
+<div metal:use-macro="view.diagrama_sencillo">
     <div metal:fill-slot="extra_meta_datos"></div>
+    
     <div metal:fill-slot="contenido">
-        
-        <!-- Encabezado
-        ================================================== -->
-        <div metal:use-macro="view.macros['resultado_de_operacion']"></div>
-        <div class="page-header">
-            <h1>Registro</h1>
+        <div id="gadget" class="accordion-group">
+            <div id="gadget_encabezado" class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" href="#gadget_colapsable">
+                    <i></i>
+                    Mapa
+                </a>
+            </div>
+            <div id="gadget_colapsable" class="accordion-body collapse">
+                <div id="mapa"></div>
+            </div>
         </div>
         
-        <!-- Contenido
-        ================================================== -->    
-        <div id="contenido_pestanas" class="tab-content">
-            <form class="form-horizontal" id="formulario_registro_tienda" method="post" accept-charset="UTF-8">
-                <fieldset>
-                    <input type="hidden" name="pagina_anterior" value="${view.pagina_anterior}" />
-                    <div metal:use-macro="view.formularios['campo_rif']"></div>
-                    <div metal:use-macro="view.formularios['campo_nombre_legal']"></div>
-                    <div metal:use-macro="view.formularios['campo_nombre_comun']"></div>
-                    <div metal:use-macro="view.formularios['campo_categoria']"></div>
-                    <div metal:use-macro="view.formularios['campo_telefono']"></div>
-                    <div metal:use-macro="view.formularios['campo_calle']"></div>
-                    <div metal:use-macro="view.formularios['campo_urbanizacion']"></div>
-                    <div metal:use-macro="view.formularios['campo_ubicacion']"></div>
-                    <hr />
-                    <div metal:use-macro="view.formularios['campo_condiciones']"></div>
-                    <div metal:use-macro="view.formularios['botones_pie_de_pagina']"></div>
-                </fieldset>
-            </form>
-            <div id="condiciones_servicio" class="modal hide fade">
-                <div metal:use-macro="view.macros['condiciones']"></div>
+        <div metal:use-macro="view.macros['resultado_de_operacion']"></div>
+        
+        <div id="principal" class="accordion-group">
+            <div id="principal_encabezado" class="accordion-heading">
+                <strong class="accordion-toggle">
+                    Registro de tienda
+                </strong>
+            </div>
+            <div id="principal_colapsable" class="accordion-body">
+                <div class="accordion-inner">
+                    <form class="form-horizontal" id="formulario_registro_tienda" method="post" accept-charset="UTF-8">
+                        <fieldset>
+                            <input type="hidden" name="pagina_anterior" value="${view.pagina_anterior}" />
+                            <div metal:use-macro="view.formularios['campo_rif']"></div>
+                            <div metal:use-macro="view.formularios['campo_nombre_legal']"></div>
+                            <div metal:use-macro="view.formularios['campo_nombre_comun']"></div>
+                            <div metal:use-macro="view.formularios['campo_categoria']"></div>
+                            <div metal:use-macro="view.formularios['campo_telefono']"></div>
+                            <div metal:use-macro="view.formularios['campo_calle']"></div>
+                            <div metal:use-macro="view.formularios['campo_urbanizacion']"></div>
+                            <div metal:use-macro="view.formularios['campo_ubicacion']"></div>
+                            <hr />
+                            <div metal:use-macro="view.formularios['campo_condiciones']"></div>
+                            <div metal:use-macro="view.formularios['botones_pie_de_pagina']"></div>
+                        </fieldset>
+                    </form>
+                    <div id="condiciones_servicio" class="modal hide fade">
+                        <div metal:use-macro="view.macros['condiciones']"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    
     <div metal:fill-slot="scripts_extra">
         <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>
-        <script type="text/javascript" src="/estatico/js/bootstrap-alert.js"></script>
-        <script type="text/javascript" src="/estatico/js/bootstrap-modal.js"></script>
         <script type="text/javascript" src="/estatico/js/registro_tienda.js"></script>
     </div>
 </div>

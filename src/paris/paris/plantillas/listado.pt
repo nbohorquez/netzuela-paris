@@ -6,21 +6,35 @@
         <input type="hidden" name="categoria_id" value="${view.categoria_id}" />
         <input type="hidden" name="territorio_padre" value="${view.territorio_padre}" />
     </div>
+    
+    <div metal:fill-slot="pitch">
+        <h3 style="text-align: center">${pagina}</h3>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+    </div>
+    
     <div metal:fill-slot="contenido">
-        
-        <!-- Encabezado
-        ================================================== -->
-        <div class="page-header">
-            <h1>${pagina}</h1>
-        </div>
-        
+
         <!-- Listado
         ================================================== -->
-        <div tal:condition="pagina == 'Productos'">
-            <div metal:use-macro="view.macros['listado_productos']"></div>
-        </div>
-        <div tal:condition="pagina == 'Tiendas'">
-            <div metal:use-macro="view.macros['listado_tiendas']"></div>
+        <div metal:fill-slot="contenido">
+            <div tal:condition="pagina == 'Productos'">
+                <div metal:use-macro="view.macros['listado_productos']"></div>
+            </div>
+            <div tal:condition="pagina == 'Tiendas'">
+                <div metal:use-macro="view.macros['listado_tiendas']"></div>
+            </div>
         </div>
     </div>
     <div metal:fill-slot="scripts_extra">

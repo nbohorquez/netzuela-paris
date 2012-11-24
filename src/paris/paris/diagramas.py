@@ -14,8 +14,13 @@ class Diagramas(object):
 
     @reify
     def diagrama_global(self):
-        renderer = get_renderer("plantillas/global.pt")
+        renderer = get_renderer("plantillas/diagrama_global.pt")
         return renderer.implementation().macros['diagrama_global']
+    
+    @reify
+    def diagrama_sencillo(self):
+        renderer = get_renderer("plantillas/diagrama_sencillo.pt")
+        return renderer.implementation().macros['diagrama_sencillo']
     
     @reify
     def macros(self):
