@@ -6,8 +6,8 @@ $(document).ready(function () {
     var terr_padre = $('input[name=territorio_padre]').val();
     var terr_yo = $('input[name=territorio_id]').val();
     $('#mapa').dibujar_niveles([
-        {territorio: terr_padre, nivel: 1, tipo: 'polilineas'},
-        {territorio: terr_yo, nivel: 1, tipo: 'poligonos'}
+        {territorio: terr_yo, nivel: 0, tipo: 'polilineas', centrar: true},
+        {territorio: terr_yo, nivel: 1, tipo: 'poligonos', centrar: false}
     ]);
     $('#mapa').bind('poligono_click', function (e, data) {
         var remitente = data.remitente;

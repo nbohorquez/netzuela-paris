@@ -54,7 +54,11 @@ Tienda.prototype.actualizar = function () {
         cierre = cierre[turno];
 
         /* Logica de la barra de turno */
-        if (cierre == apertura || ahorita < apertura) {
+        if (cierre == apertura) {
+            porcentaje = 0;
+            comentario = 'Hoy no abre la tienda';
+        }
+        else if (ahorita < apertura) {
             porcentaje = 0;
             var minutos = ((apertura - ahorita) % 1);
             var horas = (apertura - ahorita) - minutos;

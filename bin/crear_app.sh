@@ -65,8 +65,11 @@ crear_env () {
     dir=`pwd`
     source env/bin/activate
     easy_install -U distribute
-    cd ../src/paris
     pip install pyramid
+    cd ../src/paris
+    python setup.py develop
+    cd "$pwd"
+    cd ../../spuria/src/orm
     python setup.py develop
     deactivate
     cd "$pwd"

@@ -36,46 +36,46 @@ $(document).ready(function () {
     });
 
     switch (pagina)
-        {
-            case 'Tienda':
-            case 'Producto':
-            case 'Patrocinante':
-            case 'Usuario':
-                $("#mapa").google_map({
-                    estilos: [{
-                        featureType: "road",
-                        stylers: [
-                            { visibility: "on" }
-                        ]
-                    },{
-                        featureType: "poi",
-                        stylers: [
-                            { visibility: "off" }
-                        ]
-                    },{
-                        featureType: "transit",
-                        stylers: [
-                            { visibility: "off" }
-                        ]
-                    },{
-                        featureType: "administrative.province",
-                        stylers: [
-                            { visibility: "off" }
-                        ]
-                    }] 
-                });
-                break;
-            case 'Tiendas':
-            case 'Productos':
-            case 'Registro':
-            case 'Registro de tienda':
-                $("#mapa").google_map();
-                break;
-            default:
-                $("#mapa").google_map();
-        }
+    {
+        case 'Tienda':
+        case 'Producto':
+        case 'Patrocinante':
+        case 'Usuario':
+            $("#mapa").google_map({
+                estilos: [{
+                    featureType: "road",
+                    stylers: [
+                        { visibility: "on" }
+                    ]
+                },{
+                    featureType: "poi",
+                    stylers: [
+                        { visibility: "off" }
+                    ]
+                },{
+                    featureType: "transit",
+                    stylers: [
+                        { visibility: "off" }
+                    ]
+                },{
+                    featureType: "administrative.province",
+                    stylers: [
+                        { visibility: "off" }
+                    ]
+                }] 
+            });
+            break;
+        case 'Tiendas':
+        case 'Productos':
+        case 'Registro':
+        case 'Registro de tienda':
+            $("#mapa").google_map();
+            break;
+        default:
+            $("#mapa").google_map();
+    }
     
-    $('.accordion-body').on('hidden', function () {
+    $('.accordion-body').on('hide', function () {
         $(this).siblings('.accordion-heading').find('a i').removeClass("icon-chevron-up").addClass("icon-chevron-down");
     });
     
@@ -88,11 +88,10 @@ $(document).ready(function () {
         $("#mapa").data('google_map').redibujar(false);
     });
     
-    $('#gadget_colapsable').on('show', function () {
+    $('#gadget_colapsable').on('shown', function () {
         // Debido a que la pagina tiene el encabezado "DOCTYPE html", es necesario especificar
         // el tamaño del lienzo del mapa en pixeles y no en porcentajes. Mas informacion aqui:
         // http://stackoverflow.com/questions/3217928/google-map-not-working-with-xhtml-doctype-document-type
-        //$("#gadget1").height((pantalla.alto * 0.4).toString() + 'px');
         switch (pagina)
         {
             case 'Tienda':

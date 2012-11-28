@@ -13,7 +13,7 @@
         <div class="imagen-centrada">
             <a data-toggle="modal" href="#fotos_tienda">
                 <div tal:define="foto view.obtener_foto('tienda', tienda.tienda_id, 'pequenas')">
-                    <img class="img-rounded" src="/estatico/${foto.ruta_de_foto}" alt="Foto" tal:condition="foto" />
+                    <img class="img-rounded" src="/img/${foto.ruta_de_foto}" alt="Foto" tal:condition="foto" />
                     <img class="img-rounded" src="http://placehold.it/160x160" alt="Foto" tal:condition="not foto" />
                 </div>
             </a>

@@ -15,16 +15,16 @@
         elemento.data('mapa', this);
         
         // Contructor publico
-        this.inicializar = function (elemento, opciones) {         
+        this.inicializar = function (elemento, opciones) {
         this.opciones = $.extend({}, $.mapa.defaults, opciones);
         this.gmap = elemento.data('google_map');
-        var territorios_crudos = parsear_json(this, opciones.json);
-            switch(opciones.tipo) {
+        var territorios_crudos = parsear_json(this, this.opciones.json, this.opciones.centrar);
+            switch(this.opciones.tipo) {
                 case 'poligonos':
-                    this.territorios = dibujar_poligonos(this, territorios_crudos);
+                    this.poligonos = dibujar_poligonos(this, territorios_crudos, opciones.centrar);
                     break;
                 case 'polilineas':
-                    this.territorios = dibujar_polilineas(this, territorios_crudos);
+                    this.polilineas = dibujar_polilineas(this, territorios_crudos, opciones.centrar);
                     break;
                 default:
                     break;
@@ -35,7 +35,7 @@
          * Metodo privado. Fijate que 'objeto' es 'esta' instancia de esta
          * clase. Dentro de parsear_json, 'this' pierde el significado usual
          */
-        var parsear_json = function (objeto, data) {
+        var parsear_json = function (objeto, data, centrar) {
             var resultado = [];
             
             // Este lazo recorre cada territorio
@@ -55,6 +55,11 @@
                         var pto = coordenadas[k].split(':');
                         pto[0] = pto[0].replace(",", ".");
                         pto[1] = pto[1].replace(",", ".");
+
+                        if (centrar) {
+                            objeto.gmap.extender_borde(pto[0], pto[1]);
+                        }
+                        
                         contorno.push(new google.maps.LatLng(pto[0], pto[1]));
                     }
                     
@@ -192,25 +197,40 @@
     
     $.fn.dibujar_niveles = function (niveles) {
         return this.each(function () {
-            $(this).data('google_map').extender_borde("7.623887", "-68.730469");
-            $(this).data('google_map').extender_borde("11.22151", "-63.896484");
-            
             for (var i = 0, len_i = niveles.length; i < len_i; i++) {
                 $(this).agregar_capa({
                     territorio: niveles[i].territorio,
                     nivel: niveles[i].nivel,
-                    tipo: niveles[i].tipo
+                    tipo: niveles[i].tipo,
+                    centrar: niveles[i].centrar
                 });
             }
+        });
+    }
+    
+    $.fn.centrar_en_venezuela = function () {
+        $(this).data('google_map').extender_borde("7.623887", "-68.730469");
+        $(this).data('google_map').extender_borde("11.22151", "-63.896484");
+    }
+    
+    $.fn.dibujar_estados = function () {
+        return this.each(function () {
+            var Venezuela = '0.02.00.00.00.00';
+            $(this).centrar_en_venezuela();
+            $(this).dibujar_niveles([
+                {territorio: Venezuela, nivel: 0, tipo: 'polilineas', centrar: false},
+                {territorio: Venezuela, nivel: 1, tipo: 'poligonos', centrar: false}
+            ])
         });
     }
     
     $.fn.dibujar_municipios = function () {
         return this.each(function () {
             var Venezuela = '0.02.00.00.00.00';
+            $(this).centrar_en_venezuela();
             $(this).dibujar_niveles([
-                {territorio: Venezuela, nivel: 1, tipo: 'polilineas'},
-                {territorio: Venezuela, nivel: 2, tipo: 'poligonos'}
+                {territorio: Venezuela, nivel: 1, tipo: 'polilineas', centrar: false},
+                {territorio: Venezuela, nivel: 2, tipo: 'poligonos', centrar: false}
             ])
         });
     }
@@ -218,9 +238,10 @@
     $.fn.dibujar_parroquias = function () {
         return this.each(function () {
             var Venezuela = '0.02.00.00.00.00';
+            $(this).centrar_en_venezuela();
             $(this).dibujar_niveles([
-                {territorio: Venezuela, nivel: 1, tipo: 'polilineas'},
-                {territorio: Venezuela, nivel: 3, tipo: 'poligonos'}
+                {territorio: Venezuela, nivel: 1, tipo: 'polilineas', centrar: false},
+                {territorio: Venezuela, nivel: 3, tipo: 'poligonos', centrar: false}
             ])
         });
     }
@@ -231,7 +252,8 @@
             $.getJSON('/territorio/terr' + opciones.territorio + 'niv' + opciones.nivel + '/coordenadas.json', function (data) {
                 contexto.mapa({
                     json: data,
-                    tipo: opciones.tipo
+                    tipo: opciones.tipo,
+                    centrar: opciones.centrar
                 });
             });
         });
@@ -250,6 +272,7 @@
     
     $.mapa.defaults = {
         json: null,
-        tipo: 'poligonos'
+        tipo: 'poligonos',
+        centrar: true
     }
 })(jQuery);

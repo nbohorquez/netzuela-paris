@@ -36,6 +36,7 @@ def main(global_config, **settings):
     config.add_settings(encoding="UTF-8")
     config.add_settings(default_encoding="UTF-8")
     config.add_static_view('estatico', 'estatico', cache_max_age=3600)
+    config.add_static_view('img', '/var/www/img', cache_max_age=3600)
     config.add_route('inicio', '/')
     config.add_route('usuario', '/usuario/{usuario_id}')
     config.add_route('producto', '/producto/{producto_id}')

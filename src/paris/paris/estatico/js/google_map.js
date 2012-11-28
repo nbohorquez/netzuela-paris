@@ -79,6 +79,10 @@
             google.maps.event.trigger(this.mapa, 'resize');
             if (ajustar) {
                 this.ajustar_a_borde();
+                // Un zoom mayor a 16 es demasiado
+                if (this.mapa.getZoom() > 16) {
+                    this.mapa.setZoom(16);
+                }
             }
         }
         

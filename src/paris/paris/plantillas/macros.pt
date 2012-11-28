@@ -33,7 +33,7 @@
                             <a class="pull-left" href="${enlace}" tal:omit-tag="not enlace">
                                 <div tal:define="foto view.obtener_foto('producto', item.producto_id, 'miniaturas')">
                                     <img class="img-rounded" src="http://placehold.it/70x70" tal:condition="not foto" />
-                                    <img class="img-rounded" src="/estatico/${foto.ruta_de_foto}" tal:condition="foto" />
+                                    <img class="img-rounded" src="/img/${foto.ruta_de_foto}" tal:condition="foto" />
                                 </div>
                             </a>
                             <div class="media-body">
@@ -74,7 +74,7 @@
                             <a class="pull-left" href="${enlace}" tal:omit-tag="not enlace">
                                 <div tal:define="foto view.obtener_foto('tienda', item.tienda_id, 'miniaturas')">
                                     <img class="img-rounded" src="http://placehold.it/70x70" alt="tienda.nombre_comun" tal:condition="not foto" />
-                                    <img class="img-rounded" src="/estatico/${foto.ruta_de_foto}" alt="tienda.nombre_comun" tal:condition="foto" />
+                                    <img class="img-rounded" src="/img/${foto.ruta_de_foto}" alt="tienda.nombre_comun" tal:condition="foto" />
                                 </div>
                             </a>
                             <div class="media-body">
@@ -119,7 +119,7 @@
                             <a class="pull-left" href="${enlace}" tal:omit-tag="not enlace">
                                 <div tal:define="foto view.obtener_foto('usuario', comentario.consumidor.usuario_id, 'miniaturas')">
                                     <img class="img-rounded" src="http://placehold.it/70x70" alt="comentario.consumidor.nombre" tal:condition="not foto" />
-                                    <img class="img-rounded" src="/estatico/${foto.ruta_de_foto}" alt="comentario.consumidor.nombre" tal:condition="foto" />
+                                    <img class="img-rounded" src="/img/${foto.ruta_de_foto}" alt="comentario.consumidor.nombre" tal:condition="foto" />
                                 </div>
                             </a>
                             <div class="media-body">
@@ -148,12 +148,12 @@
                 <tal:block tal:repeat="foto fotos" tal:condition="len(fotos) > 0">
                     <div tal:condition="repeat.foto.start" class="item active">
                         <div class="thumbnail">
-                            <img src="/estatico/${foto.ruta_de_foto}" alt="Foto" />
+                            <img src="/img/${foto.ruta_de_foto}" alt="Foto" />
                         </div>
                     </div>
                     <div tal:condition="not repeat.foto.start" class="item">
                         <div class="thumbnail">
-                            <img src="/estatico/${foto.ruta_de_foto}" alt="Foto" />
+                            <img src="/img/${foto.ruta_de_foto}" alt="Foto" />
                         </div>
                     </div>
                 </tal:block>
@@ -214,7 +214,7 @@
                             <div class="pull-left">
                                 <a tal:omit-tag="not registro.actor_activo.href" href="${registro.actor_activo.href}">
                                     <img class="img-rounded" src="http://placehold.it/70x70" alt="foto actor pasivo" tal:condition="registro.actor_activo.foto == ''" />
-                                    <img class="img-rounded" src="/estatico/${registro.actor_activo.foto}" alt="foto actor activo" tal:condition="registro.actor_activo.foto != ''" />
+                                    <img class="img-rounded" src="/img/${registro.actor_activo.foto}" alt="foto actor activo" tal:condition="registro.actor_activo.foto != ''" />
                                 </a>
                             </div>
                             <div class="media-body">
@@ -250,7 +250,7 @@
                         <div class="popover-contenido">
                             <div class="row-fluid">
                                 <div class="span4">
-                                    <img src="/estatico/${registro.info.foto}" alt="foto actor" tal:condition="registro.info.foto != ''"/>
+                                    <img src="/img/${registro.info.foto}" alt="foto actor" tal:condition="registro.info.foto != ''"/>
                                 </div>
                                 <div class="span8">
                                     <table class="table table-hover">
@@ -367,7 +367,7 @@
                             <a class="pull-left" href="${enlace}" tal:omit-tag="not enlace">
                                 <div tal:define="foto view.obtener_foto('tienda', tienda.tienda_id, 'miniaturas')">
                                     <img class="img-rounded" src="http://placehold.it/70x70" alt="tienda.nombre_comun" tal:condition="not foto" />
-                                    <img class="img-rounded" src="/estatico/${foto.ruta_de_foto}" alt="tienda.nombre_comun" tal:condition="foto" />
+                                    <img class="img-rounded" src="/img/${foto.ruta_de_foto}" alt="tienda.nombre_comun" tal:condition="foto" />
                                 </div>
                             </a>
                             <div class="media-body">
@@ -398,7 +398,7 @@
                             <a class="pull-left" href="${enlace}" tal:omit-tag="not enlace">
                                 <div tal:define="foto view.obtener_foto('producto', producto.producto_id, 'miniaturas')">
                                     <img class="img-rounded" src="http://placehold.it/70x70" alt="producto.nombre" tal:condition="not foto" />
-                                    <img class="img-rounded" src="/estatico/${foto.ruta_de_foto}" alt="producto.nombre" tal:condition="foto" />
+                                    <img class="img-rounded" src="/img/${foto.ruta_de_foto}" alt="producto.nombre" tal:condition="foto" />
                                 </div>
                             </a>
                             <div class="media-body">
@@ -427,7 +427,7 @@
                             <a class="pull-left" href="${enlace}" tal:omit-tag="not enlace">
                                 <div tal:define="foto python:{'tienda': lambda: view.obtener_foto('tienda', item.tienda_id, 'miniaturas'), 'patrocinante': lambda: view.obtener_foto('patrocinante', item.patrocinante_id, 'miniaturas')}[item.tipo]()">
                                     <img class="img-rounded" src="http://placehold.it/70x70" alt="${item.nombre_comun}" tal:condition="not foto" />
-                                    <img class="img-rounded" src="/estatico/${foto.ruta_de_foto}" alt="${item.nombre_comun}" tal:condition="foto" />
+                                    <img class="img-rounded" src="/img/${foto.ruta_de_foto}" alt="${item.nombre_comun}" tal:condition="foto" />
                                 </div>
                             </a>
                             <div class="media-body">
