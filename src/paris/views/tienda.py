@@ -54,9 +54,9 @@ import transaction
 # cargo de forma dinamica cuando inicia la aplicacion.
 
 class TiendaView(Diagramas, Comunes):
-    def __init__(self, peticion):
-        self.peticion = peticion
-        self.pagina_actual = peticion.url
+    def __init__(self, peticion, *args, **kwargs):
+        super(TiendaView, self).__init__(peticion=peticion, *args, **kwargs)
+
         if 'tienda_id' in self.peticion.matchdict:
             self.tienda_id = self.peticion.matchdict['tienda_id']
         if 'categoria_id' in self.peticion.matchdict:
@@ -170,7 +170,12 @@ class TiendaView(Diagramas, Comunes):
         join(CalificableSeguibleAsociacion).\
         join(Tienda).\
         filter(Tienda.tienda_id == self.tienda_id).all()
-        return formatear_comentarios(comentarios)
+        
+        resultado = []
+        for comentario in comentarios:
+            resultado.append(formatear_comentarios(comentario))
+            
+        return resultado
     
     @view_config(route_name='tienda', renderer='../plantillas/tienda.pt', 
                  request_method='GET')

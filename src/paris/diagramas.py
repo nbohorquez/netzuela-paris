@@ -9,7 +9,8 @@ from pyramid.decorator import reify
 from pyramid.renderers import get_renderer
 
 class Diagramas(object):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(Diagramas, self).__init__(*args, **kwargs)
         pass
 
     @reify

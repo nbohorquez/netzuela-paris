@@ -35,8 +35,7 @@ $(document).ready(function () {
         e.stopPropagation();
     });
 
-    switch (pagina)
-    {
+    switch (pagina) {
         case 'Tienda':
         case 'Producto':
         case 'Patrocinante':
@@ -92,8 +91,7 @@ $(document).ready(function () {
         // Debido a que la pagina tiene el encabezado "DOCTYPE html", es necesario especificar
         // el tamaño del lienzo del mapa en pixeles y no en porcentajes. Mas informacion aqui:
         // http://stackoverflow.com/questions/3217928/google-map-not-working-with-xhtml-doctype-document-type
-        switch (pagina)
-        {
+        switch (pagina) {
             case 'Tienda':
             case 'Producto':
             case 'Patrocinante':
@@ -114,6 +112,18 @@ $(document).ready(function () {
         $("#mapa").data('google_map').redibujar(true);
     });
 
+    // Esto activa los popover sobre los dias de la semana en el horario de la tienda
+    $('a[rel="popover"]').popover(
+        {trigger: 'hover'}
+    ).hover(function () {
+        // Hacemos esto para que el popover pueda "salir" del espacio
+        // confinado del .collapse sin que se altere la altura de este ultimo
+        var altura = $(this).parents('.collapse').css('height');
+        $(this).parents('.collapse').css('overflow', 'visible').css('height', altura);
+    }, function () {
+        $(this).parents('.collapse').css('overflow', 'hidden');
+    });
+    
     $('.editable').hover(function () {
         //$(this).css('background-color', '#f5f5f5');
         $(this).find('.boton-editar-contenido').show();

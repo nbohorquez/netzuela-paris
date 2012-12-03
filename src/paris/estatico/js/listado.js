@@ -14,6 +14,6 @@ $(document).ready(function () {
         var listado = $('input[name=listado]').val().toLowerCase();
         var categoria = $('input[name=categoria_id]').val();
         window.location.href = '/' + listado + '/cat' + categoria 
-                                + 'geo' + remitente.id;
+                               + 'geo' + remitente.id;
     });
 });

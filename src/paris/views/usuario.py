@@ -35,9 +35,8 @@ from sqlalchemy import desc, or_
 import transaction
 
 class UsuarioView(Diagramas, Comunes):
-    def __init__(self, peticion):
-        self.peticion = peticion
-        self.pagina_actual = peticion.url
+    def __init__(self, peticion, *args, **kwargs):
+        super(UsuarioView, self).__init__(peticion=peticion, *args, **kwargs)
         if 'usuario_id' in self.peticion.matchdict:
             self.usuario_id = self.peticion.matchdict['usuario_id']
     
@@ -99,7 +98,12 @@ class UsuarioView(Diagramas, Comunes):
             comentarios = self.usuario.calificaciones_resenas
         except Exception:
             comentarios = []
-        return formatear_comentarios(comentarios)
+            
+        resultado = []
+        for comentario in comentarios:
+            resultado.append(formatear_comentarios(comentario))
+            
+        return resultado
 
     @view_config(route_name='usuario', renderer='../plantillas/usuario.pt', 
                  request_method='GET')

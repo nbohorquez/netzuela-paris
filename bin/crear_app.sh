@@ -66,10 +66,10 @@ crear_env () {
     source env/bin/activate
     easy_install -U distribute
     pip install pyramid
-    cd ../src/paris
+    cd ../src/
     python setup.py develop
     cd "$pwd"
-    cd ../../spuria/src/orm
+    cd ../../spuria/src/
     python setup.py develop
     deactivate
     cd "$pwd"
@@ -110,7 +110,7 @@ crear_archivo_pyramid_wsgi () {
 }
 
 crear_archivo_production_ini () {
-    ln -s `pwd`/../src/paris/production.ini env/production.ini
+    ln -s `pwd`/../src/production.ini env/production.ini
 }
 
 crear_archivo_apache () {

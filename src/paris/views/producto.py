@@ -46,10 +46,9 @@ import transaction
 # de forma dinamica cuando inicia la aplicacion.
 
 class ProductoView(Diagramas, Comunes):
-    def __init__(self, peticion):
-        self.peticion = peticion
-        self.pagina_actual = peticion.url
-        
+    def __init__(self, peticion, *args, **kwargs):
+        super(ProductoView, self).__init__(peticion=peticion, *args, **kwargs)
+
         if 'producto_id' in self.peticion.matchdict:
             self.producto_id = self.peticion.matchdict['producto_id']
         if 'territorio_id' in self.peticion.matchdict:
@@ -129,8 +128,12 @@ class ProductoView(Diagramas, Comunes):
         join(CalificableSeguibleAsociacion).\
         join(Producto).\
         filter(Producto.producto_id == self.producto_id).all()
-        
-        return formatear_comentarios(comentarios)
+            
+        resultado = []
+        for comentario in comentarios:
+            resultado.append(formatear_comentarios(comentario))
+            
+        return resultado
     
     @reify
     def ruta_categoria_actual(self):

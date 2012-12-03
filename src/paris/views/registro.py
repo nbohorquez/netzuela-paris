@@ -45,9 +45,8 @@ horario_por_defecto = {
 }
 
 class RegistroView(Comunes, Diagramas):
-    def __init__(self, peticion):
-        self.peticion = peticion
-        self.pagina_actual = peticion.url
+    def __init__(self, peticion, *args, **kwargs):
+        super(RegistroView, self).__init__(peticion=peticion, *args, **kwargs)
 
     @property
     def pagina_anterior(self):

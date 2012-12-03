@@ -5,16 +5,12 @@ Created on 08/04/2012
 @author: nestor
 '''
 from paris.diagramas import Diagramas
-from pyramid.decorator import reify
+from paris.comunes import Comunes
 from pyramid.view import view_config
 
-class InicioView(Diagramas):
-    def __init__(self, peticion):
-        self.peticion = peticion
-        
-    @reify
-    def peticion(self):
-        return self.peticion
+class InicioView(Diagramas, Comunes):
+    def __init__(self, peticion, *args, **kwargs):
+        super(InicioView, self).__init__(peticion=peticion, *args, **kwargs)
     
     @view_config(route_name='inicio', renderer='../plantillas/inicio.pt')
     def inicio_view(self):

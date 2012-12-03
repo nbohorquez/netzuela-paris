@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from spuria.orm import DBSession, inicializar
+from spuria.orm import inicializar as inicializar_db
+from spuria.search import inicializar as inicializar_se
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.config import Configurator
@@ -10,7 +11,9 @@ def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
     # Cargamos de forma dinamica todas las tablas desde la base de datos
-    inicializar(archivo=None, **settings)
+    inicializar_db(archivo=None, **settings)
+    # Creamos la conexion con el motor de busqueda
+    inicializar_se(archivo=None, **settings)
     """
     Tengo que cargar paris.seguridad.obtener_grupos de forma dinamica porque depende de una clase
     (acceso) que tambien fue cargada de forma dinamica en el paso anterior.
@@ -49,6 +52,7 @@ def main(global_config, **settings):
     config.add_route('productos', '/productos/cat{categoria_id}geo{territorio_id}')
     config.add_route('tiendas', '/tiendas/cat{categoria_id}geo{territorio_id}')
     config.add_route('territorio_coordenadas', '/territorio/terr{territorio_id}niv{nivel}/coordenadas.json')
+    config.add_route('objeto_teaser', '/objeto/tipo{objeto_tipo}id{objeto_id}/teaser.json')
     config.add_route('ingresar', '/ingresar')
     config.add_route('salir', '/salir')
     config.add_route('registro', '/registro')

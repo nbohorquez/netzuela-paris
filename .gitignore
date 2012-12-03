@@ -3,21 +3,16 @@
 
 bin/env/
 
-src/paris/.project
-src/paris/.pydevproject
-src/paris/.settings/
-src/paris/pyramid.pdf
+src/.project
+src/.pydevproject
+src/.settings/
+src/pyramid.pdf
 
-src/paris/build/
-src/paris/dist/
-src/paris/paris.egg-info/
-src/paris/paris/*.pyc
+src/build/
+src/dist/
+src/paris.egg-info/
+src/*.pyc
 
-src/paris/paris/estatico/js/flot/examples/
-src/paris/paris/estatico/js/flot/*.txt
-src/paris/paris/estatico/js/flot/Makefile
-
-src/paris/paris/estatico/img/grandes/
-src/paris/paris/estatico/img/medianas/
-src/paris/paris/estatico/img/pequenas/
-src/paris/paris/estatico/img/miniaturas/
+src/paris/estatico/js/flot/examples/
+src/paris/estatico/js/flot/*.txt
+src/paris/estatico/js/flot/Makefile

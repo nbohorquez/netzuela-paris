@@ -8,6 +8,7 @@ Created on 08/04/2012
 from spuria.orm import (
     Acceso,
     Accion,
+    Administrador,
     Busqueda,
     Calificacion,
     CalificacionResena,
@@ -43,7 +44,11 @@ from spuria.orm import (
     Visibilidad
 )
 from spuria.orm.descripciones_fotos import DescribibleAsociacion
+from paris.constantes import MENSAJE_DE_ERROR
+from paris.formatos import formatear_objeto_teaser
 from pyramid.decorator import reify
+from pyramid.httpexceptions import HTTPNotFound
+from pyramid.view import view_config
 from sqlalchemy import and_, func
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql.expression import asc
@@ -108,8 +113,10 @@ def sql_foto(objeto, objeto_id, tamano):
     return sql
 
 class Comunes(object):
-    def __init__(self):
-        pass
+    def __init__(self, peticion, *args, **kwargs):
+        super(Comunes, self).__init__(*args, **kwargs)
+        self.peticion = peticion
+        self.pagina_actual = peticion.url
     
     """
     <PETICION>
@@ -333,14 +340,6 @@ class Comunes(object):
             self.obtener_categoria(self.categoria_id)
         )
 
-    @reify
-    def y_verga(self):
-        return self.categoria_id
-    
-    @reify
-    def y_verga2(self):
-        return self.categoria_base
-    
     def obtener_foto(self, objeto, objeto_id, tamano):
         return sql_foto(objeto, objeto_id, tamano).first()
     
@@ -384,7 +383,7 @@ class Comunes(object):
     def obtener_categoria(self, cat_id):
         return DBSession.query(Categoria).filter_by(categoria_id = cat_id).\
         first()
-
+    """
     def obtener_cliente(self, cli_id):
         return DBSession.query(Cliente).filter_by(rif = cli_id).first()
     
@@ -404,7 +403,7 @@ class Comunes(object):
         }[objeto](objeto_id)
         
         return resultado
-    
+    """
     def obtener_tienda(self, tie_id):
         return DBSession.query(Tienda).filter_by(tienda_id = tie_id).first()
     
@@ -430,3 +429,145 @@ class Comunes(object):
         }[objeto](objeto_id)
         
         return tmp
+    
+    def obtener_administrador(self, objeto, objeto_id):
+        def adm_id(_id):
+            return DBSession.query(Administrador).filter_by(
+                administrador_id = _id
+            ).first()
+        def adm_correo(correo):
+            return DBSession.query(Administrador).\
+            join(Acceso).\
+            filter(Acceso.correo_electronico == correo).first()
+    
+        tmp = {
+            'id': lambda x: adm_id(x), 
+            'correo_electronico': lambda x: adm_correo(x)
+        }[objeto](objeto_id)
+        
+        return tmp
+    
+    def obtener_consumidor(self, objeto, objeto_id):
+        def con_id(_id):
+            return DBSession.query(Consumidor).filter_by(consumidor_id = _id).\
+            first()
+        def con_correo(correo):
+            return DBSession.query(Consumidor).\
+            join(Acceso).\
+            filter(Acceso.correo_electronico == correo).first()
+    
+        tmp = {
+            'id': lambda x: con_id(x), 
+            'correo_electronico': lambda x: con_correo(x)
+        }[objeto](objeto_id)
+        
+        return tmp
+    
+    def obtener_inventario(self, tie_id, cod):
+        return DBSession.query(Inventario).filter(and_(
+            Inventario.tienda_id == tie_id,
+            Inventario.codigo == cod
+        )).first()
+
+    def obtener_croquis(self, cro_id):
+        return DBSession.query(Croquis).filter_by(croquis_id=cro_id).first()
+
+    def obtener_mensaje(self, men_id):
+        return DBSession.query(Mensaje).filter_by(mensaje_id=men_id).first()
+    
+    def obtener_busqueda(self, bus_id):
+        return DBSession.query(Busqueda).filter_by(busqueda_id=bus_id).first()
+    
+    def obtener_calificacion_resena(self, cal_id, con_id):
+        return DBSession.query(CalificacionResena).filter(and_(
+            CalificacionResena.calificable_seguible==cal_id,
+            CalificacionResena.consumidor_id==con_id
+        )).first()
+    
+    def obtener_seguimiento(self, cal_id, con_id):
+        return DBSession.query(Seguimiento).filter(and_(
+            Seguimiento.calificable_seguible==cal_id,
+            Seguimiento.consumidor_id==con_id
+        )).first()
+        
+    def obtener_descripcion(self, des_id):
+        return DBSession.query(Descripcion).filter_by(descripcion_id=des_id).\
+        first()
+        
+    def obtener_publicidad(self, pub_id):
+        return DBSession.query(Publicidad).filter_by(publicidad_id=pub_id).\
+        first()
+        
+    def obtener_estadisticas(self, est_id):
+        return DBSession.query(Estadisticas).filter_by(estadisticas_id=est_id).\
+        first()
+        
+    def obtener_factura(self, fac_id):
+        return DBSession.query(Factura).filter_by(factura_id=fac_id).first()
+        
+    @view_config(route_name="territorio_coordenadas", renderer="json")
+    def territorio_coordenadas_view(self):
+        self.territorio_id = self.peticion.matchdict['territorio_id']
+        self.nivel = self.peticion.matchdict['nivel']
+        
+        nivel_terr = DBSession.query(Territorio.nivel).\
+        filter_by(territorio_id = self.territorio_id).first()[0]
+        
+        if nivel_terr + int(self.nivel) < 0:
+            return HTTPNotFound(MENSAJE_DE_ERROR)
+
+        terrs = DBSession.query(Territorio).\
+        filter(and_(
+            Territorio.nivel == nivel_terr + int(self.nivel),
+            Territorio.territorio_id.contains(self.territorio_base)
+        )).all()
+        
+        resultado = []
+        for terr in terrs:
+            poligonos = []
+            for crq in terr.dibujable.croquis:
+                poligono = ''
+                for pto in crq.puntos:
+                    poligono += "{0}:{1} ".format(
+                        str(pto.latitud), str(pto.longitud)
+                    )
+                poligonos.append(poligono.strip(' '))
+            resultado.append({
+                'nombre': terr.nombre,
+                'id': terr.territorio_id,
+                'poligonos': poligonos
+            })
+
+        return { 'territorios': resultado }
+
+    @view_config(route_name="objeto_teaser", renderer="json")
+    def objeto_teaser_view(self):
+        self.objeto_tipo = self.peticion.matchdict['objeto_tipo']
+        self.objeto_id = self.peticion.matchdict['objeto_id']
+        
+        objeto = {
+            'tienda': lambda x: self.obtener_tienda(x),
+            'patrocinante': lambda x: self.obtener_patrocinante(x),
+            'administrador': lambda x: self.obtener_administrador('id', x),
+            'consumidor': lambda x: self.obtener_consumidor('id', x),
+            'usuario': lambda x: self.obtener_usuario('id', x),
+            'inventario': lambda x: self.obtener_inventario(
+                x.split(':')[0], x.split(':')[1]
+            ),
+            'croquis': lambda x: self.obtener_croquis(x),
+            'producto': lambda x: self.obtener_producto(x),
+            'mensaje': lambda x: self.obtener_mensaje(x),
+            'busqueda': lambda x: self.obtener_busqueda(x),
+            'calificacion_resena': lambda x: self.obtener_calificacion_resena(
+                x.split(':')[0], x.split(':')[1]
+            ),
+            'seguimiento': lambda x: self.obtener_seguimiento(
+                x.split(':')[0], x.split(':')[1]
+            ),
+            'descripcion': lambda x: self.obtener_descripcion(x),
+            'publicidad': lambda x: self.obtener_publicidad(x),
+            'estadisticas': lambda x: self.obtener_estadisticas(x),
+            'factura': lambda x: self.obtener_factura(x)
+        }[self.objeto_tipo](self.objeto_id)
+        
+        return formatear_objeto_teaser(objeto)

@@ -17,9 +17,11 @@ from pyramid.view import view_config
 import transaction
 
 class PatrocinanteView(Diagramas, Comunes):
-    def __init__(self, peticion):
-        self.peticion = peticion
-        self.pagina_actual = peticion.url
+    def __init__(self, peticion, *args, **kwargs):
+        super(PatrocinanteView, self).__init__(
+            peticion=peticion, *args, **kwargs
+        )
+
         if 'patrocinante_id' in self.peticion.matchdict:
             self.patrocinante_id = self.peticion.matchdict['patrocinante_id']
             

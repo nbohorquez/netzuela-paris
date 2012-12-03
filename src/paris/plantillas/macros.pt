@@ -210,7 +210,7 @@
             <tbody>
                 <tr tal:repeat="registro registros">
                     <td>
-                        <div class="media titular-noticia">
+                        <div class="media">
                             <div class="pull-left">
                                 <a tal:omit-tag="not registro.actor_activo.href" href="${registro.actor_activo.href}">
                                     <img class="img-rounded" src="http://placehold.it/70x70" alt="foto actor pasivo" tal:condition="registro.actor_activo.foto == ''" />
@@ -231,40 +231,23 @@
                                                 <i tal:case="'cerro sesion'" class="icon-off"></i>
                                             </tal:block>
                                             
-                                            <a tal:omit-tag="not registro.actor_activo.href" class="popover-aqui" title="${registro.actor_activo.titulo}" tal:attributes="href registro.actor_activo.href">${registro.actor_activo.nombre}</a>
+                                            <a tal:omit-tag="not registro.actor_activo.href" class="popover-aqui" tal:attributes="href registro.actor_activo.href; tipo registro.actor_activo.tipo; id registro.actor_activo.id">
+                                                ${registro.actor_activo.nombre}
+                                            </a>
                                             
                                             ${registro.accion}
                                             <span tal:repeat="item registro.parametros.items()">
                                                 ${item[0]} = ${item[1]}<tal:block tal:condition="not repeat.item.end">,</tal:block><tal:block tal:condition="repeat.item.end"> de</tal:block>
                                             </span>
                                             
-                                            <a tal:omit-tag="not registro.actor_pasivo.href" class="popover-aqui" title="${registro.actor_pasivo.titulo}" tal:attributes="href registro.actor_pasivo.href">${registro.actor_pasivo.nombre}</a>
+                                            <a tal:omit-tag="not registro.actor_pasivo.href" class="popover-aqui" tal:attributes="href registro.actor_pasivo.href; tipo registro.actor_pasivo.tipo; id registro.actor_pasivo.id">
+                                                ${registro.actor_pasivo.nombre}
+                                            </a>
                                         </p>
                                     </div>
                                     <div class="span2">
                                         <p><small>hace ${registro.tiempo}</small></p>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="popover-contenido">
-                            <div class="row-fluid">
-                                <div class="span4">
-                                    <img src="/img/${registro.info.foto}" alt="foto actor" tal:condition="registro.info.foto != ''"/>
-                                </div>
-                                <div class="span8">
-                                    <table class="table table-hover">
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <p><span tal:repeat="columna registro.info.diccionario.keys()">${columna}<br /></span></p>
-                                                </td>
-                                                <td>
-                                                    <p><span tal:repeat="valor registro.info.diccionario.values()">${valor}<br /></span></p>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
                                 </div>
                             </div>
                         </div>

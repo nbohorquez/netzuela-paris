@@ -15,8 +15,8 @@ from pyramid.view import view_config, forbidden_view_config
 import bcrypt, transaction
 
 class AccesoView(Diagramas, Comunes):
-    def __init__(self, peticion):
-        self.peticion = peticion
+    def __init__(self, peticion, *args, **kwargs):
+        super(AccesoView, self).__init__(peticion=peticion, *args, **kwargs)
         ingresar_url = peticion.route_url('ingresar')
         # never use the login form itself as came_from
         self.referido_por = peticion.url \
