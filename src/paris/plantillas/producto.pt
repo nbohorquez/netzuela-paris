@@ -100,6 +100,7 @@
     <div metal:fill-slot="scripts_extra">
         <script type="text/javascript" src="/estatico/js/bootstrap-datepicker.js"></script>
         <script type="text/javascript" src="/estatico/js/noticias.js"></script>
+        <script type="text/javascript" src="/estatico/js/tienda.js"></script>
         <script type="text/javascript" src="/estatico/js/producto.js"></script>
     </div>
 </div>

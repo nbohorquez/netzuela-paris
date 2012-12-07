@@ -9,7 +9,7 @@
         this.mapa = this.cursor = this.borde = this.malla = this.infobox = null;
         elemento.data('google_map', this);
 
-        // Contructor publico
+        // Constructor publico
         this.inicializar = function (elemento, opciones) {
             this.opciones = $.extend({}, $.google_map.defaults, opciones);
             
@@ -52,13 +52,14 @@
         };
         
         // Metodo publico
-        this.agregar_marcador = function (latitud, longitud) {
+        this.agregar_marcador = function (latitud, longitud, opciones) {
             var punto = new google.maps.LatLng(latitud, longitud);
-            var marcador = new google.maps.Marker({
-                position: punto,
-                map: this.mapa
-            });
+            var basico = {position: punto, map: this.mapa};
+            var opciones2 = $.extend({}, basico, opciones);
+            var marcador = new google.maps.Marker(opciones2);
+            
             this.extender_borde(latitud, longitud);
+            return marcador;
         }
         
         // Metodo publico
@@ -92,6 +93,9 @@
     // Punto de entrada del plugin
     $.fn.google_map = function (opciones) {
         return this.each(function () {
+        	if ($(this).data('google_map')) {
+                return;
+            }
             (new $.google_map($(this), opciones));
         });
     };

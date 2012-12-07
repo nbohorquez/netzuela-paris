@@ -10,21 +10,26 @@
 
 (function ($) {
     $.mapa = function (elemento, opciones) {
-        this.opciones = {};
-        this.territorios = this.gmap = null;
         elemento.data('mapa', this);
-        
-        // Contructor publico
-        this.inicializar = function (elemento, opciones) {
-        this.opciones = $.extend({}, $.mapa.defaults, opciones);
+        this.opciones = {};
+        this.marcadores = this.poligonos = this.polilineas = [];
         this.gmap = elemento.data('google_map');
-        var territorios_crudos = parsear_json(this, this.opciones.json, this.opciones.centrar);
+        
+        // Constructor publico
+        this.inicializar = function (elemento, opciones) {
+            this.opciones = $.extend({}, $.mapa.defaults, opciones);
+            
             switch(this.opciones.tipo) {
                 case 'poligonos':
-                    this.poligonos = dibujar_poligonos(this, territorios_crudos, opciones.centrar);
+                    var territorios_crudos = parsear_json(this, this.opciones.json, this.opciones.centrar);
+                    dibujar_poligonos(this, territorios_crudos, this.opciones.centrar);
                     break;
                 case 'polilineas':
-                    this.polilineas = dibujar_polilineas(this, territorios_crudos, opciones.centrar);
+                    var territorios_crudos = parsear_json(this, this.opciones.json, this.opciones.centrar);
+                    dibujar_polilineas(this, territorios_crudos, this.opciones.centrar);
+                    break;
+                case 'marcador':
+                    dibujar_marcador(this, this.opciones);
                     break;
                 default:
                     break;
@@ -74,8 +79,6 @@
         
         // Metodo privado
         var dibujar_polilineas = function (objeto, territorios) {
-            var resultado = [];
-            
             // Este lazo recorre cada territorio
             for (var i = 0, len_i = territorios.length; i < len_i; i++) {
                 var terr = new Territorio({
@@ -89,10 +92,8 @@
                     terr.crear_polilinea(territorios[i].contornos[j]);
                 }
                 
-                resultado.push(terr);
+                objeto.polilineas.push(terr);
             }
-            
-            return resultado;
         }
 
         // Metodo privado
@@ -108,7 +109,6 @@
                     'background': '#FFFFFF',
                     'padding': '5px' 
                 });*/
-            var resultado = [];
 
             for (var i = 0, len_i = territorios.length; i < len_i; i++) {
                 var terr = new Territorio({
@@ -155,56 +155,29 @@
                     });
                 });
                 
-                resultado.push(terr);
+                objeto.poligonos.push(terr);
             }
-            
-            return resultado;
+        }
+        
+        // Metodo privado
+        var dibujar_marcador = function (objeto, opciones) {
+            var marcador = objeto.gmap.agregar_marcador(opciones.latitud, opciones.longitud, opciones.opciones);
+            opciones.propietario.marcador = marcador;
+            objeto.marcadores.push(marcador);
         }
         
         this.inicializar(elemento, opciones);
     };
     
-    // Funciones expuestas al exterior que envuelven a $.mapa
-    $.fn.dibujar_marcador_tienda = function (tienda) {
+    $.fn.dibujar_marcador = function (opciones) {
         return this.each(function () {
-            var contexto = $(this);
-            $.getJSON('/tienda/' + tienda + '/coordenadas.json', function (data) {
-                var latitud = data.puntos[0].latitud.replace(",", ".");
-                var longitud = data.puntos[0].longitud.replace(",", ".");
-                contexto.data('google_map').agregar_marcador(latitud, longitud);
-            });
-        });
-    }
-    
-    $.fn.dibujar_poligono_tienda = function (tienda) {
-        return this.each(function () {
-            var contexto = $(this);
-            $.getJSON('/tienda/' + tienda + '/coordenadas.json', function (data) {
-                var puntos = new Array();
-                for (var i = 0; i < data.puntos.length; i++) {
-                    var punto = new Array();
-                    punto['latitud'] = data.puntos[i].latitud.replace(",", ".");
-                    punto['longitud'] = data.puntos[i].longitud.replace(",", ".");
-                    contexto.data('google_map').extender_borde(punto['latitud'], punto['longitud']);
-                    puntos.push(punto);
-                }
-                // Sin embargo colocamos el marcador en el primer punto solamente. Se podria emplear
-                // alguna funcion matematica para calcular el centro del poligono tambien.
-                contexto.data('google_map').agregar_marcador(puntos[0]['latitud'], puntos[0]['longitud']);
-            });
-        });
-    }
-    
-    $.fn.dibujar_niveles = function (niveles) {
-        return this.each(function () {
-            for (var i = 0, len_i = niveles.length; i < len_i; i++) {
-                $(this).agregar_capa({
-                    territorio: niveles[i].territorio,
-                    nivel: niveles[i].nivel,
-                    tipo: niveles[i].tipo,
-                    centrar: niveles[i].centrar
-                });
-            }
+            $(this).mapa({
+                tipo: 'marcador',
+                latitud: opciones.latitud,
+                longitud: opciones.longitud,
+                propietario: opciones.propietario,
+                opciones: opciones.opciones
+             });
         });
     }
     
@@ -246,6 +219,19 @@
         });
     }
     
+    $.fn.dibujar_niveles = function (niveles) {
+        return this.each(function () {
+            for (var i = 0, len_i = niveles.length; i < len_i; i++) {
+                $(this).agregar_capa({
+                    territorio: niveles[i].territorio,
+                    nivel: niveles[i].nivel,
+                    tipo: niveles[i].tipo,
+                    centrar: niveles[i].centrar
+                });
+            }
+        });
+    }
+    
     $.fn.agregar_capa = function (opciones) {
         return this.each(function () {
             var contexto = $(this);
@@ -262,11 +248,16 @@
     $.fn.mapa = function (opciones) {
         return this.each(function () {
             // Este plugin funciona solamente si el elemento en cuestion ya 
-            // tiene un $.google_map
+            // tiene un $.google_map y no tiene un $.mapa
             if (!($(this).data('google_map'))) {
                 return;
             }
-            (new $.mapa($(this), opciones));
+            
+            if ($(this).data('mapa')) {
+                   $(this).data('mapa').inicializar($(this), opciones);
+            } else {
+                (new $.mapa($(this), opciones));
+               }
         });
     };
     

@@ -7,23 +7,6 @@
         <input type="hidden" name="territorio_padre" value="${view.territorio_padre}" />
     </div>
     
-    <div metal:fill-slot="pitch">
-        <h3 style="text-align: center">${pagina}</h3>
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-    </div>
-    
     <div metal:fill-slot="contenido">
 
         <!-- Listado

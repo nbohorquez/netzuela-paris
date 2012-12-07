@@ -387,9 +387,7 @@
                             <div class="media-body">
                                 <a href="${enlace}" tal:omit-tag="not enlace">${producto.nombre}</a><br />
                                 <p>
-                                    <em>${producto.codigo}</em><br />
-                                    <strong>Categoria</strong>
-                                    <span tal:condition="producto.categoria">${producto.categoria.nombre}</span>
+                                    <em>${producto.codigo}</em>
                                 </p>
                             </div>
                         </div>

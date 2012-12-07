@@ -3,6 +3,8 @@
  */
 
 function Territorio (opciones) {
+    EventObject.call(this);
+    
     this.id = ('id' in opciones) ? opciones.id : null;
     this.nombre = ('nombre' in opciones) ? opciones.nombre : null;
     this.color = ('color' in opciones) ? opciones.color : null;
@@ -12,6 +14,7 @@ function Territorio (opciones) {
 }
 
 Territorio.prototype = new EventObject();
+Territorio.prototype.constructor = Territorio;
 
 Territorio.prototype.crear_polilinea = function (contorno) {
     var polilinea = new google.maps.Polyline({

@@ -2,13 +2,13 @@
  * @author Nestor Bohorquez
  */
 
+var pagina = $("input[name=pagina]").val();
+var pantalla = {
+    alto: screen.height,
+    ancho: screen.width
+};
+    
 $(document).ready(function () {
-    var pagina = $("input[name=pagina]").val();
-    var pantalla = {
-        alto: screen.height,
-        ancho: screen.width
-    };
-
     $("#navegacion li").each(function () {
         // Chequeo si this.text() contiene la cadena de caracteres objeto.val()
         if (~$(this).text().indexOf(pagina)) {
