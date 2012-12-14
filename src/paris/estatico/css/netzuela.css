@@ -7,9 +7,9 @@ body {
     padding-top: 60px;
     margin: 0;
     background: url('/estatico/img/background5.png');
-    background-size: 1024px 640px;
-    background-repeat: repeat;
-    display: compact;
+    background-size: 1366px 854px;
+    background-repeat: no-repeat;
+    display: block;
 }
 
 .popover {

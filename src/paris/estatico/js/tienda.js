@@ -127,7 +127,7 @@ Tienda.prototype.obtener_coordenadas = function () {
             longitud: data.puntos[0].longitud.replace(",", ".")
         };
         
-        contexto.raiseEvent('coordenadas_listas', {
+        contexto.raiseEvent('coordenadas_obtenidas', {
             latitud: contexto.coordenadas.latitud,
             longitud: contexto.coordenadas.longitud
         });
@@ -171,7 +171,7 @@ $(document).ready(function () {
         }
 
         tienda.obtener_coordenadas();
-        tienda.attachEvent('coordenadas_listas', function (remitente, args) {
+        tienda.attachEvent('coordenadas_obtenidas', function (remitente, args) {
             $('#mapa').dibujar_marcador({
                 latitud: args.latitud,
                 longitud: args.longitud,

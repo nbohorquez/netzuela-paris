@@ -81,10 +81,10 @@
         <!-- Cuerpo principal
         ================================================== -->
         <div class="row-fluid">
-            <div class="span1">
-                <!-- Espacio intencionalmente dejado en blanco -->
-            </div>
+            <div class="span1"></div>
             
+            <!-- Barra laterla
+            ================================================== -->
             <div class="span3">
                 
                 <!-- Informacion sobre el objeto
@@ -150,7 +150,7 @@
                 
                 <!-- Filtros
                 ================================================== -->
-                <div id="filtros" tal:condition="pagina == 'Productos' or pagina == 'Tiendas'">
+                <div id="filtros">
                     <div id="gadget_filtro" class="accordion-group">
                         <div id="gadget_filtro_encabezado" class="accordion-heading">
                             <a class="accordion-toggle" data-toggle="collapse" href="#gadget_filtro_colapsable">
@@ -160,7 +160,7 @@
                         </div>
                         <div id="gadget_filtro_colapsable" class="accordion-body collapse">
                             <div class="accordion-inner">
-                                <ul id="categorias" class="nav nav-list treeview">
+                                <ul id="categorias" class="nav nav-list treeview" tal:condition="pagina == 'Productos' or pagina == 'Tiendas' or pagina == 'Tienda'">
                                     <li class="nav-header">Categorías</li>
                                     <tal:block tal:repeat="categoria view.ruta_categoria_actual">
                                         <li class="active nodo_padre" tal:condition="categoria.categoria_id == view.categoria_id">
@@ -176,7 +176,7 @@
                                         </li>
                                     </tal:block>
                                 </ul>
-                                <ul id="ubicacion" class="nav nav-list treeview">
+                                <ul id="ubicacion" class="nav nav-list treeview" tal:condition="pagina == 'Productos' or pagina == 'Tiendas' or pagina == 'Producto'">
                                     <li class="nav-header">Ubicación</li>
                                     <tal:block tal:repeat="region view.ruta_territorio_actual">
                                         <li class="active nodo_padre" tal:condition="region.territorio_id == view.territorio_id">
@@ -196,7 +196,6 @@
                         </div>
                     </div>
                 </div>
-                
             </div>
 
             <!-- Zona central
@@ -228,9 +227,7 @@
                 </div>
             </div>
             
-            <div class="span1">
-                <!-- Espacio intencionalmente dejado en blanco -->
-            </div>
+            <div class="span1"></div>
         </div>
         
         <hr />
