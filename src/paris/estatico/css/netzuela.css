@@ -4,12 +4,27 @@ html {
 
 body {
     height: 100%;
-    padding-top: 60px;
     margin: 0;
-    background: url('/estatico/img/background5.png');
-    background-size: 1366px 854px;
+    background: url('/estatico/img/background8.png');
+    background-size: 1366px 768px;
     background-repeat: no-repeat;
+    background-attachment: fixed;
     display: block;
+}
+
+.barra-busqueda {
+	background-color: #F0F0F0; 
+	border-width: 1px; 
+	border-style: solid; 
+	border-color: #C0C0C0; 
+	height: 70px; 
+	line-height: 70px; 
+	margin-bottom: 20px;	
+}
+
+.barra-busqueda a {
+	padding-left: 60px; 
+	padding-right: 10px;
 }
 
 .popover {
