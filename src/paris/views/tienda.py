@@ -222,6 +222,7 @@ class TiendaView(Diagramas, Comunes):
                     aviso = { 'error': 'Error', 'mensaje': e.msg }
 
         return {
+            'titulo': self.tienda.nombre_comun,
             'pagina': 'Tienda', 
             'tienda': self.tienda, 
             'autentificado': autentificado, 

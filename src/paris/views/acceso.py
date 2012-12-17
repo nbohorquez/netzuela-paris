@@ -92,7 +92,7 @@ class AccesoView(Diagramas, Comunes):
         elif 'registrarse' in self.peticion.params:
             return HTTPFound(location = self.peticion.route_url('registro'))
             
-        return { 'pagina': 'Ingresar', 'mensaje': mensaje }
+        return { 'titulo': 'Ingresar', 'pagina': 'Ingresar', 'mensaje': mensaje }
         
     @view_config(route_name='salir')
     def salir_view(self):

@@ -26,17 +26,17 @@
         
         <div class="row-fluid">
             <div class="span4">
-                <h2>Precios</h2>
+                <h2><i class='icon-money'></i> Precios</h2>
                 <p>Busca los mejores precios de cualquier producto que se te ocurra. Tus búsquedas se hacen instantáneamente sobre el inventario de cientos de miles de tiendas de todos los rincones del país. Esta no es una tienda virtual, es el mundo real en tiempo real.</p>
                 <!--<p><a class="btn" href="#">View details &raquo;</a></p>-->
             </div>
             <div class="span4">
-                <h2>Ubicación</h2>
+                <h2><i class='icon-map-marker'></i> Ubicación</h2>
                 <p>¿Te ha pasado que compras algo en una tienda y resulta que había una más cercana que lo vendía a un mejor precio? Hubieses ahorrado tiempo y dinero de haberlo sabido. Encuentra fácilmente la tienda más conveniente e incluso ¡averigua si esta abierta!</p>
                 <!--<p><a class="btn" href="#">View details &raquo;</a></p>-->
             </div>
             <div class="span4">
-                <h2>Existencia</h2>
+                <h2><i class='icon-check'></i> Existencia</h2>
                 <p>"Si señor(a) tenemos exactamente lo que Ud. busca, pero sólo nos queda uno..." Asegúrate que esto no te vuelva a pasar. Desde tu casa o desde tu teléfono móvil entérate primero. Netzuela te informa sobre la cantidad de productos que quedan en el estante.</p>
                 <!--<p><a class="btn" href="#">View details &raquo;</a></p>-->
             </div>

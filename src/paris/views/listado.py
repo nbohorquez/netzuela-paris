@@ -67,6 +67,7 @@ class ListadoView(Diagramas, Comunes):
         
         self.subtipo_de_peticion = 'productos'
         return {
+            'titulo': self.subtipo_de_peticion.capitalize(),
             'pagina': self.subtipo_de_peticion.capitalize(), 
             'lista': self.productos, 
             'autentificado': authenticated_userid(self.peticion)
@@ -82,6 +83,7 @@ class ListadoView(Diagramas, Comunes):
         
         self.subtipo_de_peticion = 'tiendas'
         return {
+            'titulo': self.subtipo_de_peticion.capitalize(),
             'pagina': self.subtipo_de_peticion.capitalize(), 
             'lista': self.tiendas, 
             'autentificado': authenticated_userid(self.peticion)

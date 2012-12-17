@@ -139,6 +139,7 @@ class UsuarioView(Diagramas, Comunes):
                     aviso = { 'error': 'Error', 'mensaje': e.msg }
 
         return {
+            'titulo': '{} {}'.format(self.usuario.nombre,self.usuario.apellido),
             'pagina': 'Usuario', 
             'usuario': self.usuario, 
             'autentificado': autentificado, 

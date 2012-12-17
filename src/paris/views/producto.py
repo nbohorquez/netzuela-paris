@@ -180,6 +180,9 @@ class ProductoView(Diagramas, Comunes):
                     aviso = { 'error': 'Error', 'mensaje': e.msg }
 
         return {
+            'titulo': '{} {}'.format(
+                self.producto.fabricante, self.producto.nombre
+            ), 
             'pagina': 'Producto', 
             'producto': self.producto, 
             'autentificado': autentificado,

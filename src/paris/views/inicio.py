@@ -14,4 +14,4 @@ class InicioView(Diagramas, Comunes):
     
     @view_config(route_name='inicio', renderer='../plantillas/inicio.pt')
     def inicio_view(self):
-        return {'pagina': 'Inicio'}
+        return { 'titulo': 'Netzuela', 'pagina': 'Inicio' }

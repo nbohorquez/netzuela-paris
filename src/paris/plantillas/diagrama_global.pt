@@ -4,13 +4,13 @@
     xmlns:tal="http://xml.zope.org/namespaces/tal"
     metal:define-macro="diagrama_global">
 <head>
-    <title>Netzuela - ${pagina}</title>
+    <title>${titulo}</title>
     <link rel="stylesheet" href="/estatico/css/bootstrap.css"/>
     <link rel="stylesheet" href="/estatico/css/bootstrap-responsive.css" />
     <link rel="stylesheet" href="/estatico/css/netzuela.css" />
     <link rel="stylesheet" href="/estatico/css/font-awesome.css" />
     <style>
-        body {padding-top: 40px;}
+        body { padding-top: 40px; }
     </style>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <div id="meta_datos">
@@ -165,7 +165,7 @@
                 
                 <!-- Filtros
                 ================================================== -->
-                <div id="filtros">
+                <div id="filtros" tal:condition="pagina != 'Usuario'">
                     <div id="gadget_filtro" class="accordion-group">
                         <div id="gadget_filtro_encabezado" class="accordion-heading">
                             <a class="accordion-toggle" data-toggle="collapse" href="#gadget_filtro_colapsable">

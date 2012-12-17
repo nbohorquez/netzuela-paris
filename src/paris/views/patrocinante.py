@@ -78,6 +78,7 @@ class PatrocinanteView(Diagramas, Comunes):
                     aviso = { 'error': 'Error', 'mensaje': e.msg }
 
         return {
+            'titulo': self.patrocinante.nombre_comun,
             'pagina': 'Patrocinante', 
             'usuario': self.patrocinante, 
             'autentificado': autentificado, 

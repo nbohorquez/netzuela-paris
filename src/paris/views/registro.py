@@ -74,7 +74,8 @@ class RegistroView(Comunes, Diagramas):
             return HTTPFound(location = self.pagina_anterior)
         
         return {
-            'pagina': 'Registro',
+            'titulo': 'Registro de usuario',
+            'pagina': 'Registro de usuario',
             'aviso': aviso
         }
 
@@ -131,6 +132,7 @@ class RegistroView(Comunes, Diagramas):
             return HTTPFound(location = self.pagina_anterior)
         
         return {
+            'titulo': 'Registro de tienda',
             'pagina': 'Registro de tienda',
             'aviso': aviso
         }
