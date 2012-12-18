@@ -243,7 +243,7 @@ class Comunes(object):
     """
     </FOTOS>
     """
-    
+
     @reify
     def territorios_hijos(self):
         try:
@@ -290,8 +290,9 @@ class Comunes(object):
     @reify
     def ruta_territorio_actual(self):
         return self.obtener_ruta_territorio(
-            self.obtener_territorio(self.territorio_id)
+            self.obtener_territorio(self.territorio_id), 1, True
         )
+        
     @reify
     def categorias_hijas(self):
         try:
@@ -337,7 +338,7 @@ class Comunes(object):
     @reify
     def ruta_categoria_actual(self):
         return self.obtener_ruta_categoria(
-            self.obtener_categoria(self.categoria_id)
+            self.obtener_categoria(self.categoria_id), 1, True
         )
 
     def obtener_foto(self, objeto, objeto_id, tamano):
@@ -346,7 +347,7 @@ class Comunes(object):
     def obtener_fotos(self, objeto, objeto_id, tamano):
         return sql_foto(objeto, objeto_id, tamano).all()
     
-    def obtener_ruta_territorio(self, territorio):
+    def obtener_ruta_territorio(self, territorio, nivel_tope, invertir):
         ruta = []
         
         while True:
@@ -354,26 +355,31 @@ class Comunes(object):
             
             if (territorio.territorio_padre == territorio.territorio_id) \
             or (territorio.territorio_padre == None) \
-            or (territorio.nivel == 1):
+            or (territorio.nivel == nivel_tope):
                 break
             else:
                 territorio = territorio.territorio_padre
-    
-        ruta.reverse()
+        
+        if invertir:
+            ruta.reverse()
+        
         return ruta
     
-    def obtener_ruta_categoria(self, categoria):
+    def obtener_ruta_categoria(self, categoria, nivel_tope, invertir):
         ruta = []
         
         while True:
             ruta.append(categoria)
             if (categoria.hijo_de_categoria == categoria.categoria_id) \
-            or (categoria.hijo_de_categoria == None):
+            or (categoria.hijo_de_categoria == None) \
+            or (categoria.nivel == nivel_tope):
                 break
             else:
                 categoria = categoria.padre
         
-        ruta.reverse()
+        if invertir:
+            ruta.reverse()
+        
         return ruta
         
     def obtener_territorio(self, terr_id):

@@ -118,6 +118,7 @@ class TiendaView(Diagramas, Comunes):
         
     @reify
     def direccion(self):
+        """
         try:
             resultado = {
                 'parroquia': self.tienda.ubicacion.nombre, 
@@ -126,8 +127,10 @@ class TiendaView(Diagramas, Comunes):
             }
         except Exception:
             resultado = None
-            
+        
         return resultado
+        """
+        return self.obtener_ruta_territorio(self.tienda.ubicacion, 2, False)
         
     @reify
     def descripciones(self):

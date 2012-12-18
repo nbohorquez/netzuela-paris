@@ -81,11 +81,18 @@
                                 <div class="row-fluid">
                                     <div class="span8">
                                         <a href="${enlace}" tal:omit-tag="not enlace" tal:condition="tienda">${tienda.nombre_comun}</a>
-                                        <p>
-                                            <span tal:condition="tienda">${tienda.nombre_legal}</span><br />
-                                            <strong>Ubicación</strong> <span tal:condition="tienda.ubicacion">${tienda.ubicacion.nombre}</span><br />
-                                            <input type="hidden" name="tienda_id" value="${item.tienda_id}" />
-                                        </p>
+                                        <br />
+                                        <a href="${tienda.facebook}" tal:condition="tienda.facebook"><i class="icon-facebook"></i></a>
+                                        <a href="${tienda.twitter}" tal:condition="tienda.twitter"><i class="icon-twitter"></i></a>
+                                        <a href="mailto:${tienda.correo_electronico}" tal:condition="tienda.correo_electronico"><i class="icon-envelope-alt"></i></a>
+                                        <div tal:define="ruta_territorio view.obtener_ruta_territorio(tienda.ubicacion, view.obtener_territorio(view.territorio_id).nivel + 1, False); tamano_ruta len(ruta_territorio)">
+                                            <tal:block tal:condition="tamano_ruta > 0">
+                                                <tal:block tal:condition="tamano_ruta > 1">${ruta_territorio[-2].nombre}, </tal:block>${ruta_territorio[-1].nombre}
+                                                <br />
+                                            </tal:block>
+                                            ${tienda.telefono}
+                                        </div>
+                                        <input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
                                     </div>
                                     <div class="span2">
                                         <p class="label label-success" tal:condition="tienda.abierto">Conectada</p>
@@ -358,10 +365,17 @@
                                 <span class="label label-success pull-right" tal:condition="tienda.abierto">Conectada</span>
                                 <span class="label label-important pull-right" tal:condition="not tienda.abierto">Desconectada</span>
                                 <br />
-                                <p>${tienda.nombre_legal}</p>
-                                <p>
-                                    <input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
-                                </p>
+                                <a href="${tienda.facebook}" tal:condition="tienda.facebook"><i class="icon-facebook"></i></a>
+                                <a href="${tienda.twitter}" tal:condition="tienda.twitter"><i class="icon-twitter"></i></a>
+                                <a href="mailto:${tienda.correo_electronico}" tal:condition="tienda.correo_electronico"><i class="icon-envelope-alt"></i></a>
+                                <div tal:define="ruta_territorio view.obtener_ruta_territorio(tienda.ubicacion, view.obtener_territorio(view.territorio_id).nivel + 1, False); tamano_ruta len(ruta_territorio)">
+                                    <tal:block tal:condition="tamano_ruta > 0">
+                                        <tal:block tal:condition="tamano_ruta > 1">${ruta_territorio[-2].nombre}, </tal:block>${ruta_territorio[-1].nombre}
+                                        <br />
+                                    </tal:block>
+                                    ${tienda.telefono}
+                                </div>
+                                <input type="hidden" name="tienda_id" value="${tienda.tienda_id}" />
                             </div>
                         </div>
                     </td>
@@ -433,5 +447,25 @@
             </tbody>
         </table>
     </metal:listado_clientes>
+    
+    <!-- Direccion de tienda
+    ================================================== -->    
+    <metal:direccion_tienda define-macro="direccion_tienda">
+        <span tal:condition="tienda.edificio_cc or tienda.casa or tienda.piso or tienda.apartamento or tienda.local_no">
+            <span tal:condition="tienda.edificio_cc">Edif. ${tienda.edificio_cc}</span><span tal:condition="tienda.casa">Casa ${tienda.casa}</span><span tal:condition="tienda.piso">, Piso ${tienda.piso}</span><span tal:condition="tienda.apartamento">, Apart. ${tienda.apartamento}</span><span tal:condition="tienda.local_no">, Local ${tienda.local_no}</span>
+            <br />
+        </span>
+        <span tal:condition="tienda.calle">Cl. ${tienda.calle}</span><span tal:condition="tienda.sector_urb_barrio">, Sector ${tienda.sector_urb_barrio}<br /></span>
+        <span tal:condition="ruta_territorio">
+            <tal:block tal:repeat="territorio ruta_territorio">
+                <tal:block tal:condition="territorio.nivel == 4">Parr. </tal:block>
+                <tal:block tal:condition="territorio.nivel == 2">Edo. </tal:block>
+                ${territorio.nombre}<tal:block tal:condition="territorio.nivel == 3">,</tal:block>
+                <tal:block tal:condition="territorio.nivel == 4"><br /></tal:block>
+            </tal:block>
+            <br />
+        </span>
+        ${tienda.telefono}<br />
+    </metal:direccion_tienda>
 </body>
 </html>

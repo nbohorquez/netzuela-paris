@@ -137,7 +137,7 @@ class ProductoView(Diagramas, Comunes):
     
     @reify
     def ruta_categoria_actual(self):
-        return self.obtener_ruta_categoria(self.producto.categoria)
+        return self.obtener_ruta_categoria(self.producto.categoria, 1, True)
         
     @view_config(route_name='producto', renderer='../plantillas/producto.pt', 
                  request_method='GET')

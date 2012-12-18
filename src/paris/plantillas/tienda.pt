@@ -38,7 +38,7 @@
     <div metal:fill-slot="info">
         <div class="accordion-inner">
             <div class="editable">
-                <table id="direccion" class="table table-hover" tal:define="region view.direccion">
+                <table id="direccion" class="table table-hover">
                     <thead>
                         <tr>
                             <th>
@@ -49,15 +49,7 @@
                     <tbody>
                         <tr>
                             <td>
-                                <span tal:condition="tienda.edificio_cc">Edif. ${tienda.edificio_cc}</span><span tal:condition="tienda.casa">Casa ${tienda.casa}</span><span tal:condition="tienda.piso">, Piso ${tienda.piso}</span><span tal:condition="tienda.apartamento">, Apart. ${tienda.apartamento}</span><span tal:condition="tienda.local_no">, Local ${tienda.local_no}</span>
-                                <br />
-                                <span tal:condition="tienda.calle">Cl. ${tienda.calle}</span><span tal:condition="tienda.sector_urb_barrio">, Sector ${tienda.sector_urb_barrio}</span>
-                                <br />
-                                <span tal:condition="region">
-                                    Parr. ${region.parroquia}<br />
-                                    ${region.municipio}, Edo. ${region.estado}<br />
-                                </span>
-                                ${tienda.telefono}<br />
+                                <div metal:use-macro="view.macros['direccion_tienda']" tal:define="ruta_territorio view.direccion"></div>
                             </td>
                         </tr>
                     </tbody>
@@ -110,7 +102,7 @@
     
     <div metal:fill-slot="categoria">
         <div class="editable">
-            <div metal:use-macro="view.macros['ruta_de_categoria']" tal:define="ruta view.obtener_ruta_categoria(view.tienda.categoria)">
+            <div metal:use-macro="view.macros['ruta_de_categoria']" tal:define="ruta view.obtener_ruta_categoria(view.tienda.categoria, 1, True)">
                 <div metal:fill-slot="ultima_rebanada">
                     <div tal:condition="editar" metal:use-macro="view.formularios['editar_categoria']" tal:define="campo_categoria tienda.categoria_id"></div>
                 </div>
