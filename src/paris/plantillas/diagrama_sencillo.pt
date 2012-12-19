@@ -127,6 +127,17 @@
     <script type="text/javascript" src="/estatico/js/mapa.js"></script>
     <div id="scripts" metal:define-slot="scripts_extra"></div>
     <script type="text/javascript">
+        /* Google Analytics */
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-37162775-1']);
+        _gaq.push(['_trackPageview']);
+        
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+        
         $(document).ready(function () {
             // No escribais nada despues de estas lineas porque el javascript no lo va a ejecutar
             // No se por que...
