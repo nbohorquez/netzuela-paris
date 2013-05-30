@@ -2,3 +2,8 @@
 ---
 
 -  Initial version
+
+0.1
+---
+
+-  Version beta para AWS.
