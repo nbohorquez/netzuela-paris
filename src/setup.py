@@ -20,7 +20,7 @@ requires = [
 ]
 
 setup(name='paris',
-      version='0.0',
+      version='0.1',
       description='paris',
       long_description=README + '\n\n' +  CHANGES,
       classifiers=[
@@ -29,9 +29,9 @@ setup(name='paris',
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
         ],
-      author='',
-      author_email='',
-      url='',
+      author='Zuliaworks C.A.',
+      author_email='contacto@zuliaworks.com',
+      url='www.zuliaworks.com',
       keywords='web wsgi bfg pylons pyramid',
       packages=find_packages(),
       include_package_data=True,
