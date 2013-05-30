@@ -26,12 +26,10 @@ parse_config() {
 crear_env() {
     alias rollback="rm -rf env 2>/dev/null; return 1"
 
-    if [ -f env/bin/python ]; then
-        return 0
+    if [ ! -f env/bin/python ]; then
+        virtualenv --no-site-packages --distribute env 2>&1 || rollback
+        rm *.tar.gz 2>/dev/null
     fi
-
-    virtualenv --no-site-packages --distribute env 2>&1 || rollback
-    rm *.tar.gz 2>/dev/null
     
     # Instalamos el site-package de spuria
     source ../../spuria/bin/env/bin/activate
@@ -44,9 +42,11 @@ crear_env() {
     deactivate
 
     echo "import sys; sys.__plen = len(sys.path)" > "$spuria_pth" || rollback
-    for i in $( find "$spuria_site_packages" -type d  )
+    for i in $( find "$spuria_site_packages" -maxdepth 1 -type d )
     do
-        echo "$spuria_site_packages"/"$i" >> "$spuria_pth" || rollback
+        if [ ! "$i" == "$spuria_site_packages" ]; then
+            echo "$i" >> "$spuria_pth" || rollback
+        fi
     done
     echo "import sys; new=sys.path[sys.__plen:]; del sys.path[sys.__plen:]; p=getattr(sys,'__egginsert',0); sys.path[p:p]=new; sys.__egginsert = p+len(new)" >> "$spuria_pth" || rollback
 
@@ -59,7 +59,7 @@ crear_env() {
     # Instalamos paris
     dir=`pwd`
     cd ../src/
-    python setup.py develop || { deactivate; cd "$dir"; rollback; }
+    python setup.py install || { deactivate; cd "$dir"; rollback; }
     deactivate
     cd "$dir"
 }
