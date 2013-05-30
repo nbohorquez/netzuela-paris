@@ -1,0 +1,149 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    metal:define-macro="diagrama_sencillo">
+<head>
+    <title>${titulo}</title>
+    <link rel="stylesheet" href="/estatico/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/estatico/css/bootstrap-responsive.css" />
+    <link rel="stylesheet" href="/estatico/css/netzuela.css" />
+    <link rel="stylesheet" href="/estatico/css/font-awesome.css" />
+    <style>
+        body { padding-top: 60px; }
+    </style>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <div id="meta_datos">
+        <input type="hidden" name="pagina" value="${pagina}" />
+        <div metal:define-slot="extra_meta_datos"></div>
+    </div>
+</head>
+<body>
+    
+    <!-- Barra superior
+    ================================================== -->
+    <div class="navbar navbar-fixed-top navbar-inverse">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+                <a class='brand' tal:attributes="href view.peticion.route_url('inicio')" title='Tu mundo en tiempo real'>
+                    <img alt='Logo de Netzuela' height='16' src='/estatico/img/Netzuela-w-.png' width='83' />
+                </a>
+                <div class="nav-collapse">
+                    <ul id="navegacion" class="nav">
+                        <li>
+                            <a tal:attributes="href view.peticion.route_url('productos', categoria_id = '0.00.00.00.00.00', territorio_id =  '0.02.00.00.00.00')">
+                                <i style='font-size: 20px' class='icon-gift'></i> Productos
+                            </a>
+                        </li>
+                        <li>
+                            <a tal:attributes="href view.peticion.route_url('tiendas', categoria_id = '0.00.00.00.00.00', territorio_id =  '0.02.00.00.00.00')">
+                                <i style='font-size: 20px' class='icon-shopping-cart'></i> Tiendas
+                            </a>
+                        </li>
+                    </ul>
+                    <form class="navbar-search pull-left" action="">
+                        <input type="text" class="search-query" placeholder="Búsqueda" />
+                        <i class="icon-search icon-white"></i>
+                    </form>
+                    <ul class="nav pull-right" tal:condition="exists:autentificado">
+                        <li class="dropdown" tal:condition="not autentificado">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-target="#">
+                                Ingresar
+                                <b class="caret"></b>
+                            </a>
+                            <div class="dropdown-menu">
+                                <form tal:attributes="action view.peticion.route_url('ingresar')" method="post" accept-charset="UTF-8">
+                                    <input type="hidden" name="pagina_anterior" value="${view.pagina_actual}" />
+                                    <input type="text" name="usuario" class="input-large" placeholder="Correo electrónico" />
+                                    <input type="password" name="contrasena" class="input-large" placeholder="Contraseña" />
+                                    <label class="checkbox">
+                                        <input type="checkbox" name="recordame" />
+                                        Recordame
+                                    </label>
+                                    <input class="btn btn-primary" type="submit" name="ingresar" value="Ingresar" />
+                                    <input class="btn" type="submit" name="registrarse" value="No tengo cuenta" />
+                                </form>
+                            </div>
+                        </li>
+                        <li class="dropdown" tal:condition="autentificado" tal:define="usuario view.obtener_usuario('correo_electronico', autentificado)">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-target="#">
+                                <span tal:content="'{0} {1}'.format(usuario.nombre, usuario.apellido)"></span>
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a tal:attributes="href view.peticion.route_url('usuario', usuario_id = usuario.usuario_id)"><i class="icon-user"></i> Ver perfil</a></li>
+                                <li class="divider"></li>
+                                <li><a tal:attributes="href view.peticion.route_url('configuracion')"><i class="icon-cog"></i> Configuración</a></li>
+                                <li><a tal:attributes="href view.peticion.route_url('salir')"><i class="icon-off"></i> Cerrar sesión</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cuerpo principal
+    ================================================== -->
+    <div class="container">
+        <div class="row-fluid">
+            <div class="span10 offset1">
+                <div metal:define-slot="contenido"></div>
+            </div>
+        </div>
+    </div>
+    
+    <hr />
+    
+    <!-- Barra inferior
+    ================================================== -->
+    <footer class="pull-right">
+        <p>
+            <span><a href="/acerca">Sobre nosotros</a></span>
+            <span><a href="/publicidad">Publicidad</a></span>
+            <span><a href="/desarrolladores">Desarrolladores</a></span>
+            <span><a href="/empleo">Empleo</a></span>
+            <span><a href="/condiciones">Condiciones</a></span>
+            <span><a href="/ayuda">Ayuda</a></span>
+            <span>&copy 2012 Zuliaworks</span>
+        </p>
+    </footer>
+    
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.9/jquery.validate.min.js"></script>    
+    <script type="text/javascript" src="/estatico/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/estatico/js/EventObject.js"></script>
+    <script type="text/javascript" src="/estatico/js/infobox.js"></script>
+    <script type="text/javascript" src="/estatico/js/google_map.js"></script>
+    <script type="text/javascript" src="/estatico/js/historial.js"></script>
+    <script type="text/javascript" src="/estatico/js/global.js"></script>
+    <script type="text/javascript" src="/estatico/js/territorio.js"></script>
+    <script type="text/javascript" src="/estatico/js/mapa.js"></script>
+    <div id="scripts" metal:define-slot="scripts_extra"></div>
+    <script type="text/javascript">
+        /* Google Analytics */
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-37162775-1']);
+        _gaq.push(['_trackPageview']);
+        
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+        
+        $(document).ready(function () {
+            // No escribais nada despues de estas lineas porque el javascript no lo va a ejecutar
+            // No se por que...
+            $(".collapse").collapse();
+            $('.carousel').carousel();
+        });
+    </script>
+</body>
+</html>

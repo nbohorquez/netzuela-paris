@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<div metal:use-macro="view.diagrama_sencillo">
+    <div metal:fill-slot="extra_meta_datos"></div>
+    
+    <div metal:fill-slot="contenido">
+        <div id="principal" class="accordion-group">
+            <div id="principal_encabezado" class="accordion-heading">
+                <strong class="accordion-toggle">
+                    Autentificación
+                </strong>
+            </div>
+            <div id="principal_colapsable" class="accordion-body">
+                <div class="accordion-inner">
+                    <form class="form-horizontal" action="/ingresar" method="post" accept-charset="UTF-8">
+                        <fieldset>
+                            <input type="hidden" name="pagina_anterior" value="${view.pagina_anterior}" />
+                            <div class="control-group">
+                                <label class="control-label" for="usuario">Correo electrónico</label>
+                                <div class="controls">
+                                    <input type="text" class="input-xlarge" id="usuario" name="usuario" />
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="contrasena">Contraseña</label>
+                                <div class="controls">
+                                    <input type="password" class="input-xlarge" id="contrasena" name="contrasena" />
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label" for="recordame">Recordame</label>
+                                <div class="controls">
+                                    <label class="checkbox">
+                                        <input type="checkbox" id="recordame" name="recordame" />
+                                        No tendrá que ingresar su usuario/contraseña la próxima vez
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <input class="btn btn-primary" type="submit" name="ingresar" value="Ingresar" />
+                                <input class="btn" type="submit" name="registrarse" value="No tengo cuenta" />
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div metal:fill-slot="scripts_extra"></div>
+</div>

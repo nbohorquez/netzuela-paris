@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<div metal:use-macro="view.diagrama_sencillo">
+    <div metal:fill-slot="extra_meta_datos"></div>
+    
+    <div metal:fill-slot="contenido">
+        <div class="hero-unit">
+            <div class='big-media'>
+                <p class="imagen-centrada">
+                    <img alt='Tu mundo en tiempo real' height='218' src='/estatico/img/Netzuela-.png' width='685' />
+                </p>
+                <p class="imagen-centrada">
+                    <a class="btn btn-inverse btn-large" tal:attributes="href view.peticion.route_url('productos', categoria_id = '0.00.00.00.00.00', territorio_id = '0.02.00.00.00.00')">
+                        ¡Entra al sitio de prueba!
+                    </a>
+                </p>
+            </div>
+            <!--
+            <form class="form-search centrado">
+                <input type="text" class="input-medium search-query" />
+                <button type="submit" class="btn">Búsqueda</button>
+            </form>
+            -->
+        </div>
+        
+        <hr/>
+        
+        <div class="row-fluid">
+            <div class="span4">
+                <h2><i class='icon-money'></i> Precios</h2>
+                <p>Busca los mejores precios de cualquier producto que se te ocurra. Tus búsquedas se hacen instantáneamente sobre el inventario de cientos de miles de tiendas de todos los rincones del país. Esta no es una tienda virtual, es el mundo real en tiempo real.</p>
+                <!--<p><a class="btn" href="#">View details &raquo;</a></p>-->
+            </div>
+            <div class="span4">
+                <h2><i class='icon-map-marker'></i> Ubicación</h2>
+                <p>¿Te ha pasado que compras algo en una tienda y resulta que había una más cercana que lo vendía a un mejor precio? Hubieses ahorrado tiempo y dinero de haberlo sabido. Encuentra fácilmente la tienda más conveniente e incluso ¡averigua si esta abierta!</p>
+                <!--<p><a class="btn" href="#">View details &raquo;</a></p>-->
+            </div>
+            <div class="span4">
+                <h2><i class='icon-check'></i> Existencia</h2>
+                <p>"Si señor(a) tenemos exactamente lo que Ud. busca, pero sólo nos queda uno..." Asegúrate que esto no te vuelva a pasar. Desde tu casa o desde tu teléfono móvil entérate primero. Netzuela te informa sobre la cantidad de productos que quedan en el estante.</p>
+                <!--<p><a class="btn" href="#">View details &raquo;</a></p>-->
+            </div>
+        </div>
+    </div>
+    
+    <div metal:fill-slot="scripts_extra"></div>
+</div>

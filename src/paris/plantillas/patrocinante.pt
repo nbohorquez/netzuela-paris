@@ -1,0 +1,14 @@
+<!DOCTYPE HTML>
+<div metal:use-macro="view.diagrama_global">
+    <div metal:fill-slot="extra_meta_datos"></div>
+    <div metal:fill-slot="contenido">
+        
+        <!-- Encabezado
+        ================================================== -->
+        <div class="page-header">
+            <h1>${pagina}</h1>
+        </div>
+        <div id="meta_datos"></div>
+    </div>
+    <div metal:fill-slot="scripts_extra"></div>
+</div>

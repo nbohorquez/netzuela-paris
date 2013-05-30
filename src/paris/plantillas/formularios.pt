@@ -1,0 +1,675 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:tal="http://xml.zope.org/namespaces/tal">
+<head>
+    <title>Formularios</title>
+</head>
+<body>
+    
+    <!-- Encabezado edicion
+    ================================================== -->
+    <metal:encabezado_edicion define-macro="encabezado_edicion">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h3>Edición</h3>
+    </metal:encabezado_edicion>
+
+    <!-- Botones: pie de modal
+    ================================================== -->
+    <metal:botones_pie_de_modal define-macro="botones_pie_de_modal">
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit" name="guardar" id="guardar">Guardar cambios</button>
+            <a class="btn" href="#" data-dismiss="modal">Cancelar</a>
+        </div>
+    </metal:botones_pie_de_modal>
+    
+    <!-- Botones: pie de pagina
+    ================================================== -->
+    <metal:botones_pie_de_pagina define-macro="botones_pie_de_pagina">
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit" name="enviar" id="enviar">Enviar</button>
+            <button class="btn" type="submit" name="cancelar" id="cancelar">Cancelar</button>
+        </div>
+    </metal:botones_pie_de_pagina>    
+    
+    <!-- Campo: correo electronico
+    ================================================== -->
+    <metal:campo_correo_electronico define-macro="campo_correo_electronico">
+        <div class="control-group">
+            <label class="control-label" for="correo_electronico">Correo electrónico</label>
+            <div class="controls" tal:define="existe exists:campo_correo_electronico">
+                <input type="text" class="input-large" placeholder="usuario@proveedor.com" id="correo_electronico" name="correo_electronico" tal:attributes="value python:campo_correo_electronico if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_correo_electronico>
+    
+    <!-- Campo: contraseña
+    ================================================== -->
+    <metal:campo_contrasena define-macro="campo_contrasena">
+        <div class="control-group">
+            <label class="control-label" for="contrasena">Contraseña</label>
+            <div class="controls">
+                <input type="password" class="input-large" id="contrasena" name="contrasena" />
+            </div>
+        </div>
+    </metal:campo_contrasena>
+    
+    <!-- Campo: repetir contraseña
+    ================================================== -->
+    <metal:campo_repetir_contrasena define-macro="campo_repetir_contrasena">
+        <div class="control-group">
+            <label class="control-label" for="repetir_contrasena">Repetir contraseña</label>
+            <div class="controls">
+                <input type="password" class="input-large" id="repetir_contrasena" name="repetir_contrasena"/>
+            </div>
+        </div>
+    </metal:campo_repetir_contrasena>
+    
+    <!-- Campo: nombre
+    ================================================== -->
+    <metal:campo_nombre define-macro="campo_nombre">
+        <div class="control-group">
+            <label class="control-label" for="nombre">Nombre</label>
+            <div class="controls" tal:define="existe exists:campo_nombre">
+                <input type="text" class="input-large" id="nombre" name="nombre" tal:attributes="value python:campo_nombre if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_nombre>
+    
+    <!-- Campo: apellido
+    ================================================== -->
+    <metal:campo_apellido define-macro="campo_apellido">
+        <div class="control-group">
+            <label class="control-label" for="apellido">Apellido</label>
+            <div class="controls" tal:define="existe exists:campo_apellido">
+                <input type="text" class="input-large" id="apellido" name="apellido" tal:attributes="value python:campo_apellido if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_apellido>
+    
+    <!-- Campo: sexo
+    ================================================== -->
+    <metal:campo_sexo define-macro="campo_sexo">
+        <div class="control-group">
+            <label class="control-label">Sexo</label>
+            <div class="controls" tal:define="existe exists:campo_sexo">
+                <label class="radio inline" tal:repeat="item view.sexos">
+                    <input type="radio" name="sexo" value="${item.valor}" tal:attributes="checked python:'checked' if (existe and campo_sexo == item.valor) else None; disabled python:None if habilitar_campo_sexo else 'disabled'" />
+                    <span class="help-inline">${item.valor}</span>
+                </label>
+            </div>
+        </div>
+    </metal:campo_sexo>
+    
+    <!-- Campo: grado de instruccion
+    ================================================== -->
+    <metal:campo_grado_de_instruccion define-macro="campo_grado_de_instruccion">
+        <div class="control-group">
+            <label class="control-label" for="grado_de_instruccion">Grado de instrucción</label>
+            <div class="controls" tal:define="existe exists:campo_grado_de_instruccion">
+                <select id="grado_de_instruccion" name="grado_de_instruccion">
+                    <option tal:repeat="item view.grados_de_instruccion" tal:content="item.valor" tal:attributes="selected python:'selected' if (existe and campo_grado_de_instruccion == item.valor) else None"></option>
+                </select>
+            </div>
+        </div>
+    </metal:campo_grado_de_instruccion>
+    
+       <!-- Campo: ubicacion
+    ================================================== -->
+    <metal:campo_ubicacion define-macro="campo_ubicacion">
+        <div class="control-group">
+            <label class="control-label">Ubicación</label>
+            <div class="controls" tal:define="existe exists:campo_ubicacion">
+                <span id="ubicacion_visible" class="input-large uneditable-input" tal:content="python:campo_ubicacion.nombre if existe else 'Seleccione en el mapa de arriba'"></span>
+                <input type="hidden" class="input-large" id="ubicacion" name="ubicacion" tal:attributes="value python:campo_ubicacion.territorio_id if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_ubicacion>
+    
+    <!-- Campo: fecha de nacimiento
+    ================================================== -->
+    <metal:campo_fecha_de_nacimiento define-macro="campo_fecha_de_nacimiento">
+        <div class="control-group">
+            <label class="control-label" for="fecha_de_nacimiento">Fecha de nacimiento</label>
+            <div class="controls" tal:define="existe exists:campo_fecha_de_nacimiento">
+                <input data-datepicker="datepicker" id="fecha_de_nacimiento" name="fecha_de_nacimiento" type="text" class="small" tal:attributes="disabled python:None if habilitar_campo_fecha_de_nacimiento else 'disabled'; value python:campo_fecha_de_nacimiento if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_fecha_de_nacimiento>
+    
+    <!-- Campo: condiciones del servicio
+    ================================================== -->
+    <metal:campo_condiciones define-macro="campo_condiciones">
+        <div class="control-group">
+            <label class="control-label" for="condiciones">
+                <a data-toggle="modal" href="#condiciones_servicio">Condiciones del servicio</a>
+            </label>
+            <div class="controls">
+                <label class="checkbox">
+                    <input type="checkbox" id="condiciones" name="condiciones" value="Acepto" />
+                    Acepto
+                </label>
+            </div>
+        </div>
+    </metal:campo_condiciones>
+    
+    <!-- Campo: RIF
+    ================================================== -->
+    <metal:campo_rif define-macro="campo_rif">
+        <div class="control-group">
+            <label class="control-label" for="rif">RIF</label>
+            <div class="controls" tal:define="existe exists:campo_rif">
+                <input type="text" class="input-large" id="rif" name="rif" placeholder="J-12345678-9" tal:attributes="value python:campo_rif if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_rif>
+    
+    <!-- Campo: nombre legal
+    ================================================== -->
+    <metal:campo_nombre_legal define-macro="campo_nombre_legal">
+        <div class="control-group">
+            <label class="control-label" for="nombre_legal">Nombre legal</label>
+            <div class="controls" tal:define="existe exists:campo_nombre_legal">
+                <input type="text" class="input-large" id="nombre_legal" name="nombre_legal" placeholder="Inversiones Cabimas 2048 C.A." tal:attributes="value python:campo_nombre_legal if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_nombre_legal>
+    
+    <!-- Campo: nombre comun
+    ================================================== -->
+    <metal:campo_nombre_comun define-macro="campo_nombre_comun">
+        <div class="control-group">
+            <label class="control-label" for="nombre_comun">Nombre común</label>
+            <div class="controls" tal:define="existe exists:campo_nombre_comun">
+                <input type="text" class="input-large" id="nombre_comun" name="nombre_comun" placeholder="Papelería La Remolacha" tal:attributes="value python:campo_nombre_comun if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_nombre_comun>
+    
+    <!-- Campo: categoria
+    ================================================== -->
+    <metal:campo_categoria define-macro="campo_categoria">
+        <div class="control-group">
+            <label class="control-label" for="categoria">Rubro/categoría</label>
+            <div class="controls" tal:define="existe exists:campo_categoria">
+                <select id="categoria" name="categoria">
+                    <option tal:repeat="item view.categorias" tal:attributes="value item.categoria_id; selected python:'selected' if (existe and campo_categoria == item.categoria_id) else None">${item.nombre}</option>
+                </select>
+            </div>
+        </div>
+    </metal:campo_categoria>
+    
+    <!-- Campo: telefono
+    ================================================== -->
+    <metal:campo_telefono define-macro="campo_telefono">
+        <div class="control-group">
+            <label class="control-label" for="telefono">Teléfono</label>
+            <div class="controls">
+                <div class="input-prepend" tal:define="existe exists:campo_telefono">
+                    <span class="add-on">+58</span><input type="text" class="input-small" id="telefono" name="telefono" placeholder="555-5555555" tal:attributes="value python:campo_telefono if existe else ''" />
+                </div>
+            </div>
+        </div>
+    </metal:campo_telefono>
+    
+    <!-- Campo: calle
+    ================================================== -->
+    <metal:campo_calle define-macro="campo_calle">
+        <div class="control-group">
+            <label class="control-label" for="calle">Calle</label>
+            <div class="controls" tal:define="existe exists:campo_calle">
+                <input type="text" class="input-large" id="calle" name="calle" tal:attributes="value python:campo_calle if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_calle>
+    
+    <!-- Campo: sector/urbanizacion/barrio
+    ================================================== -->
+    <metal:campo_urbanizacion define-macro="campo_urbanizacion">
+        <div class="control-group">
+            <label class="control-label" for="urbanizacion">Urbanización</label>
+            <div class="controls" tal:define="existe exists:campo_urbanizacion">
+                <input type="text" class="input-large" id="urbanizacion" name="urbanizacion" tal:attributes="value python:campo_urbanizacion if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_urbanizacion>
+    
+    <!-- Campo: edificio/c.c.
+    ================================================== -->
+    <metal:campo_edificio define-macro="campo_edificio">
+        <div class="control-group">
+            <label class="control-label" for="edificio">Edificio/C.C.</label>
+            <div class="controls" tal:define="existe exists:campo_edificio">
+                <input type="text" class="input-large" id="edificio" name="edificio" tal:attributes="value python:campo_edificio if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_edificio>
+    
+    <!-- Campo: piso
+    ================================================== -->
+    <metal:campo_piso define-macro="campo_piso">
+        <div class="control-group">
+            <label class="control-label" for="piso">Piso</label>
+            <div class="controls" tal:define="existe exists:campo_piso">
+                <input type="text" class="input-large" id="piso" name="piso" tal:attributes="value python:campo_piso if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_piso>
+    
+    <!-- Campo: apartamento
+    ================================================== -->
+    <metal:campo_apartamento define-macro="campo_apartamento">
+        <div class="control-group">
+            <label class="control-label" for="apartamento">Apartamento</label>
+            <div class="controls" tal:define="existe exists:campo_apartamento">
+                <input type="text" class="input-large" id="apartamento" name="apartamento" tal:attributes="value python:campo_apartamento if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_apartamento>
+    
+    <!-- Campo: local numero 
+    ================================================== -->
+    <metal:campo_local_no define-macro="campo_local_no">
+        <div class="control-group">
+            <label class="control-label" for="local_no">Local</label>
+            <div class="controls" tal:define="existe exists:campo_local_no">
+                <input type="text" class="input-large" id="local_no" name="local_no" tal:attributes="value python:campo_local_no if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_local_no>
+    
+    <!-- Campo: casa
+    ================================================== -->
+    <metal:campo_casa define-macro="campo_casa">
+        <div class="control-group">
+            <label class="control-label" for="casa">Casa</label>
+            <div class="controls" tal:define="existe exists:campo_casa">
+                <input type="text" class="input-large" id="casa" name="casa" tal:attributes="value python:campo_casa if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_casa>
+
+    <!-- Campo: pais de origen
+    ================================================== -->
+    <metal:campo_pais_de_origen define-macro="campo_pais_de_origen">
+        <div class="control-group">
+            <label class="control-label" for="pais_de_origen">País de orígen</label>
+            <div class="controls" tal:define="existe exists:campo_pais_de_origen">
+                <select id="pais_de_origen" name="pais_de_origen">
+                    <option tal:repeat="item view.paises" tal:attributes="value item.territorio_id; selected python:'selected' if (existe and campo_pais_de_origen == item.territorio_id) else None">${item.nombre}</option>
+                </select>
+            </div>
+        </div>
+    </metal:campo_pais_de_origen>
+    
+     <!-- Campo: tipo de codigo
+    ================================================== -->
+    <metal:campo_tipo_de_codigo define-macro="campo_tipo_de_codigo">
+        <div class="control-group">
+            <label class="control-label" for="tipo_de_codigo">Tipo de código</label>
+            <div class="controls" tal:define="existe exists:campo_tipo_de_codigo">
+                <select id="tipo_de_codigo" name="tipo_de_codigo">
+                    <option tal:repeat="item view.tipos_de_codigo" tal:attributes="selected python:'selected' if (existe and campo_tipo_de_codigo == item.valor) else None">${item.valor}</option>
+                </select>
+            </div>
+        </div>
+    </metal:campo_tipo_de_codigo>
+    
+    <!-- Campo: codigo
+    ================================================== -->
+    <metal:campo_codigo define-macro="campo_codigo">
+        <div class="control-group">
+            <label class="control-label" for="codigo">Tipo de código</label>
+            <div class="controls" tal:define="existe exists:campo_codigo">
+                <input type="text" class="input-large" id="codigo" name="codigo" tal:attributes="value python:campo_codigo if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_codigo>
+    
+    <!-- Campo: fabricante
+    ================================================== -->
+    <metal:campo_fabricante define-macro="campo_fabricante">
+        <div class="control-group">
+            <label class="control-label" for="fabricante">Fabricante</label>
+            <div class="controls" tal:define="existe exists:campo_fabricante">
+                <input type="text" class="input-large" id="fabricante" name="fabricante" tal:attributes="value python:campo_fabricante if existe else ''" />
+            </div>
+          </div>
+    </metal:campo_fabricante>
+    
+    <!-- Campo: modelo
+    ================================================== -->
+    <metal:campo_modelo define-macro="campo_modelo">
+        <div class="control-group">
+            <label class="control-label" for="modelo">Modelo</label>
+            <div class="controls" tal:define="existe exists:campo_modelo">
+                <input type="text" class="input-large" id="modelo" name="modelo" tal:attributes="value python:campo_modelo if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_modelo>
+    
+    <!-- Campo: debut en el mercado
+    ================================================== -->
+    <metal:campo_debut_en_el_mercado define-macro="campo_debut_en_el_mercado">
+        <div class="control-group">
+            <label class="control-label" for="debut_en_el_mercado">Debut en el mercado</label>
+            <div class="controls" tal:define="existe exists:campo_debut_en_el_mercado">
+                <input data-datepicker="datepicker" id="debut_en_el_mercado" name="debut_en_el_mercado" class="small" type="text" tal:attributes="value python:campo_debut_en_el_mercado if existe else ''" />
+            </div>
+        </div>
+    </metal:campo_debut_en_el_mercado>
+    
+    <!-- Campo: largo
+    ================================================== -->
+    <metal:campo_largo define-macro="campo_largo">
+        <div class="control-group">
+            <label class="control-label" for="largo">Largo</label>
+            <div class="controls" tal:define="existe exists:campo_largo">
+                <div class="input-append">
+                    <input type="text" class="input-small" id="largo" name="largo" tal:attributes="value python:campo_largo if existe else ''" /><span class="add-on">m</span>
+                </div>
+            </div>
+        </div>
+    </metal:campo_largo>
+    
+    <!-- Campo: ancho
+    ================================================== -->
+    <metal:campo_ancho define-macro="campo_ancho">
+        <div class="control-group">
+            <label class="control-label" for="ancho">Ancho</label>
+            <div class="controls" tal:define="existe exists:campo_ancho">
+                <div class="input-append">
+                    <input type="text" class="input-small" id="ancho" name="ancho" tal:attributes="value python:campo_ancho if existe else ''" /><span class="add-on">m</span>
+                </div>
+            </div>
+        </div>
+    </metal:campo_ancho>
+                             
+    <!-- Campo: alto
+    ================================================== -->
+    <metal:campo_alto define-macro="campo_alto">
+        <div class="control-group">
+            <label class="control-label" for="alto">Alto</label>
+            <div class="controls" tal:define="existe exists:campo_alto">
+                <div class="input-append">
+                    <input type="text" class="input-small" id="alto" name="alto" tal:attributes="value python:campo_alto if existe else ''" /><span class="add-on">m</span>
+                </div>
+            </div>
+        </div>
+    </metal:campo_alto>
+    
+    <!-- Campo: peso
+    ================================================== -->
+    <metal:campo_peso define-macro="campo_peso">
+        <div class="control-group">
+            <label class="control-label" for="peso">Peso</label>
+            <div class="controls" tal:define="existe exists:campo_peso">
+                <div class="input-append">
+                    <input type="text" class="input-small" id="peso" name="peso" tal:attributes="value python:campo_peso if existe else ''" /><span class="add-on">kg</span>
+                </div>
+            </div>
+        </div>
+    </metal:campo_peso>
+    
+    <!-- Campo: descripcion
+    ================================================== -->
+    <metal:campo_descripcion define-macro="campo_descripcion">
+        <div class="control-group">
+            <label class="control-label" for="descripcion">Descripción</label>
+            <div class="controls" tal:define="existe exists:campo_descripcion; contenido python:campo_descripcion.contenido if existe else ''">
+                <textarea class="input-xlarge" id="descripcion" name="descripcion" rows="10">${contenido}</textarea>
+                <input type="hidden" class="input-large" id="descripcion_id" name="descripcion_id" tal:attributes="value python:campo_descripcion.descripcion_id if existe else -1" />
+            </div>
+        </div>
+    </metal:campo_descripcion>
+    
+    <!-- Campo: laborable
+    ================================================== -->
+    <metal:campo_laborable define-macro="campo_laborable">
+        <div class="control-group">
+            <label class="control-label" for="${dia}">${dia}</label>
+            <div class="controls" tal:define="existe exists:campo_laborable">
+                <label class="radio inline" tal:repeat="item view.turnos">
+                    <input type="radio" name="${dia}" value="${item}" id="${dia}" tal:attributes="checked python:'checked' if (existe and campo_laborable == item) else None" />
+                    <span class="help-inline">${item}</span>
+                </label>
+            </div>
+        </div>
+    </metal:campo_laborable>
+    
+       <!-- Campo: turno
+    ================================================== -->
+    <metal:campo_turno define-macro="campo_turno">
+        <div class="control-group">
+            <!--<label class="control-label">Turno</label>-->
+            <div class="controls" tal:define="existe_dia exists:dia; existe_indice exists:indice">
+                <tal:block tal:define="dia python:'{}.'.format(dia) if existe_dia else ''; indice python:'.{}'.format(indice) if existe_indice else ''">
+                    <div class="input-prepend" tal:define="existe exists:campo_hora_de_apertura">
+                        <tal:block tal:define="nombre python:'{}hora_de_apertura{}'.format(dia, indice)">
+                            <span class="add-on">De</span><input type="text" class="input-small" placeholder="06:00" tal:attributes="value python:campo_hora_de_apertura if existe else ''; name nombre; id nombre" />
+                        </tal:block>
+                    </div>
+                    <div class="input-prepend" tal:define="existe exists:campo_hora_de_cierre">
+                        <tal:block tal:define="nombre python:'{}hora_de_cierre{}'.format(dia, indice)">
+                            <span class="add-on">A</span><input type="text" class="input-small" placeholder="17:00" tal:attributes="value python:campo_hora_de_cierre if existe else ''; name nombre; id nombre" />
+                        </tal:block>
+                    </div>
+                </tal:block>
+            </div>
+        </div>
+    </metal:campo_turno>
+    
+    <!-- Registro de usuario
+    ================================================== -->
+    <metal:registro define-macro="registro_usuario">
+        <div metal:use-macro="view.formularios['campo_correo_electronico']"></div>
+        <div metal:use-macro="view.formularios['campo_contrasena']"></div>
+        <div metal:use-macro="view.formularios['campo_repetir_contrasena']"></div>
+        <div metal:use-macro="view.formularios['campo_nombre']"></div>
+        <div metal:use-macro="view.formularios['campo_apellido']"></div>
+    </metal:registro>
+    
+    <!-- Editar descripcion
+    ================================================== -->
+    <metal:editar_descripcion define-macro="editar_descripcion">
+        <div class="boton-editar-contenido">
+            <a data-toggle="modal" href="#editar_descripcion">
+                <i class="icon-edit"></i>
+                Editar
+            </a>
+        </div>
+        <div id="editar_descripcion" class="modal hide fade">
+            <div class="modal-header">
+                <div metal:use-macro="view.formularios['encabezado_edicion']"></div>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="formulario_editar_descripcion" method="post" accept-charset="UTF-8">
+                    <fieldset>
+                        <div metal:use-macro="view.formularios['campo_descripcion']"></div>
+                        <div metal:use-macro="view.formularios['botones_pie_de_modal']"></div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </metal:editar_descripcion>
+    
+    <!-- Editar direccion
+    ================================================== -->
+    <metal:editar_direccion define-macro="editar_direccion">
+        <div class="boton-editar-contenido">
+            <a data-toggle="modal" href="#editar_direccion">
+                <i class="icon-edit"></i>
+                Editar
+            </a>
+        </div>
+        <div id="editar_direccion" class="modal hide fade">
+            <div class="modal-header">
+                <div metal:use-macro="view.formularios['encabezado_edicion']"></div>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="formulario_editar_direccion" method="post" accept-charset="UTF-8">
+                    <fieldset>
+                        <div metal:use-macro="view.formularios['campo_edificio']"></div>
+                        <div metal:use-macro="view.formularios['campo_piso']"></div>
+                        <div metal:use-macro="view.formularios['campo_apartamento']"></div>
+                        <div metal:use-macro="view.formularios['campo_local_no']"></div>
+                        <div metal:use-macro="view.formularios['campo_casa']"></div>
+                        <div metal:use-macro="view.formularios['campo_calle']"></div>
+                        <div metal:use-macro="view.formularios['campo_urbanizacion']"></div>
+                        <div metal:use-macro="view.formularios['campo_ubicacion']"></div>
+                        <div metal:use-macro="view.formularios['botones_pie_de_modal']"></div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </metal:editar_direccion>
+    
+    <!-- Editar horario
+    ================================================== -->
+    <metal:editar_horario define-macro="editar_horario">
+        <div class="boton-editar-contenido">
+            <a data-toggle="modal" href="#editar_horario">
+                <i class="icon-edit"></i>
+                Editar
+            </a>
+        </div>
+        <div id="editar_horario" class="modal hide fade">
+            <div class="modal-header">
+                <div metal:use-macro="view.formularios['encabezado_edicion']"></div>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="formulario_editar_horario" method="post" accept-charset="UTF-8">
+                    <fieldset tal:define="existe exists:campo_horarios">
+                        <tal:block tal:condition="existe" tal:repeat="horario campo_horarios">
+                            <div tal:define="dia horario.dia; campo_laborable python: 'Abierto' if horario.laborable else 'Cerrado'" metal:use-macro="view.formularios['campo_laborable']"></div>
+                            <tal:block tal:repeat="turno horario.turnos">
+                                <div tal:define="campo_hora_de_apertura turno.hora_de_apertura; campo_hora_de_cierre turno.hora_de_cierre; dia horario.dia; indice repeat.turno.index" metal:use-macro="view.formularios['campo_turno']"></div>                                
+                            </tal:block>
+                            <hr />
+                        </tal:block>
+                        <div metal:use-macro="view.formularios['botones_pie_de_modal']"></div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </metal:editar_horario>
+    
+    <!-- Editar producto
+    ================================================== -->
+    <metal:editar_producto define-macro="editar_producto">
+        <div class="boton-editar-contenido">
+            <a data-toggle="modal" href="#editar_producto">
+                <i class="icon-edit"></i>
+                Editar
+            </a>
+        </div>
+        <div id="editar_producto" class="modal hide fade">
+            <div class="modal-header">
+                <div metal:use-macro="view.formularios['encabezado_edicion']"></div>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="formulario_editar_producto" method="post" accept-charset="UTF-8">
+                    <fieldset>
+                        <div metal:use-macro="view.formularios['campo_tipo_de_codigo']"></div>
+                        <div metal:use-macro="view.formularios['campo_codigo']"></div>
+                        <div metal:use-macro="view.formularios['campo_fabricante']"></div>
+                        <div metal:use-macro="view.formularios['campo_modelo']"></div>
+                        <div metal:use-macro="view.formularios['campo_nombre']"></div>
+                        <div metal:use-macro="view.formularios['campo_debut_en_el_mercado']"></div>
+                        <div metal:use-macro="view.formularios['campo_largo']"></div>
+                        <div metal:use-macro="view.formularios['campo_ancho']"></div>
+                        <div metal:use-macro="view.formularios['campo_alto']"></div>
+                        <div metal:use-macro="view.formularios['campo_peso']"></div>
+                        <div metal:use-macro="view.formularios['campo_pais_de_origen']"></div>
+                        <div metal:use-macro="view.formularios['botones_pie_de_modal']"></div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </metal:editar_producto>
+    
+    <!-- Editar usuario
+    ================================================== -->
+    <metal:editar_usuario define-macro="editar_usuario">
+        <div class="boton-editar-contenido">
+            <a data-toggle="modal" href="#editar_usuario">
+                <i class="icon-edit"></i>
+                Editar
+            </a>
+        </div>
+        <div id="editar_usuario" class="modal hide fade">
+            <div class="modal-header">
+                <div metal:use-macro="view.formularios['encabezado_edicion']"></div>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="formulario_editar_usuario" method="post" accept-charset="UTF-8">
+                    <fieldset>
+                        <div metal:use-macro="view.formularios['campo_nombre']"></div>
+                        <div metal:use-macro="view.formularios['campo_apellido']"></div>
+                        <div metal:use-macro="view.formularios['campo_ubicacion']"></div>
+                        <div metal:use-macro="view.formularios['botones_pie_de_modal']"></div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </metal:editar_usuario>
+    
+    <!-- Editar consumidor
+    ================================================== -->
+    <metal:editar_consumidor define-macro="editar_consumidor">
+        <div class="boton-editar-contenido">
+            <a data-toggle="modal" href="#editar_consumidor">
+                <i class="icon-edit"></i>
+                Editar
+            </a>
+        </div>
+        <div id="editar_consumidor" class="modal hide fade">
+            <div class="modal-header">
+                <div metal:use-macro="view.formularios['encabezado_edicion']"></div>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="formulario_editar_usuario" method="post" accept-charset="UTF-8">
+                    <fieldset>
+                        <div metal:use-macro="view.formularios['campo_nombre']"></div>
+                        <div metal:use-macro="view.formularios['campo_apellido']"></div>
+                        <div metal:use-macro="view.formularios['campo_ubicacion']"></div>
+                        <!-- Si este usuario no tiene un consumidor asociado, permitir que 
+                          creen uno especificando sexo y fecha de nacimiento. De lo contrario,
+                          son campos no editables -->
+                        <tal:block tal:define="habilitar_campo_sexo python:None; habilitar_campo_fecha_de_nacimiento python:None">
+                            <div metal:use-macro="view.formularios['campo_sexo']"></div>
+                            <div metal:use-macro="view.formularios['campo_fecha_de_nacimiento']"></div>
+                        </tal:block>
+                        <div metal:use-macro="view.formularios['campo_grado_de_instruccion']"></div>
+                        <div metal:use-macro="view.formularios['botones_pie_de_modal']"></div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </metal:editar_consumidor>
+    
+    <!-- Editar categoria
+    ================================================== -->
+    <metal:editar_categoria define-macro="editar_categoria">
+        <div class="boton-editar-breadcum">
+            <a data-toggle="modal" href="#editar_categoria">
+                <i class="icon-edit"></i>
+                Editar
+            </a>
+        </div>
+        <div id="editar_categoria" class="modal hide fade">
+            <div class="modal-header">
+                <div metal:use-macro="view.formularios['encabezado_edicion']"></div>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="formulario_editar_categoria" method="post" accept-charset="UTF-8">
+                    <fieldset>
+                        <div metal:use-macro="view.formularios['campo_categoria']"></div>
+                          <div metal:use-macro="view.formularios['botones_pie_de_modal']"></div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </metal:editar_categoria>
+</body>
+</html>

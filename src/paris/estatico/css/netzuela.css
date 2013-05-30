@@ -1,0 +1,89 @@
+html { 
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    background: url('/estatico/img/background8.png');
+    background-size: 1366px 768px;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    display: block;
+}
+
+.barra-busqueda {
+	background-color: #F0F0F0; 
+	border-width: 1px; 
+	border-style: solid; 
+	border-color: #C0C0C0; 
+	height: 70px; 
+	line-height: 70px; 
+	margin-bottom: 20px;	
+}
+
+.barra-busqueda a {
+	padding-left: 60px; 
+	padding-right: 10px;
+}
+
+.popover {
+    width: auto;
+    min-width: 236px;
+}
+
+.popover-aqui {}
+
+.editable {
+    position: relative;
+}
+
+.boton-editar-contenido {
+    display: none;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+.nav-tabs {
+    background-color: white;
+}
+
+.boton-editar-breadcum {
+    display: none;
+}
+
+form.centrado {
+    display: block;
+    float: none;
+    margin: 0px auto;
+}
+
+.table {
+    margin-bottom: 0px
+}
+
+.pitch h3 {
+    text-align: center
+}
+
+.imagen-centrada {
+    text-align: center;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding: 0px;
+}
+
+.accordion-group {
+    background-color: white;
+    margin-bottom: 20px
+}
+
+.dropdown-menu {
+    padding: 15px; 
+    padding-bottom: 0px;
+}
+
+.well {
+    padding: 8px 0;
+}

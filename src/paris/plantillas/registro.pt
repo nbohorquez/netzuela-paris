@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<div metal:use-macro="view.diagrama_sencillo">
+    <div metal:fill-slot="extra_meta_datos"></div>
+    
+    <div metal:fill-slot="contenido">
+        <div id="gadget" class="accordion-group">
+            <div id="gadget_encabezado" class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" href="#gadget_colapsable">
+                    <i></i>
+                    Mapa
+                </a>
+            </div>
+            <div id="gadget_colapsable" class="accordion-body collapse">
+                <div id="mapa"></div>
+            </div>
+        </div>
+        
+        <div metal:use-macro="view.macros['resultado_de_operacion']"></div>
+        
+        <div id="principal" class="accordion-group">
+            <div id="principal_encabezado" class="accordion-heading">
+                <strong class="accordion-toggle">
+                    Registro
+                </strong>
+            </div>
+            <div id="principal_colapsable" class="accordion-body">
+                <div class="accordion-inner">
+                    <form class="form-horizontal" id="formulario_registro" method="post" accept-charset="UTF-8">
+                        <fieldset>
+                            <input type="hidden" name="pagina_anterior" value="${view.pagina_anterior}" />
+                            <div metal:use-macro="view.formularios['registro_usuario']"></div>
+                            <div metal:use-macro="view.formularios['campo_ubicacion']"></div>
+                            <hr />
+                            <div metal:use-macro="view.formularios['campo_condiciones']"></div>
+                            <div metal:use-macro="view.formularios['botones_pie_de_pagina']"></div>
+                        </fieldset>
+                    </form>
+                    <div id="condiciones_servicio" class="modal hide fade">
+                        <div metal:use-macro="view.macros['condiciones']"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div metal:fill-slot="scripts_extra">
+        <script type="text/javascript" src="/estatico/js/registro.js"></script>
+    </div>
+</div>
